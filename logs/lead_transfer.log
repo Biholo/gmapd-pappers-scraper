@@ -1,0 +1,24 @@
+2026-04-02 16:54:00,300 [INFO] Demarrage des operations de transfert
+2026-04-02 16:54:00,312 [INFO] 
+============================================================
+2026-04-02 16:54:00,315 [INFO] TRANSFERT GetSales -> Brevo [Nouvelles SCI]
+2026-04-02 16:54:00,316 [INFO]   GetSales list: cae70689-80ea-4820-ab22-8b06a9ef1bce
+2026-04-02 16:54:00,316 [INFO]   Dates: 2026-03-31 to 2026-04-02
+2026-04-02 16:54:00,318 [INFO]   Brevo logique: {'email': [9], 'phone': [5]}
+2026-04-02 16:54:00,322 [INFO] ============================================================
+2026-04-02 16:54:00,484 [INFO]   Total leads trouves dans GetSales pour ces dates: 0
+2026-04-02 16:54:00,485 [INFO]   Aucun lead a transferer
+2026-04-02 16:54:00,485 [INFO] 
+============================================================
+2026-04-02 16:54:00,485 [INFO] TRANSFERT GetSales -> Brevo [Anciennes SCI]
+2026-04-02 16:54:00,485 [INFO]   GetSales list: def11074-bdf3-40c6-b2af-0c20b6f3e710
+2026-04-02 16:54:00,485 [INFO]   Dates: 2026-03-31 to 2026-04-02
+2026-04-02 16:54:00,485 [INFO]   Brevo logique: {'email': [9, 6], 'phone': []}
+2026-04-02 16:54:00,486 [INFO] ============================================================
+2026-04-02 16:54:00,544 [INFO]   Total leads trouves dans GetSales pour ces dates: 0
+2026-04-02 16:54:00,544 [INFO]   Aucun lead a transferer
+2026-04-02 16:54:00,544 [INFO] ============================================================
+2026-04-02 16:54:00,544 [INFO] Rapport d'execution:
+2026-04-02 16:54:00,544 [INFO] Total GetSales -> Brevo: 0
+2026-04-02 16:54:00,544 [INFO] Total Brevo -> Brevo: 0
+2026-04-02 16:54:00,545 [INFO] ============================================================

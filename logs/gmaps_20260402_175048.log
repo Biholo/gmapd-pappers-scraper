@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/app/scripts/scraper_gmaps.py", line 60, in <module>
+    config = load_gmaps_config()
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/scripts/scraper_gmaps.py", line 57, in load_gmaps_config
+    return json.load(f)
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 335, in loads
+    raise JSONDecodeError("Unexpected UTF-8 BOM (decode using utf-8-sig)",
+json.decoder.JSONDecodeError: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)

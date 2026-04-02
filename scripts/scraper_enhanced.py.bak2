@@ -1,0 +1,1442 @@
+#!/usr/bin/env python3
+"""
+🕷️ Scraper amélioré pour les SCI sur Pappers.fr avec enrichissement Yahoo
+Version avec extraction détaillée des dirigeants et profils LinkedIn via Yahoo
+"""
+
+import asyncio
+import csv
+import html
+import json
+import re
+import time
+from datetime import datetime
+from urllib.parse import quote, unquote, urlparse, parse_qs
+from playwright.async_api import async_playwright
+import os
+import logging
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement depuis le fichier .env à la racine
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
+
+from services.getsales_service import GetSalesService
+
+# Configuration du logger (console)
+logger = logging.getLogger("sci_scraper")
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+logger.setLevel(getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO))
+
+
+class SciScraperEnhanced:
+    def __init__(self, headless=True, max_pages=None):
+        self.headless = headless
+        self.max_pages = max_pages  # None = pas de limite
+        self.csv_file = None
+        self.csv_writer = None
+        self.total_companies = 0
+        self.start_time = None
+        # Yahoo enrichment
+        self.google_page = None
+        self.storage_state_path = "state/enrichment_yahoo_state.json"
+        self.enrichment_queries_count = 0
+        # Envoi backend
+        self.consecutive_send_failures = 0
+        self.stop_requested = False
+        # Logger
+        self.logger = logger
+        # Set pour éviter les doublons
+        self.existing_sirens = set()
+        # Persistance pagination
+        self.config_file_path = 'state/scraper_config.json'
+        self.resume_page = 1
+        self.current_page_num = 1
+        # Filtres de recherche (config JSON)
+        self.forme_juridique = '6540'  # SCI par défaut
+        self.en_activite = True
+        self.date_creation_min = None  # format attendu: JJ-MM-AAAA (ex: 15-08-2025)
+        self.date_creation_max = None
+        self.scraping_status = 'initialise'  # Status du scraping
+
+    def fix_encoding(self, text):
+        """Corriger les problèmes d'encodage"""
+        if not text:
+            return text
+
+        # Décoder les entités HTML
+        fixed = html.unescape(text)
+
+        # Corriger les caractères mal encodés
+        fixes = {
+            'Ã': 'é', 'Ã¨': 'è', 'Ã ': 'à', 'Ã´': 'ô', 'Ã«': 'ë',
+            'Ã¢': 'â', 'Ã¹': 'ù', 'Ã§': 'ç', 'Ã®': 'î', 'Ãª': 'ê',
+            'â€¯': ' ', 'â‚¬': '€', 'â€™': "'", 'â€œ': '"', 'â€': '"'
+        }
+
+        for wrong, correct in fixes.items():
+            fixed = fixed.replace(wrong, correct)
+
+        return fixed.strip()
+
+    def load_resume_page(self) -> int:
+        """Charger la page de reprise depuis le fichier de configuration (si présent)."""
+        try:
+            if os.path.exists(self.config_file_path):
+                with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        page = data.get('resume_page')
+                        last_update = data.get('last_update', 'inconnue')
+                        last_status = data.get('scraping_status', 'inconnu')
+                        last_total = data.get('total_companies_scraped', 0)
+
+                        # Afficher l'historique si pertinent
+                        if last_status and last_status != 'initialise':
+                            self.logger.info(f"📊 DERNIER ÉTAT SAUVEGARDÉ:")
+                            self.logger.info(f"   Status: {last_status}")
+                            self.logger.info(f"   Mise à jour: {last_update}")
+                            self.logger.info(f"   Total entreprises: {last_total}")
+
+                        if isinstance(page, int) and page >= 1:
+                            self.resume_page = page
+                            return page
+        except Exception:
+            pass
+        self.resume_page = 1
+        return 1
+
+    def save_resume_page(self, next_page: int, status: str = None) -> None:
+        """Sauvegarder la prochaine page à traiter dans le fichier de configuration.
+
+        Args:
+            next_page: Prochaine page à traiter
+            status: État du scraping (en_cours, termine, interrompu, changement_date)
+        """
+        try:
+            data = {}
+            if os.path.exists(self.config_file_path):
+                try:
+                    with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                        existing = json.load(f)
+                        if isinstance(existing, dict):
+                            data.update(existing)
+                except Exception:
+                    pass
+
+            # Sauvegarder l'état complet
+            data['resume_page'] = max(1, int(next_page))
+            data['last_update'] = datetime.now().isoformat()
+            data['total_companies_scraped'] = self.total_companies
+
+            # Ajouter le status si fourni
+            if status:
+                data['scraping_status'] = status
+                self.scraping_status = status
+
+            # Logging détaillé de l'état
+            self.logger.info(f"💾 SAUVEGARDE CONFIG:")
+            self.logger.info(f"   📄 Page suivante: {next_page}")
+            self.logger.info(f"   📅 Dates: {self.date_creation_min} → {self.date_creation_max}")
+            self.logger.info(f"   🏢 Total entreprises: {self.total_companies}")
+            if status:
+                self.logger.info(f"   ⚡ Status: {status}")
+
+            with open(self.config_file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            self.logger.error(f"Erreur sauvegarde config: {e}")
+
+    def load_search_filters(self) -> None:
+        """Charger les filtres de recherche (dates, activité, forme juridique) depuis la config JSON.
+
+        Note: Pour simplifier, on utilise une date unique (min = max) pour rechercher jour par jour.
+        """
+        try:
+            if os.path.exists(self.config_file_path):
+                with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                    cfg = json.load(f)
+                    if isinstance(cfg, dict):
+                        fj = cfg.get('forme_juridique')
+                        if isinstance(fj, str) and fj.strip():
+                            self.forme_juridique = fj.strip()
+                        en_act = cfg.get('en_activite')
+                        if isinstance(en_act, bool):
+                            self.en_activite = en_act
+                        dmin = cfg.get('date_creation_min')
+                        if isinstance(dmin, str) and dmin.strip():
+                            self.date_creation_min = dmin.strip()
+                        dmax = cfg.get('date_creation_max')
+                        if isinstance(dmax, str) and dmax.strip():
+                            self.date_creation_max = dmax.strip()
+
+                        # Synchroniser min et max pour recherche jour par jour
+                        if self.date_creation_min and not self.date_creation_max:
+                            self.date_creation_max = self.date_creation_min
+                        elif self.date_creation_max and not self.date_creation_min:
+                            self.date_creation_min = self.date_creation_max
+                        elif self.date_creation_min != self.date_creation_max:
+                            # Si différentes, on prend la plus récente (min)
+                            self.logger.info(f"⚠️ Dates min/max différentes détectées. Utilisation de: {self.date_creation_min}")
+                            self.date_creation_max = self.date_creation_min
+        except Exception as e:
+            self.logger.error(f"Erreur chargement filtres: {e}")
+
+    def build_search_url(self, page_num: int) -> str:
+        """Construire l'URL de recherche Pappers avec les filtres configurés."""
+        base = "https://www.pappers.fr/recherche"
+        params = []
+        if self.forme_juridique:
+            params.append(f"forme_juridique={self.forme_juridique}")
+        if self.en_activite:
+            params.append("en_activite=true")
+        if self.date_creation_min:
+            params.append(f"date_creation_min={self.date_creation_min}")
+        if self.date_creation_max:
+            params.append(f"date_creation_max={self.date_creation_max}")
+        if page_num and page_num > 1:
+            params.append(f"page={page_num}")
+        query = '&'.join(params)
+        return f"{base}?{query}" if query else base
+
+    # ===== Helpers de date/filtre =====
+    @staticmethod
+    def _parse_fr_date(date_str: str):
+        try:
+            return datetime.strptime(date_str, "%d-%m-%Y").date()
+        except Exception:
+            return None
+
+    @staticmethod
+    def _format_fr_date(date_obj) -> str:
+        try:
+            return date_obj.strftime("%d-%m-%Y")
+        except Exception:
+            return None
+
+    def shift_date_filters_by_days(self, days: int) -> None:
+        """Décaler les dates min/max de 'days' jours (négatif pour revenir en arrière).
+        Note: Les dates min et max sont toujours identiques (recherche par jour unique).
+        """
+        try:
+            if self.date_creation_min:
+                dmin = self._parse_fr_date(self.date_creation_min)
+                if dmin:
+                    new_date = dmin.fromordinal(dmin.toordinal() + days)
+                    new_date_str = self._format_fr_date(new_date)
+                    if new_date_str:
+                        # Garder min et max identiques pour recherche par jour
+                        self.date_creation_min = new_date_str
+                        self.date_creation_max = new_date_str
+        except Exception as e:
+            self.logger.error(f"Erreur lors du décalage de date: {e}")
+
+    def save_filters_to_config(self) -> None:
+        """Persister les filtres actuels (dates, activité, forme) dans le fichier de config.
+
+        Note: Les dates min et max sont toujours identiques (recherche jour par jour).
+        """
+        try:
+            data = {}
+            if os.path.exists(self.config_file_path):
+                try:
+                    with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                        existing = json.load(f)
+                        if isinstance(existing, dict):
+                            data.update(existing)
+                except Exception:
+                    pass
+            # Mettre à jour les filtres depuis l'état courant
+            data['forme_juridique'] = self.forme_juridique
+            data['en_activite'] = self.en_activite
+
+            # Toujours garder min = max pour recherche par jour
+            if self.date_creation_min:
+                data['date_creation_min'] = self.date_creation_min
+                data['date_creation_max'] = self.date_creation_min  # Toujours identique
+            else:
+                data.pop('date_creation_min', None)
+                data.pop('date_creation_max', None)
+
+            with open(self.config_file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            self.logger.error(f"Erreur sauvegarde filtres: {e}")
+
+    def setup_csv(self):
+        """Initialiser ou ouvrir le fichier CSV unique pour toutes les exécutions"""
+        # Nom de fichier fixe pour persistance
+        filename = 'csv/sci_data_master.csv'
+
+        fieldnames = [
+            # Champs de base
+            'nom_societe', 'forme_juridique', 'date_creation', 'activite',
+            'code_naf', 'lieu', 'code_postal', 'effectif', 'capital', 'url_entreprise',
+
+            # Informations juridiques détaillées
+            'siren', 'siret', 'numero_tva', 'inscription_rcs', 'inscription_rne',
+            'numero_rcs', 'capital_social_detaille',
+
+            # Dirigeants (format JSON)
+            'dirigeants_json', 'nombre_dirigeants',
+
+            # Enrichissement Yahoo/LinkedIn
+            'linkedin_enriched_json',
+
+            # Métadonnées de scraping
+            'date_scraping', 'heure_scraping'
+        ]
+
+        # Vérifier si le fichier existe déjà
+        file_exists = os.path.exists(filename)
+
+        if file_exists:
+            # Charger les SIREN existants pour éviter les doublons
+            try:
+                with open(filename, 'r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    self.existing_sirens = set()
+                    row_count = 0
+                    for row in reader:
+                        if row.get('siren'):
+                            self.existing_sirens.add(row['siren'])
+                        row_count += 1
+                    print(f"📄 Fichier CSV existant trouvé: {filename}")
+                    print(f"   📊 {row_count} entreprises déjà présentes")
+                    print(f"   🔍 {len(self.existing_sirens)} SIREN uniques chargés")
+            except Exception as e:
+                self.logger.error(f"Erreur lecture CSV existant: {e}")
+                self.existing_sirens = set()
+
+            # Ouvrir en mode append
+            self.csv_file = open(filename, 'a', newline='', encoding='utf-8')
+            self.csv_writer = csv.DictWriter(self.csv_file, fieldnames=fieldnames)
+            print(f"✅ Ajout au fichier CSV existant: {filename}")
+        else:
+            # Créer un nouveau fichier avec headers
+            self.existing_sirens = set()
+            self.csv_file = open(filename, 'w', newline='', encoding='utf-8')
+            self.csv_writer = csv.DictWriter(self.csv_file, fieldnames=fieldnames)
+            self.csv_writer.writeheader()
+            print(f"📄 Nouveau fichier CSV créé: {filename}")
+
+        return filename
+
+    async def goto_resilient(self, page, url: str):
+        """Aller à une URL avec plusieurs stratégies de chargement et timeouts plus longs."""
+        strategies = [
+            ("domcontentloaded", 45000),
+            ("networkidle", 45000),
+            ("domcontentloaded", 60000),
+            ("networkidle", 60000),
+        ]
+        for wait_mode, timeout_ms in strategies:
+            try:
+                return await page.goto(url, wait_until=wait_mode, timeout=timeout_ms)
+            except Exception as e:
+                await asyncio.sleep(1)
+                continue
+        # Dernière tentative sans wait_until
+
+    def build_lead_payload(self, item) -> dict:
+        """Construire un lead conforme à l'interface Lead du backend."""
+        lead: dict = {}
+
+        # Si enrichissement LinkedIn présent, envoyer le premier résultat
+        try:
+            if item.get('linkedin_enriched_json'):
+                enriched = json.loads(item['linkedin_enriched_json'])
+                if isinstance(enriched, list) and enriched:
+                    # Prendre le premier dirigeant avec un profil LinkedIn trouvé
+                    for dirigeant in enriched:
+                        linkedin_url = dirigeant.get('linkedin_url')
+                        if linkedin_url and "linkedin.com/in/" in linkedin_url:
+                            # Extraire le slug LinkedIn (ex: john-doe-123456)
+                            linkedin_slug = linkedin_url.split('linkedin.com/in/')[-1].strip('/ ').split('?')[0]
+
+                            # OBLIGATOIRE: linkedin_id
+                            lead['linkedin_id'] = linkedin_slug
+
+                            # Alias pour compatibilité
+                            lead['linkedin'] = linkedin_slug
+
+                            # Extraire prénom et nom depuis le nom complet
+                            full_name = dirigeant.get('nom') or ''
+                            if full_name:
+                                # Nettoyer le nom (enlever titres comme M., Mme., Dr.)
+                                full_name = re.sub(r'^(M\.|Mme\.|Dr\.|Me\.)\s*', '', full_name, flags=re.IGNORECASE)
+                                tokens = [t for t in full_name.split() if t]
+
+                                if len(tokens) >= 2:
+                                    # Format classique: Prénom Nom(s)
+                                    lead['first_name'] = tokens[0]
+                                    lead['last_name'] = ' '.join(tokens[1:])
+                                elif tokens:
+                                    # Un seul token, on le met en last_name
+                                    lead['last_name'] = tokens[0]
+
+                            # Position du dirigeant
+                            qualite = dirigeant.get('qualite', '')
+                            if qualite:
+                                lead['position'] = qualite
+                                # Headline peut inclure position + entreprise
+                                lead['headline'] = f"{qualite} chez {item.get('nom_societe', '')}" if item.get('nom_societe') else qualite
+
+                            # On prend le premier dirigeant avec LinkedIn trouvé
+                            break
+
+                    # Si aucun LinkedIn trouvé, ne pas créer de lead
+                    if 'linkedin_id' not in lead:
+                        return {}
+
+        except Exception as e:
+            self.logger.error(f"Erreur construction lead: {e}")
+            return {}
+
+        # Compléter avec les infos d'entreprise
+        if item.get('nom_societe'):
+            lead['company_name'] = self.fix_encoding(item['nom_societe'])
+
+        if item.get('lieu'):
+            lead['raw_address'] = self.fix_encoding(item['lieu'])
+
+        # Extraire le domaine si on a des infos
+        # (pourrait être amélioré avec une recherche du site web de l'entreprise)
+
+        # Vérifier qu'on a au minimum linkedin_id
+        if 'linkedin_id' not in lead:
+            return {}  # Pas de lead sans linkedin_id
+
+        return lead
+
+    def close_csv(self):
+        """Fermer le fichier CSV"""
+        if self.csv_file:
+            self.csv_file.close()
+            print("💾 Fichier CSV fermé")
+
+    def extract_company_data(self, company_html, base_url):
+        """Extraire les données d'une entreprise depuis son HTML"""
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(company_html, 'html.parser')
+
+        item = {}
+
+        # Nom de la société
+        nom_selectors = ['.gros-nom', '.petit-nom', '.gros-gros-nom']
+        nom = None
+        for selector in nom_selectors:
+            element = soup.select_one(f'.nom-entreprise {selector}')
+            if element:
+                nom = element.get_text(strip=True)
+                break
+
+        item['nom_societe'] = self.fix_encoding(nom) if nom else ''
+
+        # URL de l'entreprise
+        url_element = soup.select_one('.nom-entreprise a')
+        if url_element and url_element.get('href'):
+            item['url_entreprise'] = base_url + url_element['href']
+        else:
+            item['url_entreprise'] = ''
+
+        # Initialiser tous les champs de base
+        item['forme_juridique'] = ''
+        item['date_creation'] = ''
+        item['activite'] = ''
+        item['code_naf'] = ''
+        item['lieu'] = ''
+        item['code_postal'] = ''
+        item['effectif'] = ''
+        item['capital'] = ''
+
+        # Initialiser nouveaux champs
+        item['siren'] = ''
+        item['siret'] = ''
+        item['numero_tva'] = ''
+        item['inscription_rcs'] = ''
+        item['inscription_rne'] = ''
+        item['numero_rcs'] = ''
+        item['capital_social_detaille'] = ''
+        item['dirigeants_json'] = ''
+        item['nombre_dirigeants'] = 0
+
+        # Extraire les informations des sections content
+        content_sections = soup.select('div.content')
+
+        for section in content_sections:
+            text_content = section.get_text(separator=' ', strip=True)
+
+            # Forme juridique et date de création
+            if 'Forme Juridique' in text_content:
+                value_element = section.select_one('p.value')
+                if value_element:
+                    item['forme_juridique'] = self.fix_encoding(value_element.get_text(strip=True))
+
+                date_match = re.search(r'Depuis le (\d{2}/\d{2}/\d{4})', text_content)
+                if date_match:
+                    item['date_creation'] = date_match.group(1)
+
+            # Activité et Code NAF
+            elif 'Activité' in text_content:
+                value_element = section.select_one('p.value')
+                if value_element:
+                    item['activite'] = self.fix_encoding(value_element.get_text(strip=True))
+
+                naf_match = re.search(r'Code NAF : ([A-Z0-9.]+)', text_content)
+                if naf_match:
+                    item['code_naf'] = naf_match.group(1)
+
+            # Lieu et Code postal
+            elif 'Lieu' in text_content:
+                value_element = section.select_one('p.value')
+                if value_element:
+                    item['lieu'] = self.fix_encoding(value_element.get_text(strip=True))
+
+                postal_match = re.search(r'Code postal : (\d+)', text_content)
+                if postal_match:
+                    item['code_postal'] = postal_match.group(1)
+
+            # Effectif et Capital
+            elif 'Effectif' in text_content:
+                effectif_match = re.search(r'Effectif : (.+?)(?:Capital|$)', text_content)
+                if effectif_match:
+                    item['effectif'] = self.fix_encoding(effectif_match.group(1).strip())
+
+                capital_match = re.search(r'Capital : (.+?)$', text_content)
+                if capital_match:
+                    item['capital'] = self.fix_encoding(capital_match.group(1).strip())
+
+        return item
+
+    async def extract_company_details(self, page, company_url):
+        """Extraire les détails d'une entreprise depuis sa page détail"""
+        try:
+            print(f"  🔍 Extraction des détails de {company_url}")
+
+            # Navigation avec retry et timeouts plus longs
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    # Utiliser domcontentloaded au lieu de networkidle pour éviter les timeouts
+                    response = await page.goto(company_url, wait_until="domcontentloaded", timeout=60000)
+                    if response and response.status == 200:
+                        break
+                    elif attempt == max_retries - 1:
+                        print(f"    ❌ Erreur de statut: {response.status if response else 'Pas de réponse'}")
+                        return self._empty_details()
+                except Exception as nav_error:
+                    if attempt == max_retries - 1:
+                        print(f"    ❌ Erreur de navigation après {max_retries} tentatives")
+                        return self._empty_details()
+                    print(f"    ⚠️ Tentative {attempt + 1}/{max_retries} échouée, nouvelle tentative...")
+                    await asyncio.sleep(5)
+                    continue
+
+            await page.wait_for_timeout(2000)
+
+            # Attendre que le contenu soit chargé avec un timeout plus court
+            try:
+                await page.wait_for_selector('#resume', timeout=5000)
+            except:
+                print(f"    ⚠️ La page met du temps à charger, on continue...")
+
+            details = {
+                'siren': '',
+                'siret': '',
+                'numero_tva': '',
+                'inscription_rcs': '',
+                'inscription_rne': '',
+                'numero_rcs': '',
+                'capital_social_detaille': '',
+                'dirigeants_json': '',
+                'nombre_dirigeants': 0
+            }
+
+            # Extraire les informations juridiques
+            try:
+                juridiques_section = await page.query_selector('#informations')
+                if juridiques_section:
+                    juridiques_html = await juridiques_section.inner_html()
+                    juridiques_data = self.extract_juridiques(juridiques_html)
+                    details.update(juridiques_data)
+                else:
+                    print(f"    ⚠️ Section informations juridiques non trouvée")
+            except Exception as e:
+                print(f"    ⚠️ Erreur extraction juridiques: {e}")
+
+            # Extraire les dirigeants - Stratégie principale #dirigeants
+            dirigeants_data = []
+
+            try:
+                # Attendre spécifiquement la section dirigeants
+                await page.wait_for_selector('#dirigeants', timeout=5000)
+                dirigeants_section = await page.query_selector('#dirigeants')
+
+                if dirigeants_section:
+                    dirigeants_html = await dirigeants_section.inner_html()
+                    dirigeants_data = self.extract_dirigeants(dirigeants_html)
+                    if dirigeants_data:
+                        print(f"    ✅ {len(dirigeants_data)} dirigeant(s) trouvé(s)")
+                    else:
+                        print(f"    ⚠️ Section #dirigeants présente mais vide")
+                else:
+                    print(f"    ⚠️ Pas de section #dirigeants trouvée")
+            except Exception as e:
+                print(f"    ⚠️ Impossible de récupérer les dirigeants (timeout ou erreur)")
+
+            # Mettre à jour les détails
+            if dirigeants_data:
+                # Dédoublon si nécessaire
+                unique_dirigeants = []
+                seen = set()
+                for d in dirigeants_data:
+                    if d['nom'] not in seen:
+                        unique_dirigeants.append(d)
+                        seen.add(d['nom'])
+
+                details['dirigeants_json'] = json.dumps(unique_dirigeants, ensure_ascii=False)
+                details['nombre_dirigeants'] = len(unique_dirigeants)
+                print(f"    🎯 Total: {len(unique_dirigeants)} dirigeant(s) unique(s)")
+                for i, d in enumerate(unique_dirigeants, 1):
+                    print(f"       {i}. {d['nom']} ({d.get('qualite', 'Gérant')})")
+            else:
+                # Une SCI a forcément des dirigeants - on le signale comme une anomalie
+                details['dirigeants_json'] = ''
+                details['nombre_dirigeants'] = 0
+                print(f"    ❌ ANOMALIE: Aucun dirigeant trouvé (toute SCI doit avoir au moins un gérant)")
+
+            return details
+
+        except Exception as e:
+            print(f"    ❌ Erreur lors de l'extraction des détails: {e}")
+            return self._empty_details()
+
+    def _empty_details(self):
+        """Retourne un dictionnaire vide pour les détails"""
+        return {
+            'siren': '',
+            'siret': '',
+            'numero_tva': '',
+            'inscription_rcs': '',
+            'inscription_rne': '',
+            'numero_rcs': '',
+            'capital_social_detaille': '',
+            'dirigeants_json': '',
+            'nombre_dirigeants': 0
+        }
+
+    # =====================
+    # Enrichissement Yahoo
+    # =====================
+    def clean_name_for_search(self, name: str) -> str:
+        if not name:
+            return ''
+        # supprimer parenthèses et normaliser espaces
+        name = re.sub(r'\([^)]*\)', '', name)
+        name = re.sub(r'[^\w\s-]', '', name)
+        return ' '.join(name.split()).strip()
+
+    def clean_linkedin_url(self, url: str):
+        if not url:
+            return None
+        url = unquote(url)
+        if "/url?q=" in url:
+            url = url.split("/url?q=")[-1].split("&")[0]
+        # Accepter également l'ancien format /pub/
+        if ("linkedin.com/in/" not in url) and ("linkedin.com/pub/" not in url):
+            # Pas un profil LinkedIn
+            return None
+        if "?" in url:
+            url = url.split("?")[0]
+        if not url.startswith("http"):
+            url = "https://" + url.lstrip("/")
+        self.logger.debug("URL LinkedIn nettoyée: %s", url)
+        return url
+
+    def resolve_search_result_href(self, href: str) -> str:
+        """Résoudre un href de moteur de recherche vers son URL cible réelle.
+
+        Supporte les redirections typiques (Bing/Google/Qwant). Retourne l'URL brute si aucune redirection.
+        """
+        if not href:
+            return None
+        try:
+            parsed = urlparse(href)
+            raw = href
+            # Cas 1: lien direct vers LinkedIn
+            if parsed.netloc and "linkedin.com" in parsed.netloc:
+                return raw
+
+            # Cas 2: liens de redirection (Bing/Google/Qwant/Yahoo)
+            query = parse_qs(parsed.query)
+            # Essayer toutes les clés usuelles
+            candidate_keys = [
+                "url", "u", "r", "target", "redirect", "link", "RU", "ru", "to", "l"
+            ]
+            for key in candidate_keys:
+                if key in query and len(query[key]) > 0:
+                    candidate = unquote(query[key][0])
+                    if "linkedin.com" in candidate:
+                        return candidate
+
+            # Cas 3: chemins spéciaux contenant redirect
+            if any(seg in (parsed.path or "") for seg in ["/redirect", "/r/", "/l/", "/ck/a", "/url"]):
+                for key in candidate_keys:
+                    if key in query and len(query[key]) > 0:
+                        candidate = unquote(query[key][0])
+                        if "linkedin.com" in candidate:
+                            return candidate
+        except Exception:
+            pass
+        return href
+
+    def generate_search_queries(self, dirigeant, company_info):
+        name = self.clean_name_for_search(dirigeant.get('nom', ''))
+        if not name:
+            return []
+
+        # Une seule requête simple et efficace
+        return [f'site:linkedin.com "{name}"']
+
+    async def search_yahoo_for_linkedin(self, context, query):
+        """Recherche via Yahoo avec requête site:linkedin.com."""
+        try:
+            if self.google_page is None:
+                self.google_page = await context.new_page()
+
+            yahoo_url = f"https://fr.search.yahoo.com/search?p={quote(query)}"
+            self.logger.debug("Yahoo URL: %s", yahoo_url)
+
+            response = await self.google_page.goto(yahoo_url, wait_until="domcontentloaded", timeout=30000)
+            await self.google_page.wait_for_timeout(2500)
+
+            # Yahoo utilise différents sélecteurs
+            selectors = [
+                'a[href*="linkedin.com/in/"]',
+                'a[href*="linkedin.com/pub/"]',
+                '.compTitle a',
+                'h3.title a',
+                '.algo-sr a',
+                '.ac-algo a',
+                'div.dd a'
+            ]
+
+            linkedin_urls = []
+            for selector in selectors:
+                try:
+                    links = await self.google_page.query_selector_all(selector)
+                    for link in links:
+                        href = await link.get_attribute('href')
+                        if href and "linkedin" in href.lower():
+                            # Yahoo encode les URLs différemment
+                            if "r.search.yahoo.com" in href or "/RU=" in href:
+                                # Extraire l'URL réelle
+                                import re
+                                match = re.search(r'/RU=([^/]+)/', href)
+                                if match:
+                                    href = unquote(match.group(1))
+
+                            resolved = self.resolve_search_result_href(href)
+                            if resolved and "linkedin.com/in/" in resolved:
+                                clean = self.clean_linkedin_url(resolved)
+                                if clean:
+                                    return clean
+                except:
+                    continue
+
+            self.logger.info("Aucun profil LinkedIn trouvé pour: %s", query)
+            return None
+
+        except Exception as e:
+            self.logger.error("Recherche échouée: %s", e)
+            return None
+
+    async def enrich_with_yahoo(self, page, item, company_info):
+        """Enrichir l'item avec des URLs LinkedIn via Yahoo pour TOUS les dirigeants."""
+        enriched = []
+        try:
+            self.logger.info("\n" + "=" * 70)
+            self.logger.info("🔍 ENRICHISSEMENT YAHOO pour '%s' (%s)", item.get('nom_societe', ''), company_info.get('lieu', ''))
+            self.logger.info("=" * 70)
+
+            dirigeants = []
+            if item.get('dirigeants_json'):
+                try:
+                    dirigeants = json.loads(item['dirigeants_json'])
+                except Exception:
+                    self.logger.exception("Échec du parsing de dirigeants_json pour '%s'", item.get('nom_societe', ''))
+                    dirigeants = []
+
+            if not dirigeants:
+                self.logger.info("❌ Aucun dirigeant à enrichir pour '%s'", item.get('nom_societe', ''))
+            else:
+                self.logger.info("👥 %d dirigeant(s) à rechercher sur LinkedIn via Yahoo", len(dirigeants))
+
+            # Traiter TOUS les dirigeants
+            for idx, dirigeant in enumerate(dirigeants, 1):
+                nom_dirigeant = dirigeant.get('nom', '')
+                qualite_dirigeant = dirigeant.get('qualite', '')
+
+                self.logger.info("\n🔎 Dirigeant %d/%d: %s (%s)", idx, len(dirigeants), nom_dirigeant, qualite_dirigeant)
+                self.logger.info("-" * 50)
+
+                # Une seule requête par dirigeant
+                query = self.generate_search_queries(dirigeant, company_info)[0]
+                self.enrichment_queries_count += 1
+
+                # Cooldown anti-bot périodique
+                if self.enrichment_queries_count % 15 == 0:
+                    self.logger.info("⏸ Cooldown anti-bot: pause 30s après %d requêtes", self.enrichment_queries_count)
+                    await asyncio.sleep(30)
+
+                # Pause pour paraître plus humain
+                await asyncio.sleep(2)
+
+                self.logger.info("  Recherche: %s", query)
+
+                url = await self.search_yahoo_for_linkedin(page.context, query)
+
+                if url:
+                    enriched.append({
+                        'nom': nom_dirigeant,
+                        'qualite': qualite_dirigeant,
+                        'query': query,
+                        'linkedin_url': url
+                    })
+                    self.logger.info("✅ TROUVÉ ! LinkedIn: %s", url)
+                else:
+                    self.logger.info("  ❌ Pas de résultat")
+                    enriched.append({
+                        'nom': nom_dirigeant,
+                        'qualite': qualite_dirigeant,
+                        'query': query,
+                        'linkedin_url': ''
+                    })
+
+                # Pause entre dirigeants pour éviter la détection
+                if idx < len(dirigeants):  # Pas de pause après le dernier
+                    self.logger.info("⏱ Pause 3s avant le prochain dirigeant...")
+                    await asyncio.sleep(3)
+        except Exception:
+            self.logger.exception("Erreur pendant l'enrichissement pour '%s'", item.get('nom_societe', ''))
+
+        # Résumé final pour cette entreprise
+        self.logger.info("\n" + "=" * 70)
+        if enriched:
+            item['linkedin_enriched_json'] = json.dumps(enriched, ensure_ascii=False)
+            profiles_found = [e for e in enriched if e.get('linkedin_url')]
+            self.logger.info("🎯 RÉSULTAT ENRICHISSEMENT pour '%s':", item.get('nom_societe', ''))
+            self.logger.info("  - Dirigeants totaux: %d", len(enriched))
+            self.logger.info("  - Profils LinkedIn trouvés: %d/%d", len(profiles_found), len(enriched))
+
+            if profiles_found:
+                self.logger.info("  - Profils trouvés:")
+                for p in profiles_found:
+                    self.logger.info("    • %s: %s", p['nom'], p['linkedin_url'])
+        else:
+            item['linkedin_enriched_json'] = ''
+            self.logger.info("🎯 Enrichissement Yahoo terminé pour '%s' – aucun dirigeant à enrichir", item.get('nom_societe', ''))
+        self.logger.info("=" * 70 + "\n")
+
+    def extract_juridiques(self, html_content):
+        """Extraire les informations juridiques"""
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        juridiques = {}
+
+        # Parcourir les lignes du tableau
+        rows = soup.select('table tbody tr')
+        for row in rows:
+            th = row.select_one('th')
+            td = row.select_one('td')
+
+            if th and td:
+                label = th.get_text(strip=True).lower()
+                value = td.get_text(strip=True)
+                value = self.fix_encoding(value)
+
+                if 'siren' in label and 'siret' not in label:
+                    # Extraire seulement les chiffres pour SIREN
+                    siren_match = re.search(r'(\d{3}\s?\d{3}\s?\d{3})', value)
+                    if siren_match:
+                        juridiques['siren'] = siren_match.group(1).replace(' ', '')
+
+                elif 'siret' in label:
+                    # Extraire seulement les chiffres pour SIRET
+                    siret_match = re.search(r'(\d{3}\s?\d{3}\s?\d{3}\s?\d{5})', value)
+                    if siret_match:
+                        juridiques['siret'] = siret_match.group(1).replace(' ', '')
+
+                elif 'tva' in label:
+                    # Extraire le numéro de TVA
+                    tva_match = re.search(r'(FR\d+)', value)
+                    if tva_match:
+                        juridiques['numero_tva'] = tva_match.group(1)
+
+                elif 'inscription au rcs' in label:
+                    juridiques['inscription_rcs'] = value
+
+                elif 'inscription au rne' in label:
+                    juridiques['inscription_rne'] = value
+
+                elif 'numéro rcs' in label:
+                    juridiques['numero_rcs'] = value
+
+                elif 'capital social' in label:
+                    juridiques['capital_social_detaille'] = value
+
+        return juridiques
+
+    def extract_dirigeants(self, html_content):
+        """Extraire les informations des dirigeants (personnes physiques uniquement)"""
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        dirigeants = []
+
+        # Trouver tous les dirigeants
+        dirigeants_items = soup.select('li.dirigeant')
+
+        for dirigeant_item in dirigeants_items:
+            dirigeant = {}
+
+            # Nom du dirigeant
+            nom_element = dirigeant_item.select_one('.nom a')
+            if nom_element:
+                nom_complet = nom_element.get_text(strip=True)
+                nom_complet = self.fix_encoding(nom_complet)
+
+                # Vérifier s'il s'agit d'une personne physique (pas d'une société)
+                # Les personnes physiques ont généralement prénom + nom
+                if self.is_personne_physique(nom_complet):
+                    dirigeant['nom'] = nom_complet
+
+                    # Extraire nom d'usage si présent
+                    nom_usage = dirigeant_item.select_one('.personne-nom-usage')
+                    if nom_usage:
+                        usage_text = nom_usage.get_text(strip=True)
+                        dirigeant['nom_usage'] = self.fix_encoding(usage_text)
+
+                    # Qualité/fonction
+                    qualite_element = dirigeant_item.select_one('.qualite')
+                    if qualite_element:
+                        dirigeant['qualite'] = self.fix_encoding(qualite_element.get_text(strip=True))
+
+                    # Âge et date de naissance
+                    age_element = dirigeant_item.select_one('.age-siren span')
+                    if age_element:
+                        age_text = age_element.get_text(strip=True)
+                        age_match = re.search(r'(\d+)\s*ans.*?(\d{2}/\d{4})', age_text)
+                        if age_match:
+                            dirigeant['age'] = age_match.group(1)
+                            dirigeant['date_naissance'] = age_match.group(2)
+
+                    # Date de début de fonction
+                    date_element = dirigeant_item.select_one('.dirigeant-right .date')
+                    if date_element:
+                        date_text = date_element.get_text(strip=True)
+                        date_match = re.search(r'Depuis le (\d{2}/\d{2}/\d{4})', date_text)
+                        if date_match:
+                            dirigeant['date_debut_fonction'] = date_match.group(1)
+
+                    dirigeants.append(dirigeant)
+
+        return dirigeants
+
+    def is_personne_physique(self, nom):
+        """Déterminer si c'est une personne physique ou une société"""
+        # Indicateurs de sociétés
+        societe_keywords = [
+            'SCI', 'SARL', 'SA', 'SAS', 'EURL', 'SNC', 'SASU',
+            'Société', 'Établissement', 'Groupe', 'Holding',
+            'Association', 'Fondation', 'GIE'
+        ]
+
+        nom_upper = nom.upper()
+        for keyword in societe_keywords:
+            if keyword.upper() in nom_upper:
+                return False
+
+        # Si le nom contient typiquement prénom + nom (2-3 mots), c'est probablement une personne physique
+        mots = nom.split()
+        if 2 <= len(mots) <= 4:
+            return True
+
+        return False
+
+    async def scrape_page(self, page, url, page_num):
+        """Scraper une page"""
+        print(f"🔄 Page {page_num}: {url}")
+
+        try:
+            response = await self.goto_resilient(page, url)
+
+            if not response or response.status != 200:
+                print(f"❌ Erreur de statut: {response.status}")
+                return 0
+
+            # Attendre que la page soit chargée
+            try:
+                await page.wait_for_selector('div.container-resultat', timeout=10000)
+            except Exception:
+                await page.wait_for_timeout(3000)
+
+            # Trouver les entreprises et extraire les données de base en une fois
+            companies = await page.query_selector_all('div.container-resultat')
+            print(f"🏢 {len(companies)} entreprises trouvées")
+
+            if not companies:
+                return 0
+
+            # Extraire d'abord toutes les données de base des entreprises
+            companies_data = []
+            for company in companies:
+                try:
+                    company_html = await company.inner_html()
+                    item = self.extract_company_data(company_html, "https://www.pappers.fr")
+                    if item['nom_societe'] and item['url_entreprise']:
+                        companies_data.append(item)
+                except Exception as e:
+                    print(f"  ⚠️ Erreur extraction entreprise: {e}")
+                    continue
+
+            print(f"📋 {len(companies_data)} entreprises valides trouvées")
+
+            # Maintenant extraire les détails de chaque entreprise
+            success_count = 0
+
+            for item in companies_data:
+                try:
+                    # Extraire les détails de l'entreprise
+                    details = await self.extract_company_details(page, item['url_entreprise'])
+
+                    # Fusionner les données
+                    item.update(details)
+
+                    # Enrichissement Yahoo (LinkedIn) sur 1-2 dirigeants
+                    company_info = {
+                        'nom_societe': item.get('nom_societe', ''),
+                        'lieu': item.get('lieu', '')
+                    }
+                    await self.enrich_with_yahoo(page, item, company_info)
+
+                    # Upsert lead si enrichissement trouvé
+                    if item.get('linkedin_enriched_json'):
+                        try:
+                            lead_payload = self.build_lead_payload(item)
+                            if lead_payload:
+                                getsales_api_key = os.environ.get("GETSALES_API_KEY")
+                                if getsales_api_key:
+                                    gs_service = GetSalesService(
+                                        api_key=getsales_api_key,
+                                        base_url=os.environ.get("GETSALES_BASE_URL", "https://amazing.getsales.io"),
+                                        list_uuid=os.environ.get("GETSALES_LIST_UUID"),
+                                        debug=False
+                                    )
+
+                                    resp = gs_service.process_lead(lead_payload)
+                                    status = resp.get('status')
+                                    print(f"    Lead GetSales ({item.get('nom_societe','')}) → {lead_payload.get('linkedin','')} status={status}")
+
+                                    # reset compteur d'échecs
+                                    self.consecutive_send_failures = 0
+                                else:
+                                    print(f"    ⚠️ GETSALES_API_KEY non configurée, lead ignoré")
+                        except Exception as send_err:
+                            # Formater l'erreur de manière plus lisible
+                            error_msg = str(send_err)
+                            if "HTTPError" in error_msg:
+                                # Extraire le code d'erreur HTTP
+                                import re
+                                match = re.search(r'HTTPError (\d+)', error_msg)
+                                if match:
+                                    code = match.group(1)
+                                    if code == "404":
+                                        print(f"    ⚠️ Erreur API: Endpoint introuvable (404)")
+                                        print(f"       Vérifiez la variable LEAD_UPSERT_URL")
+                                    elif code == "401":
+                                        print(f"    ⚠️ Erreur API: Authentification échouée (401)")
+                                        print(f"       Vérifiez la variable LEAD_API_KEY")
+                                    elif code == "403":
+                                        print(f"    ⚠️ Erreur API: Accès refusé (403)")
+                                    elif code == "500":
+                                        print(f"    ⚠️ Erreur API: Erreur serveur (500)")
+                                    else:
+                                        print(f"    ⚠️ Erreur API: HTTP {code}")
+                                else:
+                                    print(f"    ⚠️ Erreur envoi lead (HTTP)")
+                            else:
+                                # Autres types d'erreurs
+                                if "Connection" in error_msg:
+                                    print(f"    ⚠️ Erreur connexion au serveur")
+                                elif "Timeout" in error_msg:
+                                    print(f"    ⚠️ Timeout lors de l'envoi")
+                                else:
+                                    # Afficher seulement les 80 premiers caractères de l'erreur
+                                    short_error = error_msg[:80] + "..." if len(error_msg) > 80 else error_msg
+                                    print(f"    ⚠️ Erreur: {short_error}")
+
+                            self.consecutive_send_failures += 1
+                            if self.consecutive_send_failures >= 3:
+                                print(f"    ⛔ 3 échecs consécutifs d'envoi. Sauvegarde de l'état et arrêt.")
+                                self.save_resume_page(page_num, status='interrompu_erreurs')
+                                self.stop_requested = True
+                                # on écrit quand même l'item dans le CSV puis on sort
+                    
+                    # Vérifier les doublons avant d'écrire
+                    siren = item.get('siren', '')
+                    skip_reason = None
+
+                    if siren and siren in self.existing_sirens:
+                        skip_reason = "doublon SIREN"
+
+                    if skip_reason:
+                        print(f"⏭️  Entreprise ignorée ({skip_reason}): {item['nom_societe']} - SIREN: {siren}")
+                    else:
+                        # Ajouter les métadonnées de scraping
+                        now = datetime.now()
+                        item['date_scraping'] = now.strftime("%Y-%m-%d")
+                        item['heure_scraping'] = now.strftime("%H:%M:%S")
+
+                        # Écrire dans le CSV
+                        self.csv_writer.writerow(item)
+                        self.csv_file.flush()  # Forcer l'écriture immédiate
+
+                        # Ajouter à la liste des SIREN traités
+                        if siren:
+                            self.existing_sirens.add(siren)
+
+                        success_count += 1
+                        self.total_companies += 1
+                    
+                    # Compter les profils LinkedIn trouvés
+                    linkedin_count = 0
+                    if item.get('linkedin_enriched_json'):
+                        try:
+                            enriched_data = json.loads(item['linkedin_enriched_json'])
+                            linkedin_count = sum(1 for e in enriched_data if e.get('linkedin_url'))
+                        except:
+                            pass
+
+                        dirigeants_info = f" - {item['nombre_dirigeants']} dirigeant(s)" if item['nombre_dirigeants'] > 0 else ""
+                        linkedin_info = f" - {linkedin_count} LinkedIn" if linkedin_count > 0 else ""
+                        print(f"✅ {self.total_companies:3d}. {item['nom_societe']} - {item['lieu']}{dirigeants_info}{linkedin_info}")
+                    
+                    # Pause entre les entreprises pour éviter la surcharge
+                    await asyncio.sleep(2)
+                    
+                except Exception as e:
+                    print(f"  ❌ Erreur traitement {item['nom_societe']}: {e}")
+                    continue
+            
+            return success_count
+            
+        except Exception as e:
+            print(f"❌ Erreur: {e}")
+            return 0
+    
+    async def run(self):
+        """Lancer le scraping"""
+        self.start_time = time.time()
+        pages_processed = 0
+        
+        print("🕷️ SCRAPER SCI PAPPERS.FR - VERSION AMÉLIORÉE")
+        print("Extraction des dirigeants et informations juridiques détaillées")
+        print("=" * 70)
+        print(f"📄 Pages à scraper: {'Illimité' if self.max_pages is None else self.max_pages}")
+        print(f"👁️  Mode headless: {self.headless}")
+        print(f"📁 Fichier CSV unique: sci_data_master.csv")
+        print()
+        
+        filename = self.setup_csv()
+        
+        # Vérification de la configuration GetSales au démarrage
+        getsales_key = os.environ.get("GETSALES_API_KEY")
+        if getsales_key:
+            print(f"✅ Configuration GetSales Direct détectée (Clé API présente)")
+            print(f"   Liste UUID: {os.environ.get('GETSALES_LIST_UUID', 'Non définie')}")
+            print(f"   Flow UUID:  {os.environ.get('GETSALES_FLOW_UUID', 'Non définie')}")
+        else:
+            print(f"⚠️  GETSALES_API_KEY non trouvée dans le .env")
+            print(f"   Les leads ne seront pas envoyés")
+
+        try:
+            async with async_playwright() as p:
+                
+
+                # Démarrage du navigateur
+                browser = await p.chromium.launch(
+                    headless=self.headless,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-blink-features=AutomationControlled",
+                        "--disable-dev-shm-usage"
+                    ]
+                )
+
+                context_kwargs = dict(
+
+            # Écrire dans le CSV
+            self.csv_writer.writerow(item)
+            self.csv_file.flush()  # Forcer l'écriture immédiate
+
+            # Ajouter à la liste des SIREN traités
+            if siren:
+                self.existing_sirens.add(siren)
+                self.load_search_filters()
+
+                # Si aucune date n'est définie, commencer par aujourd'hui
+                if not self.date_creation_min:
+                    today = datetime.now()
+                    self.date_creation_min = today.strftime("%d-%m-%Y")
+                    self.date_creation_max = self.date_creation_min
+                    self.logger.info(f"📅 Pas de date définie, démarrage avec aujourd'hui: {self.date_creation_min}")
+                    self.save_filters_to_config()
+                page_num = max(1, int(self.load_resume_page()))
+
+                # Afficher l'état de configuration
+                print("\n" + "="*70)
+                print("📋 CONFIGURATION DU SCRAPING")
+                print("="*70)
+                print(f"📄 Page de démarrage: {page_num}")
+                print(f"📅 Date de recherche: {self.date_creation_min or 'Non définie'}")
+                if self.date_creation_min != self.date_creation_max:
+                    print(f"   ⚠️ ATTENTION: date_min et date_max différentes!")
+                    print(f"   date_max: {self.date_creation_max}")
+                print(f"🏢 Forme juridique: {self.forme_juridique} (SCI)")
+                print(f"✅ En activité uniquement: {self.en_activite}")
+
+                if page_num > 1:
+                    print(f"\n🔁 REPRISE DÉTECTÉE:")
+                    print(f"   Le scraping reprend à la page {page_num}")
+                    print(f"   Pour la date: {self.date_creation_min}")
+                print("="*70 + "\n")
+
+                # Boucle contrôlée pour permettre le changement de date et reset à la page 1
+                pages_processed = 0
+                while True:  # Boucle infinie, sortie uniquement sur arrêt explicite
+                    # Sauvegarder immédiatement la page courante pour reprise en cas d'arrêt brutal
+                    self.current_page_num = page_num
+                    try:
+                        self.save_resume_page(page_num)
+                    except Exception:
+                        pass
+
+                    # Construire l'URL avec filtres (date, activité, forme juridique)
+                    url = self.build_search_url(page_num)
+                    # Informations debug (une fois au début du lot)
+                    if pages_processed == 0 and (self.date_creation_min or self.date_creation_max):
+                        print(f"🗓️  Filtres date: min={self.date_creation_min or '-'} max={self.date_creation_max or '-'}")
+
+                    companies_found = await self.scrape_page(page, url, page_num)
+
+                    if self.stop_requested:
+                        print("\n" + "="*70)
+                        print("⛔ ARRÊT DU SCRAPING (Erreurs d'envoi)")
+                        print("="*70)
+                        print(f"📍 Arrêté à la page: {page_num}")
+                        print(f"📅 Sur la date: {self.date_creation_min}")
+                        print(f"🏢 Total entreprises: {self.total_companies}")
+                        print(f"💾 Configuration sauvegardée dans: {self.config_file_path}")
+                        print("ℹ️  Pour reprendre: relancer le programme")
+                        print("="*70)
+                        try:
+                            self.save_resume_page(page_num, status='interrompu_erreurs')
+                        except Exception:
+                            pass
+                        break
+
+                    if companies_found == 0:
+                        print("\n" + "="*70)
+                        print("📅 FIN DE PAGINATION POUR CETTE DATE")
+                        print("="*70)
+                        print(f"📍 Arrêt à la page: {page_num}")
+                        print(f"📅 Date terminée: {self.date_creation_min}")
+                        print(f"🏢 Total cumulé: {self.total_companies} entreprises")
+
+                        # Sauvegarder l'état avant de changer de date
+                        old_date = self.date_creation_min
+
+                        # Reculer d'un jour
+                        self.shift_date_filters_by_days(-1)
+
+                        print(f"\n🔄 PASSAGE AU JOUR PRÉCÉDENT:")
+                        print(f"   Ancienne date: {old_date}")
+                        print(f"   Nouvelle date: {self.date_creation_min}")
+                        print(f"   Retour à la page 1")
+                        print("="*70 + "\n")
+
+                        # Persister les filtres et la reprise à la page 1
+                        try:
+                            self.save_filters_to_config()
+                            self.save_resume_page(1, status='changement_date')
+                        except Exception:
+                            pass
+                        # Reset page à 1 et on continue la boucle sans incrémenter pages_processed
+                        page_num = 1
+                        # Petite pause pour éviter de spammer
+                        await asyncio.sleep(2)
+                        continue
+
+                    # Succès de la page → compter, avancer page et sauvegarder reprise
+                    pages_processed += 1
+
+                    print(f"\n✅ Page {page_num} terminée avec succès")
+                    print(f"   📊 Entreprises sur cette page: {companies_found}")
+                    print(f"   📊 Total cumulé: {self.total_companies}")
+                    print(f"   📅 Date courante: {self.date_creation_min}")
+                    print(f"   📄 Pages traitées: {pages_processed}")
+
+                    # Vérifier si on a atteint la limite (si définie)
+                    if self.max_pages and pages_processed >= self.max_pages:
+                        print(f"\n🏁 Limite de {self.max_pages} pages atteinte")
+                        break
+
+                    try:
+                        self.save_resume_page(page_num + 1, status='en_cours')
+                    except Exception:
+                        pass
+                    page_num += 1
+
+                    # Pause entre les pages
+                    print("⏳ Pause 8 secondes…")
+                    await asyncio.sleep(8)
+
+                # Sauvegarder l'état (cookies)
+                try:
+                    await context.storage_state(path=self.storage_state_path)
+                except Exception:
+                    pass
+                await browser.close()
+        
+        except KeyboardInterrupt:
+            print("\n" + "="*70)
+            print("⚠️ SCRAPING INTERROMPU PAR L'UTILISATEUR")
+            print("="*70)
+            current_page = self.current_page_num if hasattr(self, 'current_page_num') else 1
+            print(f"📍 Interrompu à la page: {current_page}")
+            print(f"📅 Sur la date: {self.date_creation_min}")
+            print(f"🏢 Total entreprises: {self.total_companies}")
+            print(f"💾 État sauvegardé dans: {self.config_file_path}")
+            print("ℹ️  Pour reprendre: relancer le programme")
+            print("="*70)
+            try:
+                self.save_resume_page(current_page, status='interrompu_utilisateur')
+            except Exception:
+                pass
+        except Exception as e:
+            import traceback
+            print(f"\n" + "="*70)
+            print(f"❌ ERREUR GÉNÉRALE")
+            print("="*70)
+            print(f"Erreur: {e}")
+            traceback.print_exc()
+            current_page = self.current_page_num if hasattr(self, 'current_page_num') else 1
+            print(f"📍 Erreur à la page: {current_page}")
+            print(f"📅 Sur la date: {self.date_creation_min}")
+            print(f"🏢 Total avant erreur: {self.total_companies}")
+            print(f"💾 État sauvegardé dans: {self.config_file_path}")
+            print("ℹ️  Pour reprendre: relancer le programme")
+            print("="*70)
+            try:
+                self.save_resume_page(current_page, status='erreur')
+            except Exception:
+                pass
+        
+        finally:
+            self.close_csv()
+            
+            # Statistiques finales
+            duration = time.time() - self.start_time
+            print("\n" + "=" * 70)
+            print("📊 STATISTIQUES FINALES")
+            print("=" * 70)
+            print(f"🏢 Total d'entreprises extraites cette session: {self.total_companies}")
+            if hasattr(self, 'existing_sirens'):
+                print(f"📊 Total cumulé dans le fichier: {len(self.existing_sirens)} entreprises uniques")
+            print(f"⏱️  Durée du scraping: {duration:.1f} secondes")
+            print(f"📄 Fichier CSV unique: {filename}")
+            if self.total_companies > 0:
+                print(f"🎯 Moyenne: {self.total_companies/duration*60:.1f} entreprises/minute")
+            else:
+                print(f"ℹ️  Aucune nouvelle entreprise ajoutée (possibles doublons)")
+
+            print(f"\n📅 DERNIÈRE POSITION:")
+            print(f"   Date: {self.date_creation_min}")
+            print(f"   Page: {self.current_page_num if hasattr(self, 'current_page_num') else 'N/A'}")
+            print(f"   Pages totales traitées: {pages_processed}")
+            print(f"\n💾 Configuration finale dans: {self.config_file_path}")
+
+            # Marquer comme terminé si on a fini normalement
+            if self.max_pages and pages_processed >= self.max_pages:
+                try:
+                    self.save_resume_page(1, status='termine_limite_pages')
+                    print(f"\n✅ SCRAPING TERMINÉ (limite de {self.max_pages} pages atteinte)")
+                except Exception:
+                    pass
+            else:
+                print("\n✅ SCRAPING TERMINÉ")
+
+
+async def main():
+    """Point d'entrée principal"""
+    
+    print("Configuration du scraping amélioré:")
+    print("1. Mode test (headless, 2 pages)")
+    print("2. Mode visible (avec navigateur, 2 pages)")
+    print("3. Mode illimité (headless, pas de limite)")
+    print("4. Configuration personnalisée")
+
+    try:
+        choice = input("\nChoisissez une option (1-4): ").strip()
+    except KeyboardInterrupt:
+        print("\nAu revoir !")
+        return
+
+    if choice == "1":
+        scraper = SciScraperEnhanced(headless=True, max_pages=2)
+    elif choice == "2":
+        scraper = SciScraperEnhanced(headless=False, max_pages=2)
+    elif choice == "3":
+        scraper = SciScraperEnhanced(headless=True, max_pages=None)  # Pas de limite
+    elif choice == "4":
+        try:
+            pages_input = input("Nombre de pages à scraper (0 ou vide = illimité): ").strip()
+            if pages_input == "" or pages_input == "0":
+                pages = None  # Illimité
+            else:
+                pages = int(pages_input)
+            headless = input("Mode headless (o/n): ").lower().startswith('o')
+            scraper = SciScraperEnhanced(headless=headless, max_pages=pages)
+        except:
+            print("Configuration invalide, utilisation des paramètres par défaut")
+            scraper = SciScraperEnhanced(headless=True, max_pages=None)
+    else:
+        print("Choix invalide, utilisation du mode illimité")
+        scraper = SciScraperEnhanced(headless=True, max_pages=None)
+    
+    await scraper.run()
+
+
+if __name__ == "__main__":
+    # Installer beautifulsoup4 si pas déjà fait
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        print("📦 Installation de beautifulsoup4...")
+        import subprocess
+        subprocess.run(["pip", "install", "beautifulsoup4"])
+    
+    asyncio.run(main()) 

@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+env
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Données locales (montées en volume)
+csv/
+*.log
+*.csv
+
+# Secrets (injectés via .env)
+.env
+
+# State files (montés en volume)
+.scraped_history.json
+enrichment_yahoo_state.json
+config/scraper_config.json
+
+# Docs
+README.md
+CLAUDE.md
+*.md

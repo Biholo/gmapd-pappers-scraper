@@ -1,0 +1,30 @@
+2026-04-02 16:40:19,181 [INFO] ================================================================================
+2026-04-02 16:40:19,181 [INFO] DEMARRAGE DU SCRAPING
+2026-04-02 16:40:19,181 [INFO] Departements: 72, 73, 74, 75, 76, 77, 78, 79
+2026-04-02 16:40:19,181 [INFO] Niches: Experts-comptables
+2026-04-02 16:40:19,182 [INFO] Mode: HEADLESS
+2026-04-02 16:40:19,182 [INFO] ================================================================================
+2026-04-02 16:40:19,182 [INFO] Client Supabase initialise
+2026-04-02 16:40:19,317 [INFO] Departement 72: 9 villes
+2026-04-02 16:40:19,443 [INFO] Departement 73: 11 villes
+2026-04-02 16:40:19,530 [INFO] Departement 74: 34 villes
+2026-04-02 16:40:19,617 [INFO] Departement 75: 1 villes
+2026-04-02 16:40:19,699 [INFO] Departement 76: 43 villes
+2026-04-02 16:40:19,780 [INFO] Departement 77: 58 villes
+2026-04-02 16:40:19,864 [INFO] Departement 78: 69 villes
+2026-04-02 16:40:19,953 [INFO] Departement 79: 10 villes
+2026-04-02 16:40:19,953 [INFO] Supabase client initialized
+2026-04-02 16:40:19,954 [INFO] TOTAL: 235 combinaisons ville/niche
+2026-04-02 16:40:19,954 [INFO] DEJA FAIT: 0 (skip)
+2026-04-02 16:40:19,954 [INFO] A FAIRE: 235
+2026-04-02 16:40:19,954 [INFO] ================================================================================
+2026-04-02 16:40:19,954 [INFO] 
+================================================================================
+2026-04-02 16:40:19,954 [INFO] NICHE: Experts-comptables
+2026-04-02 16:40:19,954 [INFO] ================================================================================
+2026-04-02 16:40:19,954 [INFO] 
+[1/235] Le Mans (72) - Experts-comptables
+2026-04-02 16:40:19,954 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Le+Mans
+2026-04-02 16:40:19,954 [INFO]   Initialisation du navigateur...
+2026-04-02 16:40:20,490 [INFO]   Chargement de Google Maps...
+2026-04-02 16:40:22,072 [INFO]   Scroll pour charger toutes les cards...

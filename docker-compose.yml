@@ -1,0 +1,123 @@
+# ============================================
+# Docker Compose - Scraping Lead
+# ============================================
+# Usage :
+#   docker compose up gmaps          → scraper Google Maps
+#   docker compose up sci            → scraper SCI/Pappers
+#   docker compose up company        → scraper Societes (SASU/SAS/EURL/SARL)
+#   docker compose up transfer       → transfert GetSales -> Brevo
+#   docker compose up scheduler      → cron automatique
+#   docker compose run --rm gmaps    → run one-shot puis supprime le conteneur
+# ============================================
+
+services:
+  # --- Scraper Google Maps (Selenium) ---
+  gmaps:
+    build: .
+    image: scraping-lead:latest
+    container_name: scraper-gmaps
+    command: gmaps
+    env_file: .env
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./csv:/app/csv
+      - ./logs:/app/logs
+      - ./config:/app/config
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.5"
+    networks:
+      - scraper-net
+
+  # --- Scraper SCI / Pappers (Playwright) ---
+  sci:
+    build: .
+    image: scraping-lead:latest
+    container_name: scraper-sci
+    command: sci
+    env_file: .env
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./csv:/app/csv
+      - ./logs:/app/logs
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.5"
+    networks:
+      - scraper-net
+
+  # --- Scraper Societes SASU/SAS/EURL/SARL (Playwright) ---
+  company:
+    build: .
+    image: scraping-lead:latest
+    container_name: scraper-company
+    command: company
+    env_file: .env
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./csv:/app/csv
+      - ./logs:/app/logs
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.5"
+    networks:
+      - scraper-net
+
+  # --- Transfert GetSales -> Brevo ---
+  transfer:
+    build: .
+    image: scraping-lead:latest
+    container_name: scraper-transfer
+    command: transfer
+    env_file: .env
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./logs:/app/logs
+    restart: "no"
+    networks:
+      - scraper-net
+
+  # --- Scheduler (cron) ---
+  scheduler:
+    build: .
+    image: scraping-lead:latest
+    container_name: scraper-scheduler
+    command: cron
+    env_file: .env
+    environment:
+      - TZ=Europe/Paris
+      - CRON_GMAPS=${CRON_GMAPS:-0 2,6,10,14 * * *;30 20 * * *}
+      - CRON_SCI=${CRON_SCI:-15 10 * * *}
+      - CRON_COMPANY=${CRON_COMPANY:-20 19 * * *}
+      - CRON_TRANSFER=${CRON_TRANSFER:-30 14 * * *}
+      - CRON_RECAP=${CRON_RECAP:-0 23 * * *}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./csv:/app/csv
+      - ./logs:/app/logs
+      - ./config:/app/config
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: "2"
+    networks:
+      - scraper-net
+
+networks:
+  scraper-net:
+    driver: bridge

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/app/scripts/scraper_gmaps.py", line 55, in <module>
+    config = load_gmaps_config()
+             ^^^^^^^^^^^^^^^^^
+NameError: name 'load_gmaps_config' is not defined

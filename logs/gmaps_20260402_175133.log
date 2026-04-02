@@ -1,0 +1,88 @@
+2026-04-02 17:51:34,011 [INFO] ================================================================================
+2026-04-02 17:51:34,011 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 17:51:34,011 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 17:51:34,011 [INFO] Mode: HEADLESS
+2026-04-02 17:51:34,011 [INFO] ================================================================================
+2026-04-02 17:51:34,011 [INFO] Client Supabase initialise
+2026-04-02 17:51:34,011 [INFO]   Brevo OK pour Experts-comptables -> listes [5] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:51:34,011 [INFO]   Brevo OK pour Restaurant asiatique -> listes [6] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:51:34,011 [INFO]   Brevo OK pour Serrurier -> listes [16] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:51:34,011 [INFO]   Brevo OK pour Plombier -> listes [15] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:51:34,012 [INFO]   Brevo OK pour Electricien -> listes [14] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:51:34,012 [INFO]   Brevo OK pour Agent immobilier -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:51:34,012 [INFO]   Brevo OK pour CGP -> listes [8] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:51:34,012 [INFO]   Brevo OK pour Marchand de biens -> listes [10] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:51:34,012 [INFO]   Brevo OK pour IAD -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:51:34,012 [INFO] Supabase client initialized
+2026-04-02 17:51:34,017 [INFO] 
+================================================================================
+2026-04-02 17:51:34,017 [INFO] NICHE: Experts-comptables (query: Experts-comptables)
+2026-04-02 17:51:34,017 [INFO] Departements restants: 14
+2026-04-02 17:51:34,017 [INFO] ================================================================================
+2026-04-02 17:51:34,017 [INFO] 
+--- Departement 82 / Experts-comptables ---
+2026-04-02 17:51:34,328 [INFO]   6 villes trouvees
+2026-04-02 17:51:34,329 [INFO]   [Castelsarrasin] Scraping...
+2026-04-02 17:51:34,329 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Castelsarrasin
+2026-04-02 17:51:34,329 [INFO]   Initialisation du navigateur...
+2026-04-02 17:51:34,940 [INFO]   Chargement de Google Maps...
+2026-04-02 17:51:36,671 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 17:51:41,245 [INFO]   Fin de liste apres 6 scrolls (5 cards)
+2026-04-02 17:51:41,256 [INFO]   5 cards trouvees
+2026-04-02 17:51:46,199 [INFO]   [1/5] FIDUCIE CONSULTANTS Expert-comptable Castelsarrasin
+2026-04-02 17:51:46,200 [INFO]     Tel: 05 63 32 66 66 | Site: https://www.fiducie.fr/
+2026-04-02 17:51:46,200 [INFO]     Adresse: 8 Pl. Lamothe Cadillac, 82100 Castelsarrasin
+2026-04-02 17:51:46,200 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:51:46,637 [INFO]     Lead pousse dans Supabase: FIDUCIE CONSULTANTS Expert-comptable Castelsarrasin
+2026-04-02 17:51:48,017 [INFO]     Email: contact@fiducie.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 17:51:52,706 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.05%2063%2032%2066%2066
+2026-04-02 17:51:57,806 [INFO]   [2/5] Sodecal Expert-comptable Castelsarrasin
+2026-04-02 17:51:57,806 [INFO]     Tel: 05 63 95 03 60 | Site: http://www.sodecal.fr/
+2026-04-02 17:51:57,806 [INFO]     Adresse: 13 Rue du Soleil, 82100 Castelsarrasin
+2026-04-02 17:51:57,806 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:51:58,160 [INFO]     Lead deja existant (doublon Supabase): Sodecal Expert-comptable Castelsarrasin
+2026-04-02 17:52:00,964 [INFO]     Email: contact@sodecal.fr | Socials: facebookUrl, xUrl, linkedinUrl
+2026-04-02 17:52:06,388 [INFO]   [3/5] SOFIGECO
+2026-04-02 17:52:06,388 [INFO]     Tel: 05 63 32 33 29 | Site: -
+2026-04-02 17:52:06,388 [INFO]     Adresse: 36 Ter Av. du Maréchal Leclerc, 82100 Castelsarrasin
+2026-04-02 17:52:06,388 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:52:06,569 [INFO]     Lead pousse dans Supabase: SOFIGECO
+2026-04-02 17:52:06,570 [INFO]     Email: - (pas de site web)
+2026-04-02 17:52:10,961 [INFO]   [4/5] Fourment Michel
+2026-04-02 17:52:10,961 [INFO]     Tel: 05 63 32 76 76 | Site: -
+2026-04-02 17:52:10,961 [INFO]     Adresse: 21 Bd Louis Sicre, 82100 Castelsarrasin
+2026-04-02 17:52:10,961 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:52:11,112 [INFO]     Lead pousse dans Supabase: Fourment Michel
+2026-04-02 17:52:11,112 [INFO]     Email: - (pas de site web)
+2026-04-02 17:52:15,666 [INFO]   [5/5] CFR Audit Conseil
+2026-04-02 17:52:15,666 [INFO]     Tel: 05 63 32 66 66 | Site: -
+2026-04-02 17:52:15,666 [INFO]     Adresse: 8 Pl. Lamothe Cadillac, 82100 Castelsarrasin
+2026-04-02 17:52:15,666 [INFO]     Note: -
+2026-04-02 17:52:15,847 [INFO]     Lead deja existant (doublon Supabase): CFR Audit Conseil
+2026-04-02 17:52:15,847 [INFO]     Email: - (pas de site web)
+2026-04-02 17:52:16,529 [INFO]   RESULTAT: 5/5 leads extraits pour Castelsarrasin
+2026-04-02 17:52:18,535 [INFO]   [Valence] Scraping...
+2026-04-02 17:52:18,535 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Valence
+2026-04-02 17:52:18,535 [INFO]   Chargement de Google Maps...
+2026-04-02 17:52:45,477 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 17:52:58,150 [INFO]   Fin de liste apres 21 scrolls (57 cards)
+2026-04-02 17:52:58,164 [INFO]   57 cards trouvees
+2026-04-02 17:53:02,892 [INFO]   [1/57] AdQuo Valence Drôme Ardèche - Cabinet Expert Comptable et Commissaire aux Comptes
+2026-04-02 17:53:02,892 [INFO]     Tel: 04 28 70 85 71 | Site: http://www.adquo.fr/
+2026-04-02 17:53:02,892 [INFO]     Adresse: 58 Av. de Romans, 26000 Valence
+2026-04-02 17:53:02,892 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:53:03,295 [INFO]     Lead deja existant (doublon Supabase): AdQuo Valence Drôme Ardèche - Cabinet Expert Comptable et Commissaire aux Comptes
+2026-04-02 17:53:03,459 [INFO]     Email: contact@adquo.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 17:53:09,648 [INFO]   [2/57] Eurex Expert Comptable Valence
+2026-04-02 17:53:09,648 [INFO]     Tel: 04 75 41 82 00 | Site: https://www.eurex.fr/experts-comptables/valence/?utm_source=gmb&utm_medium=organic&utm_campaign=valence-comptable
+2026-04-02 17:53:09,648 [INFO]     Adresse: 34 Rue du Dr Abel, 26000 Valence
+2026-04-02 17:53:09,648 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:53:09,888 [INFO]     Lead deja existant (doublon Supabase): Eurex Expert Comptable Valence
+2026-04-02 17:53:14,246 [INFO]     Email: contact@eurex.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 17:53:18,710 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.04%2075%2041%2082%2000
+2026-04-02 17:53:24,529 [INFO]   [3/57] CERFRANCE Valence | Expert Comptable
+2026-04-02 17:53:24,529 [INFO]     Tel: 04 75 78 11 11 | Site: https://cerfrance-dp.fr/nos-agences-en-isere-drome-vaucluse/agence-cerfrance-de-valence/
+2026-04-02 17:53:24,529 [INFO]     Adresse: 42 B Av. des Langories, 26000 Valence
+2026-04-02 17:53:24,529 [INFO]     Note: 4.0/5 (? avis)
+2026-04-02 17:53:24,668 [INFO]     Lead deja existant (doublon Supabase): CERFRANCE Valence | Expert Comptable
+2026-04-02 17:53:25,623 [INFO]     Email: contact@38.cerfrance.fr | Socials: facebookUrl, linkedinUrl, instagramUrl

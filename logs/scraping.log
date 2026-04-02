@@ -1,0 +1,321 @@
+2026-04-02 16:31:01,368 [INFO] ================================================================================
+2026-04-02 16:31:01,369 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 16:31:01,369 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 16:31:01,369 [INFO] Mode: HEADLESS
+2026-04-02 16:31:01,369 [INFO] ================================================================================
+2026-04-02 16:31:01,370 [ERROR] Erreur Supabase: SUPABASE_URL and SUPABASE_KEY must be provided
+2026-04-02 16:36:13,029 [INFO] ================================================================================
+2026-04-02 16:36:13,030 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 16:36:13,037 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 16:36:13,038 [INFO] Mode: HEADLESS
+2026-04-02 16:36:13,038 [INFO] ================================================================================
+2026-04-02 16:36:13,038 [INFO] Client Supabase initialise
+2026-04-02 16:36:13,038 [INFO]   Brevo OK pour Experts-comptables -> listes [5] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:36:13,038 [INFO]   Brevo OK pour Restaurant asiatique -> listes [6] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour Serrurier -> listes [16] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour Plombier -> listes [15] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour Electricien -> listes [14] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour Agent immobilier -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour CGP -> listes [8] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour Marchand de biens -> listes [10] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:36:13,039 [INFO]   Brevo OK pour IAD -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:36:13,039 [INFO] Supabase client initialized
+2026-04-02 16:36:13,040 [INFO] 
+================================================================================
+2026-04-02 16:36:13,040 [INFO] NICHE: Experts-comptables (query: Experts-comptables)
+2026-04-02 16:36:13,040 [INFO] Departements restants: 24
+2026-04-02 16:36:13,040 [INFO] ================================================================================
+2026-04-02 16:36:13,040 [INFO] 
+--- Departement 72 / Experts-comptables ---
+2026-04-02 16:36:13,275 [INFO]   9 villes trouvees
+2026-04-02 16:36:13,275 [INFO]   [Le Mans] Scraping...
+2026-04-02 16:36:13,275 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Le+Mans
+2026-04-02 16:36:13,275 [INFO]   Initialisation du navigateur...
+2026-04-02 16:36:14,591 [INFO]   Chargement de Google Maps...
+2026-04-02 16:36:15,983 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 16:36:51,410 [INFO]   Fin de liste apres 20 scrolls (56 cards)
+2026-04-02 16:36:51,423 [INFO]   56 cards trouvees
+2026-04-02 16:36:54,805 [INFO]   [1/56] JM Comptabilité - Cabinet Comptable
+2026-04-02 16:36:54,805 [INFO]     Tel: 06 67 82 04 59 | Site: https://jmcomptabilite.fr/
+2026-04-02 16:36:54,805 [INFO]     Adresse: 5 Pl. de la République, 72000 Le Mans
+2026-04-02 16:36:54,806 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:36:55,021 [INFO]     Lead deja existant (doublon Supabase): JM Comptabilité - Cabinet Comptable
+2026-04-02 16:36:56,817 [INFO]     Email: jmcomptabilite72@gmail.com | Socials: -
+2026-04-02 16:37:07,360 [INFO]     Brevo: jmcomptabilite72@gmail.com ajoute aux listes [5]
+2026-04-02 16:37:11,459 [INFO]   [2/56] AGC Perspectives - Cabinet d'expertise comptable Le Mans
+2026-04-02 16:37:11,459 [INFO]     Tel: 02 43 39 51 51 | Site: http://www.agc-perspectives.fr/
+2026-04-02 16:37:11,460 [INFO]     Adresse: UPTOWN, 2 Rue Héraclite bâtiment B, 72000 Le Mans
+2026-04-02 16:37:11,460 [INFO]     Note: 4.8/5 (? avis)
+2026-04-02 16:37:11,621 [INFO]     Lead deja existant (doublon Supabase): AGC Perspectives - Cabinet d'expertise comptable Le Mans
+2026-04-02 16:37:12,051 [INFO]     Email: administration@agcperspectives.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 16:37:16,337 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.02%2043%2039%2051%2051
+2026-04-02 16:37:16,915 [INFO]     Brevo: administration@agcperspectives.fr ajoute aux listes [5]
+2026-04-02 16:37:20,953 [INFO]   [3/56] Baker Tilly Le Mans
+2026-04-02 16:37:20,954 [INFO]     Tel: 02 43 76 94 30 | Site: https://www.bakertilly.fr/cabinets-d-expertise-comptable-en-france/expert-comptable-le-mans?utm_source=google&utm_medium=google_my_business&utm_campaign=google_my_business_lemans&utm_content=cta_site_web
+2026-04-02 16:37:20,954 [INFO]     Adresse: 110 Rue de Beaugé, 72000 Le Mans
+2026-04-02 16:37:20,954 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:37:21,149 [INFO]     Lead deja existant (doublon Supabase): Baker Tilly Le Mans
+2026-04-02 16:37:25,360 [INFO]     Email: fondation@strego.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:37:29,652 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.02%2043%2076%2094%2030
+2026-04-02 16:37:29,963 [INFO]     Brevo: fondation@strego.fr ajoute aux listes [5]
+2026-04-02 16:37:33,987 [INFO]   [4/56] FIDUCIAL Expertise Le Mans
+2026-04-02 16:37:33,988 [INFO]     Tel: 02 43 47 01 40 | Site: https://agences.fiducial.fr/FIDUCIAL-Expertise-Le-Mans
+2026-04-02 16:37:33,988 [INFO]     Adresse: 19 Bd Marie et Alexandre Oyon, 72000 Le Mans
+2026-04-02 16:37:33,988 [INFO]     Note: 4.6/5 (? avis)
+2026-04-02 16:37:34,126 [INFO]     Lead deja existant (doublon Supabase): FIDUCIAL Expertise Le Mans
+2026-04-02 16:37:36,251 [INFO]     Email: - | Socials: -
+2026-04-02 16:37:40,195 [INFO]   [5/56] Groupe Cogedis au Mans
+2026-04-02 16:37:40,196 [INFO]     Tel: 02 43 78 17 84 | Site: https://www.cogedis.com/agences/expert-comptable-le-mans/?utm_source=gmb&utm_medium=gmb&utm_campaign=GMB_pagesjaunes#rappel
+2026-04-02 16:37:40,196 [INFO]     Adresse: 34 Bd d'Estienne d'Orves Espace Boissin, 72100 Le Mans
+2026-04-02 16:37:40,196 [INFO]     Note: 4.8/5 (? avis)
+2026-04-02 16:37:40,347 [INFO]     Lead deja existant (doublon Supabase): Groupe Cogedis au Mans
+2026-04-02 16:37:41,579 [INFO]     Email: - | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:37:45,591 [INFO]   [6/56] TGS France Le Mans - Cabinet comptable, paie et RH
+2026-04-02 16:37:45,591 [INFO]     Tel: 02 43 81 99 92 | Site: https://www.tgs-france.fr/agences/cabinet-comptable-le-mans/?utm_source=MAPS&utm_medium=organic&utm_campaign=Google_local_business&utm_content=le-mans
+2026-04-02 16:37:45,591 [INFO]     Adresse: 240 Rte de Beaugé Bâtiment A, 72700 Rouillon
+2026-04-02 16:37:45,592 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:37:45,668 [INFO]     Lead deja existant (doublon Supabase): TGS France Le Mans - Cabinet comptable, paie et RH
+2026-04-02 16:37:48,135 [INFO]     Email: - | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:37:52,287 [INFO]   [7/56] CEFIGES Expert-comptable Le Mans
+2026-04-02 16:37:52,288 [INFO]     Tel: 02 43 52 03 00 | Site: https://www.cefiges.fr/
+2026-04-02 16:37:52,288 [INFO]     Adresse: 11 All. des Gémeaux, 72100 Le Mans
+2026-04-02 16:37:52,289 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:37:52,387 [INFO]     Lead deja existant (doublon Supabase): CEFIGES Expert-comptable Le Mans
+2026-04-02 16:37:52,533 [INFO]     Email: cefiges@cefiges.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:37:53,031 [INFO]     Brevo: cefiges@cefiges.fr ajoute aux listes [5]
+2026-04-02 16:37:56,954 [INFO]   [8/56] Celianse
+2026-04-02 16:37:56,954 [INFO]     Tel: 02 43 14 23 85 | Site: -
+2026-04-02 16:37:56,954 [INFO]     Adresse: 136 Rue nationale, 72000 Le Mans
+2026-04-02 16:37:56,954 [INFO]     Note: 4.2/5 (? avis)
+2026-04-02 16:37:57,049 [INFO]     Lead deja existant (doublon Supabase): Celianse
+2026-04-02 16:37:57,050 [INFO]     Email: - (pas de site web)
+2026-04-02 16:37:59,778 [INFO] Fermeture du navigateur...
+2026-04-02 16:37:59,782 [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(10054, 'Une connexion existante a dû être fermée par l’hôte distant', None, 10054, None)': /session/71f4beb14eb84bf57e112b1b4b2c0b12
+2026-04-02 16:49:30,087 [INFO] ================================================================================
+2026-04-02 16:49:30,087 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 16:49:30,088 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 16:49:30,088 [INFO] Mode: HEADLESS
+2026-04-02 16:49:30,088 [INFO] ================================================================================
+2026-04-02 16:49:30,088 [INFO] Client Supabase initialise
+2026-04-02 16:49:30,088 [INFO]   Brevo OK pour Experts-comptables -> listes [5] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:49:30,089 [INFO]   Brevo OK pour Restaurant asiatique -> listes [6] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:49:30,089 [INFO]   Brevo OK pour Serrurier -> listes [16] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:49:30,089 [INFO]   Brevo OK pour Plombier -> listes [15] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:49:30,089 [INFO]   Brevo OK pour Electricien -> listes [14] (BREVO_DEVELLY_API_KEY)
+2026-04-02 16:49:30,089 [INFO]   Brevo OK pour Agent immobilier -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:49:30,090 [INFO]   Brevo OK pour CGP -> listes [8] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:49:30,090 [INFO]   Brevo OK pour Marchand de biens -> listes [10] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:49:30,090 [INFO]   Brevo OK pour IAD -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 16:49:30,090 [INFO] Supabase client initialized
+2026-04-02 16:49:30,091 [INFO] 
+================================================================================
+2026-04-02 16:49:30,091 [INFO] NICHE: Experts-comptables (query: Experts-comptables)
+2026-04-02 16:49:30,091 [INFO] Departements restants: 24
+2026-04-02 16:49:30,091 [INFO] ================================================================================
+2026-04-02 16:49:30,092 [INFO] 
+--- Departement 72 / Experts-comptables ---
+2026-04-02 16:49:30,661 [INFO]   9 villes trouvees
+2026-04-02 16:49:30,661 [INFO]   [Le Mans] Scraping...
+2026-04-02 16:49:30,662 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Le+Mans
+2026-04-02 16:49:30,662 [INFO]   Initialisation du navigateur...
+2026-04-02 16:49:31,501 [INFO]   Chargement de Google Maps...
+2026-04-02 16:49:32,985 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 16:49:44,116 [INFO]   Fin de liste apres 20 scrolls (55 cards)
+2026-04-02 16:49:44,129 [INFO]   55 cards trouvees
+2026-04-02 16:49:47,636 [INFO]   [1/55] JM Comptabilité - Cabinet Comptable
+2026-04-02 16:49:47,636 [INFO]     Tel: 06 67 82 04 59 | Site: https://jmcomptabilite.fr/
+2026-04-02 16:49:47,637 [INFO]     Adresse: 5 Pl. de la République, 72000 Le Mans
+2026-04-02 16:49:47,637 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:49:47,849 [INFO]     Lead deja existant (doublon Supabase): JM Comptabilité - Cabinet Comptable
+2026-04-02 16:49:48,009 [INFO]     Email: jmcomptabilite72@gmail.com | Socials: -
+2026-04-02 16:49:48,525 [INFO]     Brevo: jmcomptabilite72@gmail.com ajoute aux listes [5]
+2026-04-02 16:49:53,213 [INFO]   [2/55] AGC Perspectives - Cabinet d'expertise comptable Le Mans
+2026-04-02 16:49:53,213 [INFO]     Tel: 02 43 39 51 51 | Site: http://www.agc-perspectives.fr/
+2026-04-02 16:49:53,214 [INFO]     Adresse: UPTOWN, 2 Rue Héraclite bâtiment B, 72000 Le Mans
+2026-04-02 16:49:53,214 [INFO]     Note: 4.8/5 (? avis)
+2026-04-02 16:49:53,301 [INFO]     Lead deja existant (doublon Supabase): AGC Perspectives - Cabinet d'expertise comptable Le Mans
+2026-04-02 16:49:53,699 [INFO]     Email: administration@agcperspectives.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 16:49:57,982 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.02%2043%2039%2051%2051
+2026-04-02 16:49:58,294 [INFO]     Brevo: administration@agcperspectives.fr ajoute aux listes [5]
+2026-04-02 16:50:02,124 [INFO]   [3/55] Baker Tilly Le Mans
+2026-04-02 16:50:02,125 [INFO]     Tel: 02 43 76 94 30 | Site: https://www.bakertilly.fr/cabinets-d-expertise-comptable-en-france/expert-comptable-le-mans?utm_source=google&utm_medium=google_my_business&utm_campaign=google_my_business_lemans&utm_content=cta_site_web
+2026-04-02 16:50:02,125 [INFO]     Adresse: 110 Rue de Beaugé, 72000 Le Mans
+2026-04-02 16:50:02,125 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:50:02,212 [INFO]     Lead deja existant (doublon Supabase): Baker Tilly Le Mans
+2026-04-02 16:50:06,539 [INFO]     Email: fondation@strego.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:10,783 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.02%2043%2076%2094%2030
+2026-04-02 16:50:11,126 [INFO]     Brevo: fondation@strego.fr ajoute aux listes [5]
+2026-04-02 16:50:14,917 [INFO]   [4/55] FIDUCIAL Expertise Le Mans
+2026-04-02 16:50:14,917 [INFO]     Tel: 02 43 47 01 40 | Site: https://agences.fiducial.fr/FIDUCIAL-Expertise-Le-Mans
+2026-04-02 16:50:14,917 [INFO]     Adresse: 19 Bd Marie et Alexandre Oyon, 72000 Le Mans
+2026-04-02 16:50:14,917 [INFO]     Note: 4.6/5 (? avis)
+2026-04-02 16:50:15,008 [INFO]     Lead deja existant (doublon Supabase): FIDUCIAL Expertise Le Mans
+2026-04-02 16:50:16,758 [INFO]     Email: - | Socials: -
+2026-04-02 16:50:20,673 [INFO]   [5/55] Groupe Cogedis au Mans
+2026-04-02 16:50:20,675 [INFO]     Tel: 02 43 78 17 84 | Site: https://www.cogedis.com/agences/expert-comptable-le-mans/?utm_source=gmb&utm_medium=gmb&utm_campaign=GMB_pagesjaunes#rappel
+2026-04-02 16:50:20,675 [INFO]     Adresse: 34 Bd d'Estienne d'Orves Espace Boissin, 72100 Le Mans
+2026-04-02 16:50:20,675 [INFO]     Note: 4.8/5 (? avis)
+2026-04-02 16:50:20,756 [INFO]     Lead deja existant (doublon Supabase): Groupe Cogedis au Mans
+2026-04-02 16:50:21,398 [INFO]     Email: - | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:25,275 [INFO]   [6/55] TGS France Le Mans - Cabinet comptable, paie et RH
+2026-04-02 16:50:25,276 [INFO]     Tel: 02 43 81 99 92 | Site: https://www.tgs-france.fr/agences/cabinet-comptable-le-mans/?utm_source=MAPS&utm_medium=organic&utm_campaign=Google_local_business&utm_content=le-mans
+2026-04-02 16:50:25,276 [INFO]     Adresse: 240 Rte de Beaugé Bâtiment A, 72700 Rouillon
+2026-04-02 16:50:25,276 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:50:25,388 [INFO]     Lead deja existant (doublon Supabase): TGS France Le Mans - Cabinet comptable, paie et RH
+2026-04-02 16:50:27,909 [INFO]     Email: - | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:31,873 [INFO]   [7/55] CEFIGES Expert-comptable Le Mans
+2026-04-02 16:50:31,874 [INFO]     Tel: 02 43 52 03 00 | Site: https://www.cefiges.fr/
+2026-04-02 16:50:31,874 [INFO]     Adresse: 11 All. des Gémeaux, 72100 Le Mans
+2026-04-02 16:50:31,874 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:50:31,977 [INFO]     Lead deja existant (doublon Supabase): CEFIGES Expert-comptable Le Mans
+2026-04-02 16:50:32,100 [INFO]     Email: cefiges@cefiges.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:32,574 [INFO]     Brevo: cefiges@cefiges.fr ajoute aux listes [5]
+2026-04-02 16:50:36,390 [INFO]   [8/55] Celianse
+2026-04-02 16:50:36,391 [INFO]     Tel: 02 43 14 23 85 | Site: -
+2026-04-02 16:50:36,391 [INFO]     Adresse: 136 Rue nationale, 72000 Le Mans
+2026-04-02 16:50:36,391 [INFO]     Note: 4.2/5 (? avis)
+2026-04-02 16:50:36,497 [INFO]     Lead deja existant (doublon Supabase): Celianse
+2026-04-02 16:50:36,497 [INFO]     Email: - (pas de site web)
+2026-04-02 16:50:40,415 [INFO]   [9/55] Altexa
+2026-04-02 16:50:40,415 [INFO]     Tel: 02 43 43 62 62 | Site: https://www.altexa.fr/
+2026-04-02 16:50:40,415 [INFO]     Adresse: 4 Cr Étienne Jules Marey, 72000 Le Mans
+2026-04-02 16:50:40,416 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:50:40,520 [INFO]     Lead deja existant (doublon Supabase): Altexa
+2026-04-02 16:50:41,304 [INFO]     Email: lemans@altexa.fr | Socials: -
+2026-04-02 16:50:42,823 [INFO]     Brevo: lemans@altexa.fr ajoute aux listes [5]
+2026-04-02 16:50:46,692 [INFO]   [10/55] APL Expert-Comptable Le Mans
+2026-04-02 16:50:46,693 [INFO]     Tel: 02 43 43 04 04 | Site: https://www.auditpl.com/
+2026-04-02 16:50:46,693 [INFO]     Adresse: 167 Rue de Beaugé Bâtiment le Jupiler 2ème étage, 72000 Le Mans
+2026-04-02 16:50:46,693 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:50:46,796 [INFO]     Lead deja existant (doublon Supabase): APL Expert-Comptable Le Mans
+2026-04-02 16:50:47,367 [INFO]     Email: - | Socials: facebookUrl, xUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:51,228 [INFO]   [11/55] Cerfrance Le Mans - Conseil & Expertise Comptable
+2026-04-02 16:50:51,228 [INFO]     Tel: 02 43 14 12 40 | Site: https://mayenne-sarthe.cerfrance.fr/nos-agences/agence-cerfrance-le-mans?utm_source=fiche+GMB&utm_medium=google&utm_campaign=fiche+GMB-agencelemans&utm_id=trafic+seo+GMB
+2026-04-02 16:50:51,228 [INFO]     Adresse: 13 Bd Louis le Prince Ringuet, 72000 Le Mans
+2026-04-02 16:50:51,228 [INFO]     Note: 4.6/5 (? avis)
+2026-04-02 16:50:51,340 [INFO]     Lead deja existant (doublon Supabase): Cerfrance Le Mans - Conseil & Expertise Comptable
+2026-04-02 16:50:51,777 [INFO]     Email: cerfrance.lemans@53-72.cerfrance.fr | Socials: facebookUrl, xUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:52,182 [INFO]     Brevo: cerfrance.lemans@53-72.cerfrance.fr ajoute aux listes [5]
+2026-04-02 16:50:55,913 [INFO]   [12/55] COGEP
+2026-04-02 16:50:55,913 [INFO]     Tel: 02 43 40 76 00 | Site: https://www.cogep.fr/
+2026-04-02 16:50:55,913 [INFO]     Adresse: 167 Quai Ledru-Rollin, 72100 Le Mans
+2026-04-02 16:50:55,914 [INFO]     Note: 4.0/5 (? avis)
+2026-04-02 16:50:56,007 [INFO]     Lead deja existant (doublon Supabase): COGEP
+2026-04-02 16:50:57,007 [INFO]     Email: cogep-communication@cogep.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:50:58,077 [INFO]     Brevo: cogep-communication@cogep.fr ajoute aux listes [5]
+2026-04-02 16:51:01,844 [INFO]   [13/55] LLA EXPERTS COMPTABLES
+2026-04-02 16:51:01,844 [INFO]     Tel: 02 43 23 00 81 | Site: http://www.llaec.fr/
+2026-04-02 16:51:01,845 [INFO]     Adresse: 5 bis Bd Louis le Prince Ringuet, 72000 Le Mans
+2026-04-02 16:51:01,845 [INFO]     Note: -
+2026-04-02 16:51:01,935 [INFO]     Lead deja existant (doublon Supabase): LLA EXPERTS COMPTABLES
+2026-04-02 16:51:02,097 [INFO]     Email: accueil.caen@llaec.fr | Socials: linkedinUrl
+2026-04-02 16:51:02,468 [INFO]     Brevo: accueil.caen@llaec.fr ajoute aux listes [5]
+2026-04-02 16:51:06,221 [INFO]   [14/55] Cabinet d'expertise comptable Jean Roustier
+2026-04-02 16:51:06,221 [INFO]     Tel: 02 43 16 30 24 | Site: -
+2026-04-02 16:51:06,221 [INFO]     Adresse: 20 Rue d'Iéna, 72100 Le Mans
+2026-04-02 16:51:06,222 [INFO]     Note: -
+2026-04-02 16:51:06,317 [INFO]     Lead deja existant (doublon Supabase): Cabinet d'expertise comptable Jean Roustier
+2026-04-02 16:51:06,317 [INFO]     Email: - (pas de site web)
+2026-04-02 16:51:10,215 [INFO]   [15/55] HR EXPERTS AND CONSULTING
+2026-04-02 16:51:10,216 [INFO]     Tel: 09 88 40 04 40 | Site: http://hrexpertsconsulting.fr/
+2026-04-02 16:51:10,216 [INFO]     Adresse: Av. du Général Leclerc, 72000 Le Mans
+2026-04-02 16:51:10,216 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:51:10,327 [INFO]     Lead deja existant (doublon Supabase): HR EXPERTS AND CONSULTING
+2026-04-02 16:51:10,533 [INFO]     Email: contact@hrexperts.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:51:14,505 [INFO]   [16/55] TYLS Conseil Le Mans - (ex ComptaCom)
+2026-04-02 16:51:14,505 [INFO]     Tel: 02 43 76 81 81 | Site: https://tyls.com/cabinets/expertise-comptable/le-mans?utm_source=GMB&utm_medium=Local+Search&utm_campaign=GMB-Le-Mans
+2026-04-02 16:51:14,506 [INFO]     Adresse: Les Portes de, 6 Rue Louis Chappée, L'Océane Secteur C, 72650 Saint-Saturnin
+2026-04-02 16:51:14,506 [INFO]     Note: 4.9/5 (? avis)
+2026-04-02 16:51:14,619 [INFO]     Lead pousse dans Supabase: TYLS Conseil Le Mans - (ex ComptaCom)
+2026-04-02 16:51:15,305 [INFO]     Email: juliette.marini@tyls.com | Socials: facebookUrl, xUrl, linkedinUrl, instagramUrl
+2026-04-02 16:51:19,571 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.02%2043%2076%2081%2081
+2026-04-02 16:51:19,821 [INFO]     Brevo: juliette.marini@tyls.com ajoute aux listes [5]
+2026-04-02 16:51:23,722 [INFO]   [17/55] Expert-comptable FITECO Le Mans
+2026-04-02 16:51:23,722 [INFO]     Tel: 02 43 40 50 40 | Site: https://www.fiteco.com/
+2026-04-02 16:51:23,723 [INFO]     Adresse: 97 Av. Bollée, 72100 Le Mans
+2026-04-02 16:51:23,723 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:51:23,821 [INFO]     Lead deja existant (doublon Supabase): Expert-comptable FITECO Le Mans
+2026-04-02 16:51:25,216 [INFO]     Email: rgdp@fiteco.com | Socials: facebookUrl, xUrl, linkedinUrl
+2026-04-02 16:51:25,555 [INFO]     Brevo: rgdp@fiteco.com ajoute aux listes [5]
+2026-04-02 16:51:29,370 [INFO]   [18/55] Altonéo Le Mans
+2026-04-02 16:51:29,371 [INFO]     Tel: 02 43 50 26 90 | Site: https://altoneo.com/
+2026-04-02 16:51:29,371 [INFO]     Adresse: 25 Av. du Panorama, 72100 Le Mans
+2026-04-02 16:51:29,371 [INFO]     Note: 4.3/5 (? avis)
+2026-04-02 16:51:29,481 [INFO]     Lead deja existant (doublon Supabase): Altonéo Le Mans
+2026-04-02 16:51:30,486 [INFO]     Email: dpo@altoneo.com | Socials: -
+2026-04-02 16:51:31,324 [INFO]     Brevo: dpo@altoneo.com ajoute aux listes [5]
+2026-04-02 16:51:35,389 [INFO]   [19/55] Comptafrance
+2026-04-02 16:51:35,389 [INFO]     Tel: 02 43 50 15 20 | Site: http://www.comptafrance.fr/
+2026-04-02 16:51:35,389 [INFO]     Adresse: 8 Bd René Cassin, 72100 Le Mans
+2026-04-02 16:51:35,390 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:51:35,464 [INFO]     Lead deja existant (doublon Supabase): Comptafrance
+2026-04-02 16:51:37,268 [INFO]     Email: direction@comptafrance.fr | Socials: facebookUrl, xUrl, linkedinUrl, instagramUrl
+2026-04-02 16:51:37,771 [INFO]     Brevo: direction@comptafrance.fr ajoute aux listes [5]
+2026-04-02 16:51:41,367 [INFO]   [20/55] OPTIME CONSEIL
+2026-04-02 16:51:41,368 [INFO]     Tel: 02 43 40 03 00 | Site: https://www.optime.fr/
+2026-04-02 16:51:41,368 [INFO]     Adresse: 29 Rue des Marais, 72100 Le Mans
+2026-04-02 16:51:41,368 [INFO]     Note: -
+2026-04-02 16:51:41,539 [INFO]     Lead deja existant (doublon Supabase): OPTIME CONSEIL
+2026-04-02 16:51:42,323 [INFO]     Email: srichard@optime.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 16:51:43,087 [INFO]     Brevo: srichard@optime.fr ajoute aux listes [5]
+2026-04-02 16:51:46,810 [INFO]   [21/55] COGEP
+2026-04-02 16:51:46,810 [INFO]     Tel: 02 43 40 76 00 | Site: https://www.cogep.fr/
+2026-04-02 16:51:46,811 [INFO]     Adresse: 167 Quai Ledru-Rollin, 72100 Le Mans
+2026-04-02 16:51:46,811 [INFO]     Note: 4.0/5 (? avis)
+2026-04-02 16:51:46,896 [INFO]     Lead deja existant (doublon Supabase): COGEP
+2026-04-02 16:51:47,849 [INFO]     Email: cogep-communication@cogep.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:51:51,541 [INFO]   [22/55] Expert-comptable FITECO Le Mans
+2026-04-02 16:51:51,541 [INFO]     Tel: 02 43 40 50 40 | Site: https://www.fiteco.com/
+2026-04-02 16:51:51,542 [INFO]     Adresse: 97 Av. Bollée, 72100 Le Mans
+2026-04-02 16:51:51,542 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:51:51,628 [INFO]     Lead deja existant (doublon Supabase): Expert-comptable FITECO Le Mans
+2026-04-02 16:51:53,022 [INFO]     Email: rgdp@fiteco.com | Socials: facebookUrl, xUrl, linkedinUrl
+2026-04-02 16:51:56,667 [INFO]   [23/55] OPTIME CONSEIL
+2026-04-02 16:51:56,667 [INFO]     Tel: 02 43 40 03 00 | Site: https://www.optime.fr/
+2026-04-02 16:51:56,667 [INFO]     Adresse: 29 Rue des Marais, 72100 Le Mans
+2026-04-02 16:51:56,667 [INFO]     Note: -
+2026-04-02 16:51:56,776 [INFO]     Lead deja existant (doublon Supabase): OPTIME CONSEIL
+2026-04-02 16:51:57,460 [INFO]     Email: srichard@optime.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 16:52:01,543 [INFO]   [24/55] Comptafrance
+2026-04-02 16:52:01,543 [INFO]     Tel: 02 43 50 15 20 | Site: http://www.comptafrance.fr/
+2026-04-02 16:52:01,543 [INFO]     Adresse: 8 Bd René Cassin, 72100 Le Mans
+2026-04-02 16:52:01,544 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:52:01,651 [INFO]     Lead deja existant (doublon Supabase): Comptafrance
+2026-04-02 16:52:03,449 [INFO]     Email: direction@comptafrance.fr | Socials: facebookUrl, xUrl, linkedinUrl, instagramUrl
+2026-04-02 16:52:07,116 [INFO]   [25/55] E2CA Ruaudin - Le Mans
+2026-04-02 16:52:07,116 [INFO]     Tel: 02 85 29 71 80 | Site: https://www.e2ca-expertise.com/
+2026-04-02 16:52:07,116 [INFO]     Adresse: 1526 Chem. des Queutes, 72230 Ruaudin
+2026-04-02 16:52:07,116 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:52:07,199 [INFO]     Lead deja existant (doublon Supabase): E2CA Ruaudin - Le Mans
+2026-04-02 16:52:07,397 [INFO]     Email: secretariat@e2ca-expertise.com | Socials: facebookUrl, linkedinUrl
+2026-04-02 16:52:07,890 [INFO]     Brevo: secretariat@e2ca-expertise.com ajoute aux listes [5]
+2026-04-02 16:52:11,565 [INFO]   [26/55] Delta Conseil (Sarl)
+2026-04-02 16:52:11,565 [INFO]     Tel: 02 43 77 07 77 | Site: -
+2026-04-02 16:52:11,565 [INFO]     Adresse: 72 Av. Olivier Messiaen, 72000 Le Mans
+2026-04-02 16:52:11,565 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 16:52:11,665 [INFO]     Lead pousse dans Supabase: Delta Conseil (Sarl)
+2026-04-02 16:52:11,665 [INFO]     Email: - (pas de site web)
+2026-04-02 16:52:15,509 [INFO]   [27/55] Cabinet d'expertise comptable Jean Roustier
+2026-04-02 16:52:15,509 [INFO]     Tel: 02 43 16 30 24 | Site: -
+2026-04-02 16:52:15,509 [INFO]     Adresse: 20 Rue d'Iéna, 72100 Le Mans
+2026-04-02 16:52:15,509 [INFO]     Note: -
+2026-04-02 16:52:15,591 [INFO]     Lead deja existant (doublon Supabase): Cabinet d'expertise comptable Jean Roustier
+2026-04-02 16:52:15,591 [INFO]     Email: - (pas de site web)
+2026-04-02 16:52:19,317 [INFO]   [28/55] Alcé expertise
+2026-04-02 16:52:19,318 [INFO]     Tel: 01 89 53 46 95 | Site: http://alcexpertise.fr/
+2026-04-02 16:52:19,318 [INFO]     Adresse: Pass. du Commerce, 72100 Le Mans
+2026-04-02 16:52:19,319 [INFO]     Note: -
+2026-04-02 16:52:19,389 [INFO]     Lead deja existant (doublon Supabase): Alcé expertise
+2026-04-02 16:52:19,617 [INFO]     Email: AlcExpertise@alcexpertise.fr | Socials: facebookUrl, linkedinUrl, instagramUrl
+2026-04-02 16:52:19,962 [INFO]     Brevo: alcexpertise@alcexpertise.fr ajoute aux listes [5]
+2026-04-02 16:52:23,553 [INFO]   [29/55] Socoma (Activite Comptable)
+2026-04-02 16:52:23,553 [INFO]     Tel: 02 43 76 14 14 | Site: https://www.socoma.info/
+2026-04-02 16:52:23,553 [INFO]     Adresse: 15 Rue Gougeard, 72000 Le Mans
+2026-04-02 16:52:23,554 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 16:52:23,642 [INFO]     Lead pousse dans Supabase: Socoma (Activite Comptable)
+2026-04-02 16:52:23,727 [INFO]     Email: lemans@socoma.info | Socials: -
+2026-04-02 16:52:24,329 [INFO]     Brevo: lemans@socoma.info ajoute aux listes [5]
+2026-04-02 16:52:26,003 [INFO] Fermeture du navigateur...
+2026-04-02 16:52:26,006 [WARNING] Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(10054, 'Une connexion existante a dû être fermée par l’hôte distant', None, 10054, None)': /session/80b9f22072f7c3ad537f58cdd2bfe4b7
+2026-04-02 16:52:30,081 [WARNING] Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=59963): Failed to establish a new connection: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée")': /session/80b9f22072f7c3ad537f58cdd2bfe4b7
+2026-04-02 16:52:34,141 [WARNING] Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=59963): Failed to establish a new connection: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée")': /session/80b9f22072f7c3ad537f58cdd2bfe4b7

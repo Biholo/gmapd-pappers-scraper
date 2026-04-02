@@ -1,0 +1,89 @@
+📦 Installation de beautifulsoup4...
+Collecting beautifulsoup4
+  Downloading beautifulsoup4-4.14.3-py3-none-any.whl.metadata (3.8 kB)
+Collecting soupsieve>=1.6.1 (from beautifulsoup4)
+  Downloading soupsieve-2.8.3-py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: typing-extensions>=4.0.0 in /usr/local/lib/python3.12/site-packages (from beautifulsoup4) (4.15.0)
+Downloading beautifulsoup4-4.14.3-py3-none-any.whl (107 kB)
+Downloading soupsieve-2.8.3-py3-none-any.whl (37 kB)
+Installing collected packages: soupsieve, beautifulsoup4
+Successfully installed beautifulsoup4-4.14.3 soupsieve-2.8.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+Configuration du scraping amélioré:
+1. Mode test (headless, 2 pages)
+2. Mode visible (avec navigateur, 2 pages)
+3. Mode illimité (headless, pas de limite)
+4. Configuration personnalisée
+
+Choisissez une option (1-4): 🕷️ SCRAPER SCI PAPPERS.FR - VERSION AMÉLIORÉE
+Extraction des dirigeants et informations juridiques détaillées
+======================================================================
+📄 Pages à scraper: 2
+👁️  Mode headless: True
+📁 Fichier CSV unique: sci_data_master.csv
+
+📄 Fichier CSV existant trouvé: csv/sci_data_master.csv
+   📊 2855 entreprises déjà présentes
+   🔍 2834 SIREN uniques chargés
+✅ Ajout au fichier CSV existant: csv/sci_data_master.csv
+✅ Configuration GetSales Direct détectée (Clé API présente)
+   Liste UUID: def11074-bdf3-40c6-b2af-0c20b6f3e710
+   Flow UUID:  d10e8857-91ca-442a-97c1-55d4e05bb837
+
+======================================================================
+❌ ERREUR GÉNÉRALE
+======================================================================
+Erreur: Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/app/scripts/scraper_enhanced.py", line 1202, in run
+    context = await browser.new_context(**context_kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 14026, in new_context
+    await self._impl_obj.new_context(
+  File "/usr/local/lib/python3.12/site-packages/playwright/_impl/_browser.py", line 169, in new_context
+    await self._browser_type._prepare_browser_context_params(params)
+  File "/usr/local/lib/python3.12/site-packages/playwright/_impl/_browser_type.py", line 315, in _prepare_browser_context_params
+    params["storageState"] = json.loads(
+                             ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+📍 Erreur à la page: 1
+📅 Sur la date: None
+🏢 Total avant erreur: 0
+💾 État sauvegardé dans: state/scraper_config.json
+ℹ️  Pour reprendre: relancer le programme
+======================================================================
+2026-03-26 22:33:37 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 22:33:37 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 22:33:37 INFO [sci_scraper]    📅 Dates: None → None
+2026-03-26 22:33:37 INFO [sci_scraper]    🏢 Total entreprises: 0
+2026-03-26 22:33:37 INFO [sci_scraper]    ⚡ Status: erreur
+💾 Fichier CSV fermé
+
+======================================================================
+📊 STATISTIQUES FINALES
+======================================================================
+🏢 Total d'entreprises extraites cette session: 0
+📊 Total cumulé dans le fichier: 2834 entreprises uniques
+⏱️  Durée du scraping: 1.4 secondes
+📄 Fichier CSV unique: csv/sci_data_master.csv
+ℹ️  Aucune nouvelle entreprise ajoutée (possibles doublons)
+
+📅 DERNIÈRE POSITION:
+   Date: None
+   Page: 1
+   Pages totales traitées: 0
+
+💾 Configuration finale dans: state/scraper_config.json
+
+✅ SCRAPING TERMINÉ

@@ -1,0 +1,15 @@
+# Core
+python-dotenv==1.0.0
+requests>=2.31.0
+
+# Supabase
+supabase>=2.27.2
+
+# Selenium (scraper Google Maps)
+selenium>=4.24.0
+
+# Playwright (scraper SCI Pappers)
+playwright>=1.40.0
+
+# Email (rapport scraping)
+resend>=2.0.0

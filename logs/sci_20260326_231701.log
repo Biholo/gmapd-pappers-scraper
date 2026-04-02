@@ -1,0 +1,997 @@
+📦 Installation de beautifulsoup4...
+Collecting beautifulsoup4
+  Downloading beautifulsoup4-4.14.3-py3-none-any.whl.metadata (3.8 kB)
+Collecting soupsieve>=1.6.1 (from beautifulsoup4)
+  Downloading soupsieve-2.8.3-py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: typing-extensions>=4.0.0 in /usr/local/lib/python3.12/site-packages (from beautifulsoup4) (4.15.0)
+Downloading beautifulsoup4-4.14.3-py3-none-any.whl (107 kB)
+Downloading soupsieve-2.8.3-py3-none-any.whl (37 kB)
+Installing collected packages: soupsieve, beautifulsoup4
+Successfully installed beautifulsoup4-4.14.3 soupsieve-2.8.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+Configuration du scraping amélioré:
+1. Mode test (headless, 2 pages)
+2. Mode visible (avec navigateur, 2 pages)
+3. Mode illimité (headless, pas de limite)
+4. Configuration personnalisée
+
+Choisissez une option (1-4): 🕷️ SCRAPER SCI PAPPERS.FR - VERSION AMÉLIORÉE
+Extraction des dirigeants et informations juridiques détaillées
+======================================================================
+📄 Pages à scraper: 2
+👁️  Mode headless: False
+📁 Fichier CSV unique: sci_data_master.csv
+
+📄 Nouveau fichier CSV créé: sci_data_master.csv
+✅ Configuration GetSales Direct détectée (Clé API présente)
+   Liste UUID: def11074-bdf3-40c6-b2af-0c20b6f3e710
+   Flow UUID:  d10e8857-91ca-442a-97c1-55d4e05bb837
+2026-03-26 23:17:16 INFO [sci_scraper] 📅 Pas de date définie, démarrage avec aujourd'hui: 26-03-2026
+2026-03-26 23:17:16 INFO [sci_scraper] 📊 DERNIER ÉTAT SAUVEGARDÉ:
+2026-03-26 23:17:16 INFO [sci_scraper]    Status: inconnu
+2026-03-26 23:17:16 INFO [sci_scraper]    Mise à jour: inconnue
+2026-03-26 23:17:16 INFO [sci_scraper]    Total entreprises: 0
+
+======================================================================
+📋 CONFIGURATION DU SCRAPING
+======================================================================
+📄 Page de démarrage: 1
+📅 Date de recherche: 26-03-2026
+🏢 Forme juridique: 6540 (SCI)
+✅ En activité uniquement: True
+======================================================================
+
+2026-03-26 23:17:16 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:17:16 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:17:16 INFO [sci_scraper]    📅 Dates: 26-03-2026 → 26-03-2026
+2026-03-26 23:17:16 INFO [sci_scraper]    🏢 Total entreprises: 0
+🗓️  Filtres date: min=26-03-2026 max=26-03-2026
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=26-03-2026&date_creation_max=26-03-2026
+🏢 0 entreprises trouvées
+
+======================================================================
+📅 FIN DE PAGINATION POUR CETTE DATE
+======================================================================
+📍 Arrêt à la page: 1
+📅 Date terminée: 26-03-2026
+🏢 Total cumulé: 0 entreprises
+
+🔄 PASSAGE AU JOUR PRÉCÉDENT:
+   Ancienne date: 26-03-2026
+   Nouvelle date: 25-03-2026
+   Retour à la page 1
+======================================================================
+
+2026-03-26 23:17:32 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:17:32 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:17:32 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:17:32 INFO [sci_scraper]    🏢 Total entreprises: 0
+2026-03-26 23:17:32 INFO [sci_scraper]    ⚡ Status: changement_date
+2026-03-26 23:17:34 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:17:34 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:17:34 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:17:34 INFO [sci_scraper]    🏢 Total entreprises: 0
+🗓️  Filtres date: min=25-03-2026 max=25-03-2026
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=25-03-2026&date_creation_max=25-03-2026
+🏢 7 entreprises trouvées
+📋 7 entreprises valides trouvées
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-perron-102867587
+    ⚠️ Section #dirigeants présente mais vide
+    ❌ ANOMALIE: Aucun dirigeant trouvé (toute SCI doit avoir au moins un gérant)
+2026-03-26 23:17:39 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:17:39 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI PERRON' (LE POET-LAVAL)
+2026-03-26 23:17:39 INFO [sci_scraper] ======================================================================
+2026-03-26 23:17:39 INFO [sci_scraper] ❌ Aucun dirigeant à enrichir pour 'SCI PERRON'
+2026-03-26 23:17:39 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:17:39 INFO [sci_scraper] 🎯 Enrichissement Yahoo terminé pour 'SCI PERRON' – aucun dirigeant à enrichir
+2026-03-26 23:17:39 INFO [sci_scraper] ======================================================================
+
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/point-de-vue-102886181
+    ✅ 4 dirigeant(s) trouvé(s)
+    🎯 Total: 4 dirigeant(s) unique(s)
+       1. Cros Alice (Associé indéfiniment responsable)
+       2. VIRGINIE PIANET (Associé indéfiniment responsable)
+       3. Pianet Virginie (Gérant et associé indéfiniment responsable)
+       4. Cros Vincent (Associé indéfiniment responsable)
+2026-03-26 23:17:43 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:17:43 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'POINT DE VUE' (SEMALENS)
+2026-03-26 23:17:43 INFO [sci_scraper] ======================================================================
+2026-03-26 23:17:43 INFO [sci_scraper] 👥 4 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:17:43 INFO [sci_scraper] 
+🔎 Dirigeant 1/4: Cros Alice (Associé indéfiniment responsable)
+2026-03-26 23:17:43 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:17:45 INFO [sci_scraper]   Recherche: site:linkedin.com "Cros Alice"
+2026-03-26 23:17:49 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/alice-cros-46658a180
+2026-03-26 23:17:49 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:17:52 INFO [sci_scraper] 
+🔎 Dirigeant 2/4: VIRGINIE PIANET (Associé indéfiniment responsable)
+2026-03-26 23:17:52 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:17:54 INFO [sci_scraper]   Recherche: site:linkedin.com "VIRGINIE PIANET"
+2026-03-26 23:17:57 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/virginie-pillet-840288230
+2026-03-26 23:17:57 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:18:00 INFO [sci_scraper] 
+🔎 Dirigeant 3/4: Pianet Virginie (Gérant et associé indéfiniment responsable)
+2026-03-26 23:18:00 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:02 INFO [sci_scraper]   Recherche: site:linkedin.com "Pianet Virginie"
+2026-03-26 23:18:05 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/virginie-pinget-bauer-47680b98
+2026-03-26 23:18:05 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:18:08 INFO [sci_scraper] 
+🔎 Dirigeant 4/4: Cros Vincent (Associé indéfiniment responsable)
+2026-03-26 23:18:08 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:10 INFO [sci_scraper]   Recherche: site:linkedin.com "Cros Vincent"
+2026-03-26 23:18:12 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/vincent-cros-a7240388
+2026-03-26 23:18:12 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:12 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'POINT DE VUE':
+2026-03-26 23:18:12 INFO [sci_scraper]   - Dirigeants totaux: 4
+2026-03-26 23:18:12 INFO [sci_scraper]   - Profils LinkedIn trouvés: 4/4
+2026-03-26 23:18:12 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:18:12 INFO [sci_scraper]     • Cros Alice: https://fr.linkedin.com/in/alice-cros-46658a180
+2026-03-26 23:18:12 INFO [sci_scraper]     • VIRGINIE PIANET: https://fr.linkedin.com/in/virginie-pillet-840288230
+2026-03-26 23:18:12 INFO [sci_scraper]     • Pianet Virginie: https://fr.linkedin.com/in/virginie-pinget-bauer-47680b98
+2026-03-26 23:18:12 INFO [sci_scraper]     • Cros Vincent: https://fr.linkedin.com/in/vincent-cros-a7240388
+2026-03-26 23:18:12 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (POINT DE VUE) → alice-cros-46658a180 status=exists
+✅   2. POINT DE VUE - SEMALENS - 4 dirigeant(s) - 4 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/belliard-immobilier-102891934
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Belliard Olivier (Gérant et associé indéfiniment responsable)
+       2. Belliard Mathis (Associé indéfiniment responsable)
+       3. Belliard Julien (Associé indéfiniment responsable)
+2026-03-26 23:18:17 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:17 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'BELLIARD IMMOBILIER' (CORMOLAIN)
+2026-03-26 23:18:17 INFO [sci_scraper] ======================================================================
+2026-03-26 23:18:17 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:18:17 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Belliard Olivier (Gérant et associé indéfiniment responsable)
+2026-03-26 23:18:17 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:19 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Olivier"
+2026-03-26 23:18:22 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/olivier-belliard-7348242b
+2026-03-26 23:18:22 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:18:25 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Belliard Mathis (Associé indéfiniment responsable)
+2026-03-26 23:18:25 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:27 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Mathis"
+2026-03-26 23:18:30 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Belliard Mathis"
+2026-03-26 23:18:30 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:18:30 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:18:33 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Belliard Julien (Associé indéfiniment responsable)
+2026-03-26 23:18:33 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:35 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Julien"
+2026-03-26 23:18:38 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/julien-belliard-3613a134
+2026-03-26 23:18:38 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:38 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'BELLIARD IMMOBILIER':
+2026-03-26 23:18:38 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:18:38 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/3
+2026-03-26 23:18:38 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:18:38 INFO [sci_scraper]     • Belliard Olivier: https://fr.linkedin.com/in/olivier-belliard-7348242b
+2026-03-26 23:18:38 INFO [sci_scraper]     • Belliard Julien: https://fr.linkedin.com/in/julien-belliard-3613a134
+2026-03-26 23:18:38 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (BELLIARD IMMOBILIER) → olivier-belliard-7348242b status=exists
+✅   3. BELLIARD IMMOBILIER - CORMOLAIN - 3 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-vnlj-102894862
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Nenkov Yordan (Associé indéfiniment responsable)
+2026-03-26 23:18:43 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:43 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI VNLJ' (PARIS)
+2026-03-26 23:18:43 INFO [sci_scraper] ======================================================================
+2026-03-26 23:18:43 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:18:43 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Nenkov Yordan (Associé indéfiniment responsable)
+2026-03-26 23:18:43 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:45 INFO [sci_scraper]   Recherche: site:linkedin.com "Nenkov Yordan"
+2026-03-26 23:18:48 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Nenkov Yordan"
+2026-03-26 23:18:48 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:18:48 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:48 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI VNLJ':
+2026-03-26 23:18:48 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:18:48 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/1
+2026-03-26 23:18:48 INFO [sci_scraper] ======================================================================
+
+✅   4. SCI VNLJ - PARIS - 1 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/lb-102891991
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Gourgaud Fanny (Gérant et associé indéfiniment responsable)
+       2. Blassy Johan (Gérant et associé indéfiniment responsable)
+2026-03-26 23:18:53 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:18:53 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'L.B' (SAINT-MAURICE-DE-LIGNON)
+2026-03-26 23:18:53 INFO [sci_scraper] ======================================================================
+2026-03-26 23:18:53 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:18:53 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Gourgaud Fanny (Gérant et associé indéfiniment responsable)
+2026-03-26 23:18:53 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:18:55 INFO [sci_scraper]   Recherche: site:linkedin.com "Gourgaud Fanny"
+2026-03-26 23:18:58 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/fanny-gougaud-383673167
+2026-03-26 23:18:58 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:19:01 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Blassy Johan (Gérant et associé indéfiniment responsable)
+2026-03-26 23:19:01 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:19:03 INFO [sci_scraper]   Recherche: site:linkedin.com "Blassy Johan"
+2026-03-26 23:19:06 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/johan-blaise-a94381194
+2026-03-26 23:19:06 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:06 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'L.B':
+2026-03-26 23:19:06 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:19:06 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:19:06 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:19:06 INFO [sci_scraper]     • Gourgaud Fanny: https://fr.linkedin.com/in/fanny-gougaud-383673167
+2026-03-26 23:19:06 INFO [sci_scraper]     • Blassy Johan: https://fr.linkedin.com/in/johan-blaise-a94381194
+2026-03-26 23:19:06 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (L.B) → fanny-gougaud-383673167 status=exists
+✅   5. L.B - SAINT-MAURICE-DE-LIGNON - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/masati-patrimoine-102899218
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Berga Mathieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:19:11 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:11 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'MASATI PATRIMOINE' (SAINT-JEAN-LES-DEUX-JUMEAUX)
+2026-03-26 23:19:11 INFO [sci_scraper] ======================================================================
+2026-03-26 23:19:11 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:19:11 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Berga Mathieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:19:11 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:19:13 INFO [sci_scraper]   Recherche: site:linkedin.com "Berga Mathieu"
+2026-03-26 23:19:16 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/berga-berga-bb077b64
+2026-03-26 23:19:16 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:16 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'MASATI PATRIMOINE':
+2026-03-26 23:19:16 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:19:16 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:19:16 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:19:16 INFO [sci_scraper]     • Berga Mathieu: https://fr.linkedin.com/in/berga-berga-bb077b64
+2026-03-26 23:19:16 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (MASATI PATRIMOINE) → berga-berga-bb077b64 status=exists
+✅   6. MASATI PATRIMOINE - SAINT-JEAN-LES-DEUX-JUMEAUX - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/valyens-102893096
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Couturier Julien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:19:20 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:20 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'VALYENS' (MEAUX)
+2026-03-26 23:19:20 INFO [sci_scraper] ======================================================================
+2026-03-26 23:19:20 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:19:20 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Couturier Julien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:19:20 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:19:22 INFO [sci_scraper]   Recherche: site:linkedin.com "Couturier Julien"
+2026-03-26 23:19:26 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/couturier-julien
+2026-03-26 23:19:26 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:26 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'VALYENS':
+2026-03-26 23:19:26 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:19:26 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:19:26 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:19:26 INFO [sci_scraper]     • Couturier Julien: https://fr.linkedin.com/in/couturier-julien
+2026-03-26 23:19:26 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (VALYENS) → couturier-julien status=exists
+✅   7. VALYENS - MEAUX - 1 dirigeant(s) - 1 LinkedIn
+
+✅ Page 1 terminée avec succès
+   📊 Entreprises sur cette page: 7
+   📊 Total cumulé: 7
+   📅 Date courante: 25-03-2026
+   📄 Pages traitées: 1
+2026-03-26 23:19:28 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:19:28 INFO [sci_scraper]    📄 Page suivante: 2
+2026-03-26 23:19:28 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:19:28 INFO [sci_scraper]    🏢 Total entreprises: 7
+2026-03-26 23:19:28 INFO [sci_scraper]    ⚡ Status: en_cours
+⏳ Pause 8 secondes…
+2026-03-26 23:19:36 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:19:36 INFO [sci_scraper]    📄 Page suivante: 2
+2026-03-26 23:19:36 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:19:36 INFO [sci_scraper]    🏢 Total entreprises: 7
+🔄 Page 2: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=25-03-2026&date_creation_max=25-03-2026&page=2
+🏢 0 entreprises trouvées
+
+======================================================================
+📅 FIN DE PAGINATION POUR CETTE DATE
+======================================================================
+📍 Arrêt à la page: 2
+📅 Date terminée: 25-03-2026
+🏢 Total cumulé: 7 entreprises
+
+🔄 PASSAGE AU JOUR PRÉCÉDENT:
+   Ancienne date: 25-03-2026
+   Nouvelle date: 24-03-2026
+   Retour à la page 1
+======================================================================
+
+2026-03-26 23:19:49 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:19:49 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:19:49 INFO [sci_scraper]    📅 Dates: 24-03-2026 → 24-03-2026
+2026-03-26 23:19:49 INFO [sci_scraper]    🏢 Total entreprises: 7
+2026-03-26 23:19:49 INFO [sci_scraper]    ⚡ Status: changement_date
+2026-03-26 23:19:51 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:19:51 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:19:51 INFO [sci_scraper]    📅 Dates: 24-03-2026 → 24-03-2026
+2026-03-26 23:19:51 INFO [sci_scraper]    🏢 Total entreprises: 7
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=24-03-2026&date_creation_max=24-03-2026
+🏢 20 entreprises trouvées
+📋 20 entreprises valides trouvées
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/ejg-102843786
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Lepetit Emile (Gérant)
+       2. Dhaine Guillaume (Gérant)
+       3. Guiot Jefferson (Gérant)
+2026-03-26 23:19:55 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:19:55 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'EJG' (PARIS)
+2026-03-26 23:19:55 INFO [sci_scraper] ======================================================================
+2026-03-26 23:19:55 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:19:55 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Lepetit Emile (Gérant)
+2026-03-26 23:19:55 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:19:57 INFO [sci_scraper]   Recherche: site:linkedin.com "Lepetit Emile"
+2026-03-26 23:20:00 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/emile-petit
+2026-03-26 23:20:00 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:20:03 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Dhaine Guillaume (Gérant)
+2026-03-26 23:20:03 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:20:05 INFO [sci_scraper]   Recherche: site:linkedin.com "Dhaine Guillaume"
+2026-03-26 23:20:08 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/guillaume-d-741ba0200
+2026-03-26 23:20:08 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:20:11 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Guiot Jefferson (Gérant)
+2026-03-26 23:20:11 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:20:11 INFO [sci_scraper] ⏸ Cooldown anti-bot: pause 30s après 15 requêtes
+2026-03-26 23:20:43 INFO [sci_scraper]   Recherche: site:linkedin.com "Guiot Jefferson"
+2026-03-26 23:20:46 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/jefferson-guiot
+2026-03-26 23:20:46 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:20:46 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'EJG':
+2026-03-26 23:20:46 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:20:46 INFO [sci_scraper]   - Profils LinkedIn trouvés: 3/3
+2026-03-26 23:20:46 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:20:46 INFO [sci_scraper]     • Lepetit Emile: https://fr.linkedin.com/in/emile-petit
+2026-03-26 23:20:46 INFO [sci_scraper]     • Dhaine Guillaume: https://fr.linkedin.com/in/guillaume-d-741ba0200
+2026-03-26 23:20:46 INFO [sci_scraper]     • Guiot Jefferson: https://fr.linkedin.com/in/jefferson-guiot
+2026-03-26 23:20:46 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (EJG) → emile-petit status=created
+✅   8. EJG - PARIS - 3 dirigeant(s) - 3 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/opales-102884657
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Halopé Hamon Gabin (Associé indéfiniment responsable)
+       2. Halopé Hamon Alban (Associé indéfiniment responsable)
+       3. Halopé Jean-Philippe (Gérant et associé indéfiniment responsable)
+2026-03-26 23:20:51 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:20:51 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'OPALES' (ANGERS)
+2026-03-26 23:20:51 INFO [sci_scraper] ======================================================================
+2026-03-26 23:20:51 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:20:51 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Halopé Hamon Gabin (Associé indéfiniment responsable)
+2026-03-26 23:20:51 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:20:53 INFO [sci_scraper]   Recherche: site:linkedin.com "Halopé Hamon Gabin"
+2026-03-26 23:20:56 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Halopé Hamon Gabin"
+2026-03-26 23:20:56 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:20:56 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:20:59 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Halopé Hamon Alban (Associé indéfiniment responsable)
+2026-03-26 23:20:59 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:01 INFO [sci_scraper]   Recherche: site:linkedin.com "Halopé Hamon Alban"
+2026-03-26 23:21:04 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Halopé Hamon Alban"
+2026-03-26 23:21:04 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:21:04 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:21:07 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Halopé Jean-Philippe (Gérant et associé indéfiniment responsable)
+2026-03-26 23:21:07 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:09 INFO [sci_scraper]   Recherche: site:linkedin.com "Halopé Jean-Philippe"
+2026-03-26 23:21:12 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Halopé Jean-Philippe"
+2026-03-26 23:21:12 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:21:12 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:12 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'OPALES':
+2026-03-26 23:21:12 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:21:12 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/3
+2026-03-26 23:21:12 INFO [sci_scraper] ======================================================================
+
+✅   9. OPALES - ANGERS - 3 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/agi-42-102897212
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Harle Augustin (Associé indéfiniment responsable)
+       2. Vivarelli Gilles (Gérant et associé indéfiniment responsable)
+2026-03-26 23:21:17 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:17 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'AGI 42' (MAGNEUX-HAUTE-RIVE)
+2026-03-26 23:21:17 INFO [sci_scraper] ======================================================================
+2026-03-26 23:21:17 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:21:17 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Harle Augustin (Associé indéfiniment responsable)
+2026-03-26 23:21:17 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:19 INFO [sci_scraper]   Recherche: site:linkedin.com "Harle Augustin"
+2026-03-26 23:21:22 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/augustin-harrel-courtès-83110426
+2026-03-26 23:21:22 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:21:25 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Vivarelli Gilles (Gérant et associé indéfiniment responsable)
+2026-03-26 23:21:25 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:27 INFO [sci_scraper]   Recherche: site:linkedin.com "Vivarelli Gilles"
+2026-03-26 23:21:30 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/gilles-vivarelli-173283b4
+2026-03-26 23:21:30 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:30 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'AGI 42':
+2026-03-26 23:21:30 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:21:30 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:21:30 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:21:30 INFO [sci_scraper]     • Harle Augustin: https://fr.linkedin.com/in/augustin-harrel-courtès-83110426
+2026-03-26 23:21:30 INFO [sci_scraper]     • Vivarelli Gilles: https://fr.linkedin.com/in/gilles-vivarelli-173283b4
+2026-03-26 23:21:30 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (AGI 42) → augustin-harrel-courtès-83110426 status=created
+✅  10. AGI 42 - MAGNEUX-HAUTE-RIVE - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/ys-mss-102849726
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. MINOU SURF SCHOOL (Associé indéfiniment responsable)
+2026-03-26 23:21:35 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:35 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'YS MSS' (LOCMARIA-PLOUZANE)
+2026-03-26 23:21:35 INFO [sci_scraper] ======================================================================
+2026-03-26 23:21:35 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:21:35 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: MINOU SURF SCHOOL (Associé indéfiniment responsable)
+2026-03-26 23:21:35 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:37 INFO [sci_scraper]   Recherche: site:linkedin.com "MINOU SURF SCHOOL"
+2026-03-26 23:21:40 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/yann-salaun-3651351a9
+2026-03-26 23:21:40 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:40 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'YS MSS':
+2026-03-26 23:21:40 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:21:40 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:21:40 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:21:40 INFO [sci_scraper]     • MINOU SURF SCHOOL: https://fr.linkedin.com/in/yann-salaun-3651351a9
+2026-03-26 23:21:40 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (YS MSS) → yann-salaun-3651351a9 status=created
+✅  11. YS MSS - LOCMARIA-PLOUZANE - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/les-palmiers-64-102837788
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Libois Jordane (Associé indéfiniment responsable)
+       2. Libois Tony (Gérant et associé indéfiniment responsable)
+       3. Libois Jean (Associé indéfiniment responsable)
+2026-03-26 23:21:45 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:21:45 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'LES PALMIERS 64' (LE CRES)
+2026-03-26 23:21:45 INFO [sci_scraper] ======================================================================
+2026-03-26 23:21:45 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:21:45 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Libois Jordane (Associé indéfiniment responsable)
+2026-03-26 23:21:45 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:47 INFO [sci_scraper]   Recherche: site:linkedin.com "Libois Jordane"
+2026-03-26 23:21:50 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/stephane-libois
+2026-03-26 23:21:50 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:21:53 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Libois Tony (Gérant et associé indéfiniment responsable)
+2026-03-26 23:21:53 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:21:55 INFO [sci_scraper]   Recherche: site:linkedin.com "Libois Tony"
+2026-03-26 23:21:58 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Libois Tony"
+2026-03-26 23:21:58 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:21:58 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:22:01 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Libois Jean (Associé indéfiniment responsable)
+2026-03-26 23:22:01 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:03 INFO [sci_scraper]   Recherche: site:linkedin.com "Libois Jean"
+2026-03-26 23:22:06 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/jean-philippe-dubois-b627a6130
+2026-03-26 23:22:06 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:06 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'LES PALMIERS 64':
+2026-03-26 23:22:06 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:22:06 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/3
+2026-03-26 23:22:06 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:22:06 INFO [sci_scraper]     • Libois Jordane: https://fr.linkedin.com/in/stephane-libois
+2026-03-26 23:22:06 INFO [sci_scraper]     • Libois Jean: https://fr.linkedin.com/in/jean-philippe-dubois-b627a6130
+2026-03-26 23:22:06 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (LES PALMIERS 64) → stephane-libois status=created
+✅  12. LES PALMIERS 64 - LE CRES - 3 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/meye-immobilier-102898731
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Meye Yoann (Gérant et associé indéfiniment responsable)
+       2. MEYE PATRIMOINE (Associé indéfiniment responsable)
+2026-03-26 23:22:10 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:10 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'MEYE IMMOBILIER' (PONTCHATEAU)
+2026-03-26 23:22:10 INFO [sci_scraper] ======================================================================
+2026-03-26 23:22:10 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:22:10 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Meye Yoann (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:10 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:12 INFO [sci_scraper]   Recherche: site:linkedin.com "Meye Yoann"
+2026-03-26 23:22:15 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/yoann-meyer-15ba95114
+2026-03-26 23:22:15 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:22:18 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: MEYE PATRIMOINE (Associé indéfiniment responsable)
+2026-03-26 23:22:18 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:20 INFO [sci_scraper]   Recherche: site:linkedin.com "MEYE PATRIMOINE"
+2026-03-26 23:22:23 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/marc-meyer-8b026169
+2026-03-26 23:22:23 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:23 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'MEYE IMMOBILIER':
+2026-03-26 23:22:23 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:22:23 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:22:23 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:22:23 INFO [sci_scraper]     • Meye Yoann: https://fr.linkedin.com/in/yoann-meyer-15ba95114
+2026-03-26 23:22:23 INFO [sci_scraper]     • MEYE PATRIMOINE: https://fr.linkedin.com/in/marc-meyer-8b026169
+2026-03-26 23:22:23 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (MEYE IMMOBILIER) → yoann-meyer-15ba95114 status=created
+✅  13. MEYE IMMOBILIER - PONTCHATEAU - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-horizon-dsv-102752029
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Bechu Sebastien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:28 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:28 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI HORIZON DSV' (JAUNAY-MARIGNY)
+2026-03-26 23:22:28 INFO [sci_scraper] ======================================================================
+2026-03-26 23:22:28 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:22:28 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Bechu Sebastien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:28 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:30 INFO [sci_scraper]   Recherche: site:linkedin.com "Bechu Sebastien"
+2026-03-26 23:22:33 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/sébastien-bechu-557ba463
+2026-03-26 23:22:33 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:33 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI HORIZON DSV':
+2026-03-26 23:22:33 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:22:33 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:22:33 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:22:33 INFO [sci_scraper]     • Bechu Sebastien: https://fr.linkedin.com/in/sébastien-bechu-557ba463
+2026-03-26 23:22:33 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (SCI HORIZON DSV) → sébastien-bechu-557ba463 status=created
+✅  14. SCI HORIZON DSV - JAUNAY-MARIGNY - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-auvarat-102902053
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Llorca Sylvie (Gérant et associé indéfiniment responsable)
+       2. Llorca Denis (Gérant et associé indéfiniment responsable)
+       3. Llorca Claude (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:38 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:22:38 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI AUVARAT' (PERIGNAT-LES-SARLIEVE)
+2026-03-26 23:22:38 INFO [sci_scraper] ======================================================================
+2026-03-26 23:22:38 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:22:38 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Llorca Sylvie (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:38 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:40 INFO [sci_scraper]   Recherche: site:linkedin.com "Llorca Sylvie"
+2026-03-26 23:22:43 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/llorca-sylvie-8bb634377
+2026-03-26 23:22:43 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:22:46 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Llorca Denis (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:46 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:48 INFO [sci_scraper]   Recherche: site:linkedin.com "Llorca Denis"
+2026-03-26 23:22:51 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/llorca-denis-ab83b983
+2026-03-26 23:22:51 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:22:54 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Llorca Claude (Gérant et associé indéfiniment responsable)
+2026-03-26 23:22:54 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:22:54 INFO [sci_scraper] ⏸ Cooldown anti-bot: pause 30s après 30 requêtes
+2026-03-26 23:23:26 INFO [sci_scraper]   Recherche: site:linkedin.com "Llorca Claude"
+2026-03-26 23:23:27 ERROR [sci_scraper] Recherche échouée: Page.goto: net::ERR_CONNECTION_REFUSED at https://fr.search.yahoo.com/search?p=site%3Alinkedin.com%20%22Llorca%20Claude%22
+Call log:
+  - navigating to "https://fr.search.yahoo.com/search?p=site%3Alinkedin.com%20%22Llorca%20Claude%22", waiting until "domcontentloaded"
+
+2026-03-26 23:23:27 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:23:27 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:23:27 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI AUVARAT':
+2026-03-26 23:23:27 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:23:27 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/3
+2026-03-26 23:23:27 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:23:27 INFO [sci_scraper]     • Llorca Sylvie: https://fr.linkedin.com/in/llorca-sylvie-8bb634377
+2026-03-26 23:23:27 INFO [sci_scraper]     • Llorca Denis: https://fr.linkedin.com/in/llorca-denis-ab83b983
+2026-03-26 23:23:27 INFO [sci_scraper] ======================================================================
+
+    ⚠️ Erreur: <urlopen error [Errno -2] Name or service not known>
+✅  15. SCI AUVARAT - PERIGNAT-LES-SARLIEVE - 3 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/dvg-patrimoine-102877917
+    ⚠️ Tentative 1/3 échouée, nouvelle tentative...
+    ⚠️ Tentative 2/3 échouée, nouvelle tentative...
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Duverger Emilie (Gérant et associé indéfiniment responsable)
+2026-03-26 23:23:44 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:23:44 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'DVG PATRIMOINE' (CHABEUIL)
+2026-03-26 23:23:44 INFO [sci_scraper] ======================================================================
+2026-03-26 23:23:44 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:23:44 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Duverger Emilie (Gérant et associé indéfiniment responsable)
+2026-03-26 23:23:44 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:23:46 INFO [sci_scraper]   Recherche: site:linkedin.com "Duverger Emilie"
+2026-03-26 23:23:50 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/emilie-duverger-51529229a
+2026-03-26 23:23:50 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:23:50 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'DVG PATRIMOINE':
+2026-03-26 23:23:50 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:23:50 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:23:50 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:23:50 INFO [sci_scraper]     • Duverger Emilie: https://fr.linkedin.com/in/emilie-duverger-51529229a
+2026-03-26 23:23:50 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (DVG PATRIMOINE) → emilie-duverger-51529229a status=created
+✅  16. DVG PATRIMOINE - CHABEUIL - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/epal-102840782
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Paillou Emilien (Gérant et associé indéfiniment responsable)
+       2. PAILLOU INVESTISSEMENTS (Associé indéfiniment responsable)
+2026-03-26 23:23:55 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:23:55 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'EPAL' (MONTAIGU-VENDEE)
+2026-03-26 23:23:55 INFO [sci_scraper] ======================================================================
+2026-03-26 23:23:55 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:23:55 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Paillou Emilien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:23:55 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:23:57 INFO [sci_scraper]   Recherche: site:linkedin.com "Paillou Emilien"
+2026-03-26 23:24:00 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/emilie-paillous-978b4173
+2026-03-26 23:24:00 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:24:03 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: PAILLOU INVESTISSEMENTS (Associé indéfiniment responsable)
+2026-03-26 23:24:03 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:05 INFO [sci_scraper]   Recherche: site:linkedin.com "PAILLOU INVESTISSEMENTS"
+2026-03-26 23:24:08 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "PAILLOU INVESTISSEMENTS"
+2026-03-26 23:24:08 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:24:08 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:08 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'EPAL':
+2026-03-26 23:24:08 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:24:08 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/2
+2026-03-26 23:24:08 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:24:08 INFO [sci_scraper]     • Paillou Emilien: https://fr.linkedin.com/in/emilie-paillous-978b4173
+2026-03-26 23:24:08 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (EPAL) → emilie-paillous-978b4173 status=created
+✅  17. EPAL - MONTAIGU-VENDEE - 2 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/pataxcel-102889847
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Vidal Patrice (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:13 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:13 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'PATAXCEL' (SAINT-LEGER-DE-MONTBRUN)
+2026-03-26 23:24:13 INFO [sci_scraper] ======================================================================
+2026-03-26 23:24:13 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:24:13 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Vidal Patrice (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:13 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:15 INFO [sci_scraper]   Recherche: site:linkedin.com "Vidal Patrice"
+2026-03-26 23:24:18 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/vidal-patrice
+2026-03-26 23:24:18 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:18 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'PATAXCEL':
+2026-03-26 23:24:18 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:24:18 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:24:18 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:24:18 INFO [sci_scraper]     • Vidal Patrice: https://fr.linkedin.com/in/vidal-patrice
+2026-03-26 23:24:18 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (PATAXCEL) → vidal-patrice status=created
+✅  18. PATAXCEL - SAINT-LEGER-DE-MONTBRUN - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/mecareflex-102857158
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Magnat Richard (Gérant et associé indéfiniment responsable)
+       2. Contamine Lea (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:24 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:24 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'MECAREFLEX' (PRESSIGNAC)
+2026-03-26 23:24:24 INFO [sci_scraper] ======================================================================
+2026-03-26 23:24:24 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:24:24 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Magnat Richard (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:24 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:26 INFO [sci_scraper]   Recherche: site:linkedin.com "Magnat Richard"
+2026-03-26 23:24:29 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/richard-magnette-105b36140
+2026-03-26 23:24:29 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:24:32 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Contamine Lea (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:33 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:35 INFO [sci_scraper]   Recherche: site:linkedin.com "Contamine Lea"
+2026-03-26 23:24:38 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/léa-montagnier
+2026-03-26 23:24:38 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:38 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'MECAREFLEX':
+2026-03-26 23:24:38 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:24:38 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:24:38 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:24:38 INFO [sci_scraper]     • Magnat Richard: https://fr.linkedin.com/in/richard-magnette-105b36140
+2026-03-26 23:24:38 INFO [sci_scraper]     • Contamine Lea: https://fr.linkedin.com/in/léa-montagnier
+2026-03-26 23:24:38 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (MECAREFLEX) → richard-magnette-105b36140 status=created
+✅  19. MECAREFLEX - PRESSIGNAC - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/2a-immo-102894219
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Artaud Adrien (Gérant et associé indéfiniment responsable)
+       2. Simonet Audrey (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:43 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:43 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour '2A IMMO' (MALICORNE)
+2026-03-26 23:24:43 INFO [sci_scraper] ======================================================================
+2026-03-26 23:24:43 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:24:43 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Artaud Adrien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:43 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:45 INFO [sci_scraper]   Recherche: site:linkedin.com "Artaud Adrien"
+2026-03-26 23:24:48 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/adrien-artaud-379a3a3b1
+2026-03-26 23:24:48 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:24:51 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Simonet Audrey (Gérant et associé indéfiniment responsable)
+2026-03-26 23:24:51 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:24:53 INFO [sci_scraper]   Recherche: site:linkedin.com "Simonet Audrey"
+2026-03-26 23:24:56 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/audrey-simonet
+2026-03-26 23:24:56 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:24:56 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour '2A IMMO':
+2026-03-26 23:24:56 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:24:56 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:24:56 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:24:56 INFO [sci_scraper]     • Artaud Adrien: https://fr.linkedin.com/in/adrien-artaud-379a3a3b1
+2026-03-26 23:24:56 INFO [sci_scraper]     • Simonet Audrey: https://fr.linkedin.com/in/audrey-simonet
+2026-03-26 23:24:56 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (2A IMMO) → adrien-artaud-379a3a3b1 status=created
+✅  20. 2A IMMO - MALICORNE - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/le-vieil-olivier-102887429
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Dorier Alexandra (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:01 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:01 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'LE VIEIL OLIVIER' (CUISERY)
+2026-03-26 23:25:01 INFO [sci_scraper] ======================================================================
+2026-03-26 23:25:01 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:25:01 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Dorier Alexandra (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:01 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:03 INFO [sci_scraper]   Recherche: site:linkedin.com "Dorier Alexandra"
+2026-03-26 23:25:06 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Dorier Alexandra"
+2026-03-26 23:25:06 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:25:06 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:06 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'LE VIEIL OLIVIER':
+2026-03-26 23:25:06 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:25:06 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/1
+2026-03-26 23:25:06 INFO [sci_scraper] ======================================================================
+
+✅  21. LE VIEIL OLIVIER - CUISERY - 1 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/immo-cmo-102850872
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Molari Olivier (Gérant et associé indéfiniment responsable)
+       2. Nezosi Claire (Associé indéfiniment responsable)
+2026-03-26 23:25:11 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:11 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'IMMO CMO' (SAINTE-RUFFINE)
+2026-03-26 23:25:11 INFO [sci_scraper] ======================================================================
+2026-03-26 23:25:11 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:25:11 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Molari Olivier (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:11 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:13 INFO [sci_scraper]   Recherche: site:linkedin.com "Molari Olivier"
+2026-03-26 23:25:16 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/omfnb
+2026-03-26 23:25:16 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:25:19 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Nezosi Claire (Associé indéfiniment responsable)
+2026-03-26 23:25:19 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:21 INFO [sci_scraper]   Recherche: site:linkedin.com "Nezosi Claire"
+2026-03-26 23:25:24 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/clairemilner
+2026-03-26 23:25:24 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:24 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'IMMO CMO':
+2026-03-26 23:25:24 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:25:24 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:25:24 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:25:24 INFO [sci_scraper]     • Molari Olivier: https://fr.linkedin.com/in/omfnb
+2026-03-26 23:25:24 INFO [sci_scraper]     • Nezosi Claire: https://fr.linkedin.com/in/clairemilner
+2026-03-26 23:25:24 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (IMMO CMO) → omfnb status=exists
+✅  22. IMMO CMO - SAINTE-RUFFINE - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/ecmi-102853843
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Malherbe Charles (Gérant et associé indéfiniment responsable)
+       2. ECM EXPANSION (Associé indéfiniment responsable)
+2026-03-26 23:25:29 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:29 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'ECMI' (PIERREVERT)
+2026-03-26 23:25:29 INFO [sci_scraper] ======================================================================
+2026-03-26 23:25:29 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:25:29 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Malherbe Charles (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:29 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:31 INFO [sci_scraper]   Recherche: site:linkedin.com "Malherbe Charles"
+2026-03-26 23:25:34 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/charles-malherbe-67423426
+2026-03-26 23:25:34 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:25:37 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: ECM EXPANSION (Associé indéfiniment responsable)
+2026-03-26 23:25:37 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:39 INFO [sci_scraper]   Recherche: site:linkedin.com "ECM EXPANSION"
+2026-03-26 23:25:42 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/carlos-ferreira-8075301b6
+2026-03-26 23:25:42 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:42 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'ECMI':
+2026-03-26 23:25:42 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:25:42 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:25:42 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:25:42 INFO [sci_scraper]     • Malherbe Charles: https://fr.linkedin.com/in/charles-malherbe-67423426
+2026-03-26 23:25:42 INFO [sci_scraper]     • ECM EXPANSION: https://fr.linkedin.com/in/carlos-ferreira-8075301b6
+2026-03-26 23:25:42 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (ECMI) → charles-malherbe-67423426 status=created
+✅  23. ECMI - PIERREVERT - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/mla-102120383
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Oz Ali (Associé indéfiniment responsable)
+       2. Taspinar Meryem (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:47 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:25:47 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'MLA' (SULLY-SUR-LOIRE)
+2026-03-26 23:25:47 INFO [sci_scraper] ======================================================================
+2026-03-26 23:25:47 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:25:47 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Oz Ali (Associé indéfiniment responsable)
+2026-03-26 23:25:47 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:49 INFO [sci_scraper]   Recherche: site:linkedin.com "Oz Ali"
+2026-03-26 23:25:52 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://uk.linkedin.com/in/oz-ali-952bb2205
+2026-03-26 23:25:52 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:25:55 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Taspinar Meryem (Gérant et associé indéfiniment responsable)
+2026-03-26 23:25:55 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:25:55 INFO [sci_scraper] ⏸ Cooldown anti-bot: pause 30s après 45 requêtes
+2026-03-26 23:26:27 INFO [sci_scraper]   Recherche: site:linkedin.com "Taspinar Meryem"
+2026-03-26 23:26:30 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://dk.linkedin.com/in/meryem-taspinar-034ba91a5
+2026-03-26 23:26:30 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:30 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'MLA':
+2026-03-26 23:26:30 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:26:30 INFO [sci_scraper]   - Profils LinkedIn trouvés: 2/2
+2026-03-26 23:26:30 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:26:30 INFO [sci_scraper]     • Oz Ali: https://uk.linkedin.com/in/oz-ali-952bb2205
+2026-03-26 23:26:30 INFO [sci_scraper]     • Taspinar Meryem: https://dk.linkedin.com/in/meryem-taspinar-034ba91a5
+2026-03-26 23:26:30 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (MLA) → oz-ali-952bb2205 status=created
+✅  24. MLA - SULLY-SUR-LOIRE - 2 dirigeant(s) - 2 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/trubimmo-102873932
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Trubert François (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:35 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:35 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'TRUB'IMMO' (BRETEIL)
+2026-03-26 23:26:35 INFO [sci_scraper] ======================================================================
+2026-03-26 23:26:35 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:26:35 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Trubert François (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:35 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:26:37 INFO [sci_scraper]   Recherche: site:linkedin.com "Trubert François"
+2026-03-26 23:26:40 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/francois-trubert-2821bb142
+2026-03-26 23:26:40 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:40 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'TRUB'IMMO':
+2026-03-26 23:26:40 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:26:40 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:26:40 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:26:40 INFO [sci_scraper]     • Trubert François: https://fr.linkedin.com/in/francois-trubert-2821bb142
+2026-03-26 23:26:40 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (TRUB'IMMO) → francois-trubert-2821bb142 status=created
+✅  25. TRUB'IMMO - BRETEIL - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-mr2cl-102885100
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Chanson Matthieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:45 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:45 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI MR2CL' (JASSANS-RIOTTIER)
+2026-03-26 23:26:45 INFO [sci_scraper] ======================================================================
+2026-03-26 23:26:45 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:26:45 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Chanson Matthieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:45 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:26:47 INFO [sci_scraper]   Recherche: site:linkedin.com "Chanson Matthieu"
+2026-03-26 23:26:50 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/matthieu-chanson-738998104
+2026-03-26 23:26:50 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:50 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI MR2CL':
+2026-03-26 23:26:50 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:26:50 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:26:50 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:26:50 INFO [sci_scraper]     • Chanson Matthieu: https://fr.linkedin.com/in/matthieu-chanson-738998104
+2026-03-26 23:26:50 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (SCI MR2CL) → matthieu-chanson-738998104 status=created
+✅  26. SCI MR2CL - JASSANS-RIOTTIER - 1 dirigeant(s) - 1 LinkedIn
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-la-valdene-102814019
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Anacleto Anaiza (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:55 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:26:55 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI LA VALDENE' (LYON)
+2026-03-26 23:26:55 INFO [sci_scraper] ======================================================================
+2026-03-26 23:26:55 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:26:55 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Anacleto Anaiza (Gérant et associé indéfiniment responsable)
+2026-03-26 23:26:55 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:26:57 INFO [sci_scraper]   Recherche: site:linkedin.com "Anacleto Anaiza"
+2026-03-26 23:27:00 INFO [sci_scraper] ✅ TROUVÉ ! LinkedIn: https://fr.linkedin.com/in/laura-anacleto-0594254a
+2026-03-26 23:27:00 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:27:00 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI LA VALDENE':
+2026-03-26 23:27:00 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:27:00 INFO [sci_scraper]   - Profils LinkedIn trouvés: 1/1
+2026-03-26 23:27:00 INFO [sci_scraper]   - Profils trouvés:
+2026-03-26 23:27:00 INFO [sci_scraper]     • Anacleto Anaiza: https://fr.linkedin.com/in/laura-anacleto-0594254a
+2026-03-26 23:27:00 INFO [sci_scraper] ======================================================================
+
+    Lead GetSales (SCI LA VALDENE) → laura-anacleto-0594254a status=created
+✅  27. SCI LA VALDENE - LYON - 1 dirigeant(s) - 1 LinkedIn
+
+✅ Page 1 terminée avec succès
+   📊 Entreprises sur cette page: 20
+   📊 Total cumulé: 27
+   📅 Date courante: 24-03-2026
+   📄 Pages traitées: 2
+
+🏁 Limite de 2 pages atteinte
+💾 Fichier CSV fermé
+
+======================================================================
+📊 STATISTIQUES FINALES
+======================================================================
+🏢 Total d'entreprises extraites cette session: 27
+📊 Total cumulé dans le fichier: 27 entreprises uniques
+⏱️  Durée du scraping: 592.1 secondes
+📄 Fichier CSV unique: sci_data_master.csv
+🎯 Moyenne: 2.7 entreprises/minute
+
+📅 DERNIÈRE POSITION:
+   Date: 24-03-2026
+   Page: 1
+   Pages totales traitées: 2
+
+💾 Configuration finale dans: scraper_config.json
+2026-03-26 23:27:03 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:27:03 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:27:03 INFO [sci_scraper]    📅 Dates: 24-03-2026 → 24-03-2026
+2026-03-26 23:27:03 INFO [sci_scraper]    🏢 Total entreprises: 27
+2026-03-26 23:27:03 INFO [sci_scraper]    ⚡ Status: termine_limite_pages
+
+✅ SCRAPING TERMINÉ (limite de 2 pages atteinte)

@@ -1,0 +1,50 @@
+2026-04-02 17:54:15,362 [INFO] ================================================================================
+2026-04-02 17:54:15,363 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 17:54:15,363 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 17:54:15,363 [INFO] Mode: HEADLESS
+2026-04-02 17:54:15,363 [INFO] ================================================================================
+2026-04-02 17:54:15,363 [INFO] Client Supabase initialise
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Experts-comptables -> listes [5] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Restaurant asiatique -> listes [6] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Serrurier -> listes [16] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Plombier -> listes [15] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Electricien -> listes [14] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour Agent immobilier -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:54:15,363 [INFO]   Brevo OK pour CGP -> listes [8] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:54:15,364 [INFO]   Brevo OK pour Marchand de biens -> listes [10] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:54:15,364 [INFO]   Brevo OK pour IAD -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:54:15,364 [INFO] Supabase client initialized
+2026-04-02 17:54:15,368 [INFO] 
+================================================================================
+2026-04-02 17:54:15,368 [INFO] NICHE: Experts-comptables (query: Experts-comptables)
+2026-04-02 17:54:15,369 [INFO] Departements restants: 14
+2026-04-02 17:54:15,369 [INFO] ================================================================================
+2026-04-02 17:54:15,369 [INFO] 
+--- Departement 82 / Experts-comptables ---
+2026-04-02 17:54:15,503 [INFO]   6 villes trouvees
+2026-04-02 17:54:15,503 [INFO]   [Castelsarrasin] Scraping...
+2026-04-02 17:54:15,503 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Castelsarrasin
+2026-04-02 17:54:15,503 [INFO]   Initialisation du navigateur...
+2026-04-02 17:54:16,228 [INFO]   Chargement de Google Maps...
+2026-04-02 17:54:17,898 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 17:54:23,430 [INFO]   Fin de liste apres 6 scrolls (6 cards)
+2026-04-02 17:54:23,439 [INFO]   6 cards trouvees
+2026-04-02 17:54:28,079 [INFO]   [1/6] FIDUCIAL Expertise Moissac
+2026-04-02 17:54:28,079 [INFO]     Tel: 05 63 04 19 65 | Site: https://agences.fiducial.fr/FIDUCIAL-Expertise-Moissac
+2026-04-02 17:54:28,079 [INFO]     Adresse: 39 Av. du Chasselas, 82200 Moissac
+2026-04-02 17:54:28,079 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 17:54:28,225 [INFO]     Lead deja existant (doublon Supabase): FIDUCIAL Expertise Moissac
+2026-04-02 17:54:29,130 [INFO]     Email: - | Socials: -
+2026-04-02 17:54:34,103 [INFO]   [2/6] FIDUCIE CONSULTANTS Expert-comptable Castelsarrasin
+2026-04-02 17:54:34,103 [INFO]     Tel: 05 63 32 66 66 | Site: https://www.fiducie.fr/
+2026-04-02 17:54:34,104 [INFO]     Adresse: 8 Pl. Lamothe Cadillac, 82100 Castelsarrasin
+2026-04-02 17:54:34,104 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:54:34,219 [INFO]     Lead deja existant (doublon Supabase): FIDUCIE CONSULTANTS Expert-comptable Castelsarrasin
+2026-04-02 17:54:35,405 [INFO]     Email: contact@fiducie.fr | Socials: facebookUrl, linkedinUrl
+2026-04-02 17:54:39,730 [WARNING]     Failed to update enrichment: 409 Client Error: Conflict for url: https://mtvalzmtksnylhckrjze.supabase.co/rest/v1/leads?phone=eq.05%2063%2032%2066%2066
+2026-04-02 17:54:44,495 [INFO]   [3/6] Sodecal Expert-comptable Castelsarrasin
+2026-04-02 17:54:44,496 [INFO]     Tel: 05 63 95 03 60 | Site: http://www.sodecal.fr/
+2026-04-02 17:54:44,496 [INFO]     Adresse: 13 Rue du Soleil, 82100 Castelsarrasin
+2026-04-02 17:54:44,496 [INFO]     Note: 5.0/5 (? avis)
+2026-04-02 17:54:44,605 [INFO]     Lead deja existant (doublon Supabase): Sodecal Expert-comptable Castelsarrasin
+2026-04-02 17:54:47,149 [INFO]     Email: contact@sodecal.fr | Socials: facebookUrl, xUrl, linkedinUrl

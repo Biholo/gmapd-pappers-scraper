@@ -1,0 +1,341 @@
+📦 Installation de beautifulsoup4...
+Collecting beautifulsoup4
+  Downloading beautifulsoup4-4.14.3-py3-none-any.whl.metadata (3.8 kB)
+Collecting soupsieve>=1.6.1 (from beautifulsoup4)
+  Downloading soupsieve-2.8.3-py3-none-any.whl.metadata (4.6 kB)
+Requirement already satisfied: typing-extensions>=4.0.0 in /usr/local/lib/python3.12/site-packages (from beautifulsoup4) (4.15.0)
+Downloading beautifulsoup4-4.14.3-py3-none-any.whl (107 kB)
+Downloading soupsieve-2.8.3-py3-none-any.whl (37 kB)
+Installing collected packages: soupsieve, beautifulsoup4
+Successfully installed beautifulsoup4-4.14.3 soupsieve-2.8.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.0.1
+[notice] To update, run: pip install --upgrade pip
+Configuration du scraping amélioré:
+1. Mode test (headless, 2 pages)
+2. Mode visible (avec navigateur, 2 pages)
+3. Mode illimité (headless, pas de limite)
+4. Configuration personnalisée
+
+Choisissez une option (1-4): 🕷️ SCRAPER SCI PAPPERS.FR - VERSION AMÉLIORÉE
+Extraction des dirigeants et informations juridiques détaillées
+======================================================================
+📄 Pages à scraper: Illimité
+👁️  Mode headless: True
+📁 Fichier CSV unique: sci_data_master.csv
+
+📄 Nouveau fichier CSV créé: sci_data_master.csv
+✅ Configuration GetSales Direct détectée (Clé API présente)
+   Liste UUID: def11074-bdf3-40c6-b2af-0c20b6f3e710
+   Flow UUID:  d10e8857-91ca-442a-97c1-55d4e05bb837
+2026-03-26 23:14:13 INFO [sci_scraper] 📅 Pas de date définie, démarrage avec aujourd'hui: 26-03-2026
+2026-03-26 23:14:13 INFO [sci_scraper] 📊 DERNIER ÉTAT SAUVEGARDÉ:
+2026-03-26 23:14:13 INFO [sci_scraper]    Status: inconnu
+2026-03-26 23:14:13 INFO [sci_scraper]    Mise à jour: inconnue
+2026-03-26 23:14:13 INFO [sci_scraper]    Total entreprises: 0
+
+======================================================================
+📋 CONFIGURATION DU SCRAPING
+======================================================================
+📄 Page de démarrage: 1
+📅 Date de recherche: 26-03-2026
+🏢 Forme juridique: 6540 (SCI)
+✅ En activité uniquement: True
+======================================================================
+
+2026-03-26 23:14:13 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:14:13 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:14:13 INFO [sci_scraper]    📅 Dates: 26-03-2026 → 26-03-2026
+2026-03-26 23:14:13 INFO [sci_scraper]    🏢 Total entreprises: 0
+🗓️  Filtres date: min=26-03-2026 max=26-03-2026
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=26-03-2026&date_creation_max=26-03-2026
+🏢 0 entreprises trouvées
+
+======================================================================
+📅 FIN DE PAGINATION POUR CETTE DATE
+======================================================================
+📍 Arrêt à la page: 1
+📅 Date terminée: 26-03-2026
+🏢 Total cumulé: 0 entreprises
+
+🔄 PASSAGE AU JOUR PRÉCÉDENT:
+   Ancienne date: 26-03-2026
+   Nouvelle date: 25-03-2026
+   Retour à la page 1
+======================================================================
+
+2026-03-26 23:14:28 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:14:28 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:14:28 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:14:28 INFO [sci_scraper]    🏢 Total entreprises: 0
+2026-03-26 23:14:28 INFO [sci_scraper]    ⚡ Status: changement_date
+2026-03-26 23:14:30 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:14:30 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:14:30 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:14:30 INFO [sci_scraper]    🏢 Total entreprises: 0
+🗓️  Filtres date: min=25-03-2026 max=25-03-2026
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=25-03-2026&date_creation_max=25-03-2026
+🏢 7 entreprises trouvées
+📋 7 entreprises valides trouvées
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/point-de-vue-102886181
+    ✅ 4 dirigeant(s) trouvé(s)
+    🎯 Total: 4 dirigeant(s) unique(s)
+       1. Cros Alice (Associé indéfiniment responsable)
+       2. VIRGINIE PIANET (Associé indéfiniment responsable)
+       3. Pianet Virginie (Gérant et associé indéfiniment responsable)
+       4. Cros Vincent (Associé indéfiniment responsable)
+2026-03-26 23:14:35 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:14:35 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'POINT DE VUE' (SEMALENS)
+2026-03-26 23:14:35 INFO [sci_scraper] ======================================================================
+2026-03-26 23:14:35 INFO [sci_scraper] 👥 4 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:14:35 INFO [sci_scraper] 
+🔎 Dirigeant 1/4: Cros Alice (Associé indéfiniment responsable)
+2026-03-26 23:14:35 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:14:37 INFO [sci_scraper]   Recherche: site:linkedin.com "Cros Alice"
+2026-03-26 23:14:40 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Cros Alice"
+2026-03-26 23:14:40 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:14:40 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:14:43 INFO [sci_scraper] 
+🔎 Dirigeant 2/4: VIRGINIE PIANET (Associé indéfiniment responsable)
+2026-03-26 23:14:43 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:14:45 INFO [sci_scraper]   Recherche: site:linkedin.com "VIRGINIE PIANET"
+2026-03-26 23:14:48 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "VIRGINIE PIANET"
+2026-03-26 23:14:48 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:14:48 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:14:51 INFO [sci_scraper] 
+🔎 Dirigeant 3/4: Pianet Virginie (Gérant et associé indéfiniment responsable)
+2026-03-26 23:14:51 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:14:53 INFO [sci_scraper]   Recherche: site:linkedin.com "Pianet Virginie"
+2026-03-26 23:14:56 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Pianet Virginie"
+2026-03-26 23:14:56 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:14:56 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:14:59 INFO [sci_scraper] 
+🔎 Dirigeant 4/4: Cros Vincent (Associé indéfiniment responsable)
+2026-03-26 23:14:59 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:01 INFO [sci_scraper]   Recherche: site:linkedin.com "Cros Vincent"
+2026-03-26 23:15:04 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Cros Vincent"
+2026-03-26 23:15:04 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:04 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:04 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'POINT DE VUE':
+2026-03-26 23:15:04 INFO [sci_scraper]   - Dirigeants totaux: 4
+2026-03-26 23:15:04 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/4
+2026-03-26 23:15:04 INFO [sci_scraper] ======================================================================
+
+✅   1. POINT DE VUE - SEMALENS - 4 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-vnlj-102894862
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Nenkov Yordan (Associé indéfiniment responsable)
+2026-03-26 23:15:09 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:09 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI VNLJ' (PARIS)
+2026-03-26 23:15:09 INFO [sci_scraper] ======================================================================
+2026-03-26 23:15:09 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:15:09 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Nenkov Yordan (Associé indéfiniment responsable)
+2026-03-26 23:15:09 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:11 INFO [sci_scraper]   Recherche: site:linkedin.com "Nenkov Yordan"
+2026-03-26 23:15:13 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Nenkov Yordan"
+2026-03-26 23:15:13 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:13 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:13 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'SCI VNLJ':
+2026-03-26 23:15:13 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:15:13 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/1
+2026-03-26 23:15:13 INFO [sci_scraper] ======================================================================
+
+✅   2. SCI VNLJ - PARIS - 1 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/belliard-immobilier-102891934
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Belliard Olivier (Gérant et associé indéfiniment responsable)
+       2. Belliard Mathis (Associé indéfiniment responsable)
+       3. Belliard Julien (Associé indéfiniment responsable)
+2026-03-26 23:15:18 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:18 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'BELLIARD IMMOBILIER' (CORMOLAIN)
+2026-03-26 23:15:18 INFO [sci_scraper] ======================================================================
+2026-03-26 23:15:18 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:15:18 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Belliard Olivier (Gérant et associé indéfiniment responsable)
+2026-03-26 23:15:18 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:20 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Olivier"
+2026-03-26 23:15:23 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Belliard Olivier"
+2026-03-26 23:15:23 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:23 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:15:26 INFO [sci_scraper] 
+🔎 Dirigeant 2/3: Belliard Mathis (Associé indéfiniment responsable)
+2026-03-26 23:15:26 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:28 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Mathis"
+2026-03-26 23:15:31 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Belliard Mathis"
+2026-03-26 23:15:31 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:31 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:15:34 INFO [sci_scraper] 
+🔎 Dirigeant 3/3: Belliard Julien (Associé indéfiniment responsable)
+2026-03-26 23:15:34 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:36 INFO [sci_scraper]   Recherche: site:linkedin.com "Belliard Julien"
+2026-03-26 23:15:39 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Belliard Julien"
+2026-03-26 23:15:39 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:39 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:39 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'BELLIARD IMMOBILIER':
+2026-03-26 23:15:39 INFO [sci_scraper]   - Dirigeants totaux: 3
+2026-03-26 23:15:39 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/3
+2026-03-26 23:15:39 INFO [sci_scraper] ======================================================================
+
+✅   3. BELLIARD IMMOBILIER - CORMOLAIN - 3 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/lb-102891991
+    ✅ 2 dirigeant(s) trouvé(s)
+    🎯 Total: 2 dirigeant(s) unique(s)
+       1. Gourgaud Fanny (Gérant et associé indéfiniment responsable)
+       2. Blassy Johan (Gérant et associé indéfiniment responsable)
+2026-03-26 23:15:44 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:44 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'L.B' (SAINT-MAURICE-DE-LIGNON)
+2026-03-26 23:15:44 INFO [sci_scraper] ======================================================================
+2026-03-26 23:15:44 INFO [sci_scraper] 👥 2 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:15:44 INFO [sci_scraper] 
+🔎 Dirigeant 1/2: Gourgaud Fanny (Gérant et associé indéfiniment responsable)
+2026-03-26 23:15:44 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:46 INFO [sci_scraper]   Recherche: site:linkedin.com "Gourgaud Fanny"
+2026-03-26 23:15:49 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Gourgaud Fanny"
+2026-03-26 23:15:49 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:49 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...
+2026-03-26 23:15:52 INFO [sci_scraper] 
+🔎 Dirigeant 2/2: Blassy Johan (Gérant et associé indéfiniment responsable)
+2026-03-26 23:15:52 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:15:54 INFO [sci_scraper]   Recherche: site:linkedin.com "Blassy Johan"
+2026-03-26 23:15:57 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Blassy Johan"
+2026-03-26 23:15:57 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:15:57 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:15:57 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'L.B':
+2026-03-26 23:15:57 INFO [sci_scraper]   - Dirigeants totaux: 2
+2026-03-26 23:15:57 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/2
+2026-03-26 23:15:57 INFO [sci_scraper] ======================================================================
+
+✅   4. L.B - SAINT-MAURICE-DE-LIGNON - 2 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/masati-patrimoine-102899218
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Berga Mathieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:16:01 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:01 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'MASATI PATRIMOINE' (SAINT-JEAN-LES-DEUX-JUMEAUX)
+2026-03-26 23:16:01 INFO [sci_scraper] ======================================================================
+2026-03-26 23:16:01 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:16:01 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Berga Mathieu (Gérant et associé indéfiniment responsable)
+2026-03-26 23:16:01 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:16:03 INFO [sci_scraper]   Recherche: site:linkedin.com "Berga Mathieu"
+2026-03-26 23:16:06 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Berga Mathieu"
+2026-03-26 23:16:06 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:16:06 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:06 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'MASATI PATRIMOINE':
+2026-03-26 23:16:06 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:16:06 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/1
+2026-03-26 23:16:06 INFO [sci_scraper] ======================================================================
+
+✅   5. MASATI PATRIMOINE - SAINT-JEAN-LES-DEUX-JUMEAUX - 1 dirigeant(s)
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/sci-perron-102867587
+    ⚠️ Section #dirigeants présente mais vide
+    ❌ ANOMALIE: Aucun dirigeant trouvé (toute SCI doit avoir au moins un gérant)
+2026-03-26 23:16:12 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:12 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'SCI PERRON' (LE POET-LAVAL)
+2026-03-26 23:16:12 INFO [sci_scraper] ======================================================================
+2026-03-26 23:16:12 INFO [sci_scraper] ❌ Aucun dirigeant à enrichir pour 'SCI PERRON'
+2026-03-26 23:16:12 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:12 INFO [sci_scraper] 🎯 Enrichissement Yahoo terminé pour 'SCI PERRON' – aucun dirigeant à enrichir
+2026-03-26 23:16:12 INFO [sci_scraper] ======================================================================
+
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/valyens-102893096
+    ✅ 1 dirigeant(s) trouvé(s)
+    🎯 Total: 1 dirigeant(s) unique(s)
+       1. Couturier Julien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:16:16 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:16 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'VALYENS' (MEAUX)
+2026-03-26 23:16:16 INFO [sci_scraper] ======================================================================
+2026-03-26 23:16:16 INFO [sci_scraper] 👥 1 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:16:16 INFO [sci_scraper] 
+🔎 Dirigeant 1/1: Couturier Julien (Gérant et associé indéfiniment responsable)
+2026-03-26 23:16:16 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:16:18 INFO [sci_scraper]   Recherche: site:linkedin.com "Couturier Julien"
+2026-03-26 23:16:21 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Couturier Julien"
+2026-03-26 23:16:21 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:16:21 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:21 INFO [sci_scraper] 🎯 RÉSULTAT ENRICHISSEMENT pour 'VALYENS':
+2026-03-26 23:16:21 INFO [sci_scraper]   - Dirigeants totaux: 1
+2026-03-26 23:16:21 INFO [sci_scraper]   - Profils LinkedIn trouvés: 0/1
+2026-03-26 23:16:21 INFO [sci_scraper] ======================================================================
+
+✅   7. VALYENS - MEAUX - 1 dirigeant(s)
+
+✅ Page 1 terminée avec succès
+   📊 Entreprises sur cette page: 7
+   📊 Total cumulé: 7
+   📅 Date courante: 25-03-2026
+   📄 Pages traitées: 1
+2026-03-26 23:16:23 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:16:23 INFO [sci_scraper]    📄 Page suivante: 2
+2026-03-26 23:16:23 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:16:23 INFO [sci_scraper]    🏢 Total entreprises: 7
+2026-03-26 23:16:23 INFO [sci_scraper]    ⚡ Status: en_cours
+⏳ Pause 8 secondes…
+2026-03-26 23:16:31 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:16:31 INFO [sci_scraper]    📄 Page suivante: 2
+2026-03-26 23:16:31 INFO [sci_scraper]    📅 Dates: 25-03-2026 → 25-03-2026
+2026-03-26 23:16:31 INFO [sci_scraper]    🏢 Total entreprises: 7
+🔄 Page 2: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=25-03-2026&date_creation_max=25-03-2026&page=2
+🏢 0 entreprises trouvées
+
+======================================================================
+📅 FIN DE PAGINATION POUR CETTE DATE
+======================================================================
+📍 Arrêt à la page: 2
+📅 Date terminée: 25-03-2026
+🏢 Total cumulé: 7 entreprises
+
+🔄 PASSAGE AU JOUR PRÉCÉDENT:
+   Ancienne date: 25-03-2026
+   Nouvelle date: 24-03-2026
+   Retour à la page 1
+======================================================================
+
+2026-03-26 23:16:45 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:16:45 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:16:45 INFO [sci_scraper]    📅 Dates: 24-03-2026 → 24-03-2026
+2026-03-26 23:16:45 INFO [sci_scraper]    🏢 Total entreprises: 7
+2026-03-26 23:16:45 INFO [sci_scraper]    ⚡ Status: changement_date
+2026-03-26 23:16:47 INFO [sci_scraper] 💾 SAUVEGARDE CONFIG:
+2026-03-26 23:16:47 INFO [sci_scraper]    📄 Page suivante: 1
+2026-03-26 23:16:47 INFO [sci_scraper]    📅 Dates: 24-03-2026 → 24-03-2026
+2026-03-26 23:16:47 INFO [sci_scraper]    🏢 Total entreprises: 7
+🔄 Page 1: https://www.pappers.fr/recherche?forme_juridique=6540&en_activite=true&date_creation_min=24-03-2026&date_creation_max=24-03-2026
+🏢 20 entreprises trouvées
+📋 20 entreprises valides trouvées
+  🔍 Extraction des détails de https://www.pappers.fr/entreprise/opales-102884657
+    ✅ 3 dirigeant(s) trouvé(s)
+    🎯 Total: 3 dirigeant(s) unique(s)
+       1. Halopé Hamon Gabin (Associé indéfiniment responsable)
+       2. Halopé Hamon Alban (Associé indéfiniment responsable)
+       3. Halopé Jean-Philippe (Gérant et associé indéfiniment responsable)
+2026-03-26 23:16:52 INFO [sci_scraper] 
+======================================================================
+2026-03-26 23:16:52 INFO [sci_scraper] 🔍 ENRICHISSEMENT YAHOO pour 'OPALES' (ANGERS)
+2026-03-26 23:16:52 INFO [sci_scraper] ======================================================================
+2026-03-26 23:16:52 INFO [sci_scraper] 👥 3 dirigeant(s) à rechercher sur LinkedIn via Yahoo
+2026-03-26 23:16:52 INFO [sci_scraper] 
+🔎 Dirigeant 1/3: Halopé Hamon Gabin (Associé indéfiniment responsable)
+2026-03-26 23:16:52 INFO [sci_scraper] --------------------------------------------------
+2026-03-26 23:16:54 INFO [sci_scraper]   Recherche: site:linkedin.com "Halopé Hamon Gabin"
+2026-03-26 23:16:56 INFO [sci_scraper] Aucun profil LinkedIn trouvé pour: site:linkedin.com "Halopé Hamon Gabin"
+2026-03-26 23:16:56 INFO [sci_scraper]   ❌ Pas de résultat
+2026-03-26 23:16:56 INFO [sci_scraper] ⏱ Pause 3s avant le prochain dirigeant...

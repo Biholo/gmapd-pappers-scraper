@@ -1,0 +1,36 @@
+2026-04-02 17:53:39,414 [INFO] ================================================================================
+2026-04-02 17:53:39,415 [INFO] DEMARRAGE DU SCRAPING GOOGLE MAPS
+2026-04-02 17:53:39,415 [INFO] Niches: Experts-comptables, Restaurant asiatique, Serrurier, Plombier, Electricien, Agent immobilier, CGP, Marchand de biens, IAD
+2026-04-02 17:53:39,415 [INFO] Mode: HEADLESS
+2026-04-02 17:53:39,415 [INFO] ================================================================================
+2026-04-02 17:53:39,415 [INFO] Client Supabase initialise
+2026-04-02 17:53:39,415 [INFO]   Brevo OK pour Experts-comptables -> listes [5] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:53:39,415 [INFO]   Brevo OK pour Restaurant asiatique -> listes [6] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:53:39,415 [INFO]   Brevo OK pour Serrurier -> listes [16] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:53:39,415 [INFO]   Brevo OK pour Plombier -> listes [15] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:53:39,415 [INFO]   Brevo OK pour Electricien -> listes [14] (BREVO_DEVELLY_API_KEY)
+2026-04-02 17:53:39,416 [INFO]   Brevo OK pour Agent immobilier -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:53:39,416 [INFO]   Brevo OK pour CGP -> listes [8] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:53:39,416 [INFO]   Brevo OK pour Marchand de biens -> listes [10] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:53:39,416 [INFO]   Brevo OK pour IAD -> listes [4] (BREVO_OPTI_HABITAT_API_KEY)
+2026-04-02 17:53:39,416 [INFO] Supabase client initialized
+2026-04-02 17:53:39,419 [INFO] 
+================================================================================
+2026-04-02 17:53:39,419 [INFO] NICHE: Experts-comptables (query: Experts-comptables)
+2026-04-02 17:53:39,419 [INFO] Departements restants: 14
+2026-04-02 17:53:39,419 [INFO] ================================================================================
+2026-04-02 17:53:39,419 [INFO] 
+--- Departement 82 / Experts-comptables ---
+2026-04-02 17:53:39,632 [INFO]   6 villes trouvees
+2026-04-02 17:53:39,632 [INFO]   [Castelsarrasin] Scraping...
+2026-04-02 17:53:39,633 [INFO]   URL: https://www.google.com/maps/search/Experts-comptables+Castelsarrasin
+2026-04-02 17:53:39,633 [INFO]   Initialisation du navigateur...
+2026-04-02 17:53:40,352 [INFO]   Chargement de Google Maps...
+2026-04-02 17:53:42,107 [INFO]   Scroll pour charger toutes les cards...
+2026-04-02 17:53:47,036 [INFO]   Fin de liste apres 6 scrolls (6 cards)
+2026-04-02 17:53:47,113 [INFO]   6 cards trouvees
+2026-04-02 17:53:51,453 [INFO]   [1/6] FIDUCIAL Expertise Moissac
+2026-04-02 17:53:51,453 [INFO]     Tel: 05 63 04 19 65 | Site: https://agences.fiducial.fr/FIDUCIAL-Expertise-Moissac
+2026-04-02 17:53:51,454 [INFO]     Adresse: 39 Av. du Chasselas, 82200 Moissac
+2026-04-02 17:53:51,454 [INFO]     Note: 4.5/5 (? avis)
+2026-04-02 17:53:51,601 [INFO]     Lead pousse dans Supabase: FIDUCIAL Expertise Moissac
