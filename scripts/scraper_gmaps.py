@@ -159,19 +159,29 @@ def format_phone_fr(phone: str) -> str:
     return p
 
 
-def process_lead(lead_data, email, socials, city_name, city_id, brevo_svc, list_ids, gsheets_svc, niche_name, stats, department):
-    """Gérer l'envoi vers Brevo (avec email) OU vers Google Sheets (téléphone sans site web)."""
+def process_lead(lead_data, email, socials, city_name, city_id, brevo_svc, list_ids, gsheets_svc, niche_name, stats, department, gsheets_rule="no_website"):
+    """Gérer l'envoi vers Brevo (avec email) OU vers Google Sheets selon la règle de la niche.
+    
+    gsheets_rule:
+    - "no_website": envoyer à Google Sheets si pas de site web (défaut)
+    - "no_email": envoyer à Google Sheets si pas d'email
+    """
     phone = lead_data.get("phone")
     website = lead_data.get("website")
 
     # Flag pour savoir si on a traité le lead d'une manière ou d'une autre
     processed = False
 
-    # 1. Si pas de site web MAIS un numéro de téléphone -> Google Sheets
-    # Indépendant de Brevo
-    if phone and not website:
-        # On passe _sent_emails car la fonction l'attend, mais la logique des doublons 
-        # utilise get_existing_phones dans gsheets_svc
+    # 1. Décider si on envoie à Google Sheets selon la règle
+    should_send_gsheets = False
+    if gsheets_rule == "no_email":
+        # Pour CGP, Agent Immo, IAD: envoyer si pas d'email
+        should_send_gsheets = phone and not email
+    else:  # "no_website" (défaut)
+        # Pour les autres: envoyer si pas de site web
+        should_send_gsheets = phone and not website
+
+    if should_send_gsheets:
         if gsheets_svc and gsheets_svc.send_to_gsheets(niche_name, lead_data, email, city_name, department, _sent_emails):
             processed = True
 
@@ -224,8 +234,6 @@ def main():
         logger.warning("Google Sheets n'a pas pu être initialisé. Les leads sans site ne seront pas envoyés au Google Sheet.")
         logger.warning("Vérifiez que config/google_credentials.json existe et que GOOGLE_SHEETS_MASTER_SPREADSHEET_ID est configuré.")
         gsheets_service = None
-
-    caller_name = settings.get("CALLER_NAME", "Léa")
 
     for niche_cfg in niches_config:
         name = niche_cfg["name"]
@@ -298,7 +306,7 @@ def main():
                     continue
 
                 if not cities:
-                    logger.info(f"  Aucune ville, on marque comme termine")
+                    logger.info("  Aucune ville, on marque comme termine")
                     mark_department_done(config, niche_idx, dept_code)
                     continue
 
@@ -316,11 +324,12 @@ def main():
                     logger.info(f"  [{city_name}] Scraping...")
 
                     try:
-                        def handle_lead(lead_data, email, socials, niche=niche_name, city=city_name, cid=city_id, brevo=brevo_svc, lists=list_ids):
+                        gsheets_rule = niche_cfg.get("gsheets_rule", "no_website")
+                        def handle_lead(lead_data, email, socials, niche=niche_name, city=city_name, cid=city_id, brevo=brevo_svc, lists=list_ids, dept=dept_code, rule=gsheets_rule):
                             return process_lead(
                                 lead_data, email, socials, city, cid,
                                 brevo, lists, gsheets_service,
-                                niche, stats, caller_name
+                                niche, stats, dept, rule
                             )
 
                         scraper.scrape(

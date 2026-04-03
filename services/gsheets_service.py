@@ -152,15 +152,14 @@ class GoogleSheetsService:
         department: str = "",
         sent_emails_set: set = None
     ) -> bool:
-        """Envoyer un lead vers Google Sheets s'il a un téléphone et pas de site web."""
+        """Envoyer un lead vers Google Sheets."""
         if not self.client or not self.main_spreadsheet or not niche_name:
             return False
 
         phone = lead_data.get("phone")
-        website = lead_data.get("website")
 
-        # téléphone obligatoire + pas de site web
-        if not phone or website:
+        # téléphone obligatoire
+        if not phone:
             return False
             
         # Formatage du numéro avec espaces (ex: "06 28 11 26 31")
@@ -226,11 +225,16 @@ class GoogleSheetsService:
             if not headers:
                 self._create_headers_and_validation(sheet)
 
+            # Forcer le format texte pour le téléphone en ajoutant un apostrophe
+            phone_value = lead_data.get("phone", "")
+            if phone_value:
+                phone_value = f"'{phone_value}"
+            
             row_data = [
                 lead_data.get("company", ""),
                 lead_data.get("city", ""),
                 lead_data.get("address", ""),
-                lead_data.get("phone", ""),
+                phone_value,
                 lead_data.get("email", ""),
                 lead_data.get("status", "Nouveau"),
                 lead_data.get("comment", ""),
@@ -251,9 +255,13 @@ class GoogleSheetsService:
         if not phone:
             return ""
         # Enlever tous les espaces et caractères spéciaux
-        digits = ''.join(c for c in phone if c.isdigit())
+        digits = ''.join(c for c in str(phone) if c.isdigit())
         if len(digits) == 10:
             # Format français: XX XX XX XX XX
+            return ' '.join([digits[i:i+2] for i in range(0, 10, 2)])
+        elif len(digits) > 10:
+            # Si plus de 10 chiffres, prendre les 10 derniers (ex: +33 6 28 11 26 31)
+            digits = digits[-10:]
             return ' '.join([digits[i:i+2] for i in range(0, 10, 2)])
         return phone
 

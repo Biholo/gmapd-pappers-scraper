@@ -33,6 +33,8 @@ class GoogleMapsScraper:
         self.max_scrolls = max_scrolls
         self.driver = None
         self.supabase = None
+        self.cities_scraped = 0  # Compteur pour recycler le driver
+        self.max_cities_per_driver = 10  # Recycler tous les 10 villes
         
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         logs_dir = os.path.join(base_dir, 'logs')
@@ -70,6 +72,27 @@ class GoogleMapsScraper:
         opts.add_argument("--no-sandbox")
         opts.add_argument("--lang=fr-FR")
         opts.add_argument("--disable-blink-features=AutomationControlled")
+        # Optimisations mémoire et stabilité
+        opts.add_argument("--disable-extensions")
+        opts.add_argument("--disable-plugins")
+        opts.add_argument("--disable-images")  # Désactiver les images pour économiser la mémoire
+        opts.add_argument("--disable-default-apps")
+        opts.add_argument("--disable-sync")
+        opts.add_argument("--disable-translate")
+        opts.add_argument("--disable-background-networking")
+        opts.add_argument("--disable-breakpad")
+        opts.add_argument("--disable-client-side-phishing-detection")
+        opts.add_argument("--disable-component-extensions-with-background-pages")
+        opts.add_argument("--disable-default-apps")
+        opts.add_argument("--disable-device-discovery-notifications")
+        opts.add_argument("--disable-hang-monitor")
+        opts.add_argument("--disable-popup-blocking")
+        opts.add_argument("--disable-prompt-on-repost")
+        opts.add_argument("--disable-background-timer-throttling")
+        opts.add_argument("--disable-renderer-backgrounding")
+        opts.add_argument("--disable-preconnect")
+        # Limite mémoire
+        opts.add_argument("--memory-pressure-off")
         opts.add_experimental_option("excludeSwitches", ["enable-automation"])
         opts.add_experimental_option("useAutomationExtension", False)
 
@@ -81,6 +104,7 @@ class GoogleMapsScraper:
         chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
         service = ChromeService(executable_path=chromedriver_path) if chromedriver_path else ChromeService()
         driver = webdriver.Chrome(service=service, options=opts)
+        driver.set_page_load_timeout(30)  # Timeout de 30s pour charger une page
         driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
         })
@@ -458,6 +482,15 @@ class GoogleMapsScraper:
         except Exception as e:
             logger.warning(f"  Could not mark {city_id}/{niche} as done: {e}")
 
+    def _recycle_driver_if_needed(self):
+        """Ferme et recrée le driver tous les N villes pour éviter les fuites mémoire."""
+        if self.cities_scraped >= self.max_cities_per_driver:
+            logger.info(f"  Recyclage du driver (après {self.cities_scraped} villes)...")
+            self.close()
+            self.driver = None
+            self.cities_scraped = 0
+            time.sleep(2)  # Pause pour libérer les ressources
+
     def scrape(self, city_name, city_id, niche, on_lead_enriched=None):
         """Scrape une ville pour une niche donnee.
 
@@ -471,12 +504,21 @@ class GoogleMapsScraper:
         logger.info(f"  URL: {url}")
 
         try:
+            # Recycler le driver si nécessaire
+            self._recycle_driver_if_needed()
+
             if not self.driver:
                 logger.info("  Initialisation du navigateur...")
                 self.driver = self._build_driver()
 
-            logger.info(f"  Chargement de Google Maps...")
-            self.driver.get(url)
+            logger.info("  Chargement de Google Maps...")
+            try:
+                self.driver.get(url)
+            except Exception as e:
+                logger.warning(f"  Timeout ou erreur chargement page: {e}, recyclage du driver...")
+                self.close()
+                self.driver = self._build_driver()
+                self.driver.get(url)
             self._accept_consent(self.driver)
 
             logger.info(f"  Scroll pour charger toutes les cards...")
@@ -573,7 +615,7 @@ class GoogleMapsScraper:
                             except Exception as e:
                                 logger.debug(f"    Enrichment error: {e}")
                         else:
-                            logger.info(f"    Email: - (pas de site web)")
+                            logger.info("    Email: - (pas de site web)")
                             if on_lead_enriched:
                                 try:
                                     on_lead_enriched(lead_data, None, None)
@@ -591,10 +633,17 @@ class GoogleMapsScraper:
 
             logger.info(f"  RESULTAT: {leads_posted}/{total_cards} leads extraits pour {city_name}")
             self._mark_done(city_id, niche)
+            self.cities_scraped += 1  # Incrémenter le compteur
             return True
 
         except Exception as e:
             logger.error(f"  Erreur scrape {city_name}: {e}")
+            # En cas d'erreur Chromium, recycler le driver
+            if "unknown error" in str(e).lower() or "crashed" in str(e).lower():
+                logger.warning(f"  Erreur Chromium détectée, recyclage du driver...")
+                self.close()
+                self.driver = None
+                self.cities_scraped = 0
             return False
 
     def close(self):

@@ -1,26 +1,12 @@
-# Scraping Lead - Pipeline de prospection automatisee
+# Scraping Lead - Pipeline de prospection automatisée
 
-Systeme complet de scraping, enrichissement LinkedIn et envoi vers Brevo.
-3 pipelines : Google Maps, Pappers (SCI + Societes), Transfert GetSales/Brevo.
-
-## Architecture
-
-```
-Google Maps  ──────> Supabase + Brevo (direct si email)
-Pappers SCI  ──────> GetSales (enrichissement LinkedIn) ──────> Brevo
-Pappers SASU/SAS ──> GetSales (enrichissement LinkedIn) ──────> Brevo
-```
-
-### Deux comptes Brevo
-
-| Compte | API Key env | Niches |
-|--------|-------------|--------|
-| **Opti Habitat** | `BREVO_OPTI_HABITAT_API_KEY` | Agent immo, CGP, Marchand de biens, SCI |
-| **Develly** | `BREVO_DEVELLY_API_KEY` | Comptables, Restaurants asiatiques, Serruriers, Plombiers, Electriciens |
+Scraping Google Maps, Pappers (SCI + Sociétés), transfert GetSales/Brevo.
 
 ---
 
-## Installation
+## 🚀 Démarrage rapide
+
+### Installation locale
 
 ```bash
 git clone <repo>
@@ -36,285 +22,186 @@ Copier `.env.example` en `.env` et remplir les credentials.
 
 ---
 
-## Scripts
-
-### 1. Google Maps - `scripts/scraper_gmaps.py`
-
-Scrape toute la France par niche sur Google Maps. Envoie directement vers Brevo quand un email est trouve.
-
-```bash
-# Lancer le scraping (utilise config/gmaps_scraping_config.json)
-python scripts/scraper_gmaps.py
-```
-
-**Configuration** : `config/gmaps_scraping_config.json`
-
-Chaque niche contient :
-- `name` : Nom de la niche
-- `search_query` : Requete Google Maps
-- `brevo_api_key_env` : Variable env de la cle API Brevo
-- `brevo_list_id_env` : Liste de variables env des IDs de listes Brevo (array)
-- `departments` : Departements restants a scraper (retires automatiquement quand termines)
-
-**Parametres** dans `config/config.py` :
-- `MAX_SCROLLS` : Nombre max de scrolls par ville (defaut: 50)
-- `HEADLESS` : Mode headless (defaut: True)
-- `DELAY_BETWEEN_CITIES` : Delai entre villes en secondes (defaut: 2)
-- `DELAY_BETWEEN_NICHES` : Delai entre niches (defaut: 5)
-
-**Anti-doublons** : Validation email par regex stricte + dedup local en memoire + `update_enabled=True` sur Brevo (met a jour si le contact existe deja).
-
----
-
-### 2. Pappers (SCI / Societes) - `scripts/scraper_pappers.py`
-
-Scrape les entreprises sur Pappers.fr, enrichit les dirigeants via Yahoo/LinkedIn, envoie vers GetSales puis file d'enrichissement LinkedIn.
-
-```bash
-# Scraping SCI (forme juridique 6540)
-python scripts/scraper_pappers.py --type sci --mode production --send-email
-
-# Scraping Societes SASU/SAS/EURL/SARL (formes 5720,5710,5498,5499)
-python scripts/scraper_pappers.py --type company --mode production --send-email
-
-# Mode test (2 pages max, headless)
-python scripts/scraper_pappers.py --type sci --mode test
-
-# Mode visible (navigateur affiche)
-python scripts/scraper_pappers.py --type company --mode visible
-
-# Mode illimite (pas de limite de pages)
-python scripts/scraper_pappers.py --type sci --mode unlimited
-
-# Limiter le nombre de pages
-python scripts/scraper_pappers.py --type sci --mode production --max-pages 10
-
-# Menu interactif (sans --mode)
-python scripts/scraper_pappers.py --type sci
-```
-
-**Parametres** :
-
-| Parametre | Valeurs | Description |
-|-----------|---------|-------------|
-| `--type` | `sci`, `company` | Type de scraping (defaut: `sci`) |
-| `--mode` | `test`, `visible`, `unlimited`, `production`, `custom` | Mode d'execution |
-| `--max-pages` | entier | Limite de pages par date |
-| `--send-email` | flag | Envoyer un rapport par email a la fin |
-| `--email-to` | adresses | Destinataires du rapport |
-
-**Routing GetSales** :
-
-| Type | Condition | Liste GetSales |
-|------|-----------|---------------|
-| SCI | Creee < 30 jours | `GETSALES_NEW_SCI_LIST_UUID` |
-| SCI | Creee > 30 jours | `GETSALES_OLD_SCI_LIST_UUID` |
-| Company | Toujours | `GETSALES_NEW_COMPANY_LIST_UUID` |
-
-Apres ajout dans GetSales, le lead est automatiquement ajoute a la **file d'enrichissement LinkedIn** (API `PUT /leads/api/leads/advanced-enrichment`).
-
-**Config persistante** : `scraper_config.json` (SCI) / `scraper_config_company.json` (societes) - sauvegarde la page et la date pour reprendre en cas d'interruption.
-
----
-
-### 3. Transfert de leads - `scripts/lead_transfer.py`
-
-Transfère les leads enrichis entre GetSales et Brevo.
-
-#### GetSales -> Brevo (leads avec email uniquement)
-
-```bash
-python scripts/lead_transfer.py getsales-to-brevo
-```
-
-**Mapping** :
-
-| Liste GetSales | Listes Brevo |
-|---------------|-------------|
-| `GETSALES_NEW_SCI_LIST_UUID` | `BREVO_SCI_LOGICIEL_LIST` + `BREVO_SCI_NEW_LIST` |
-| `GETSALES_OLD_SCI_LIST_UUID` | `BREVO_SCI_LOGICIEL_LIST` + `BREVO_SCI_OLD_LIST` |
-
-#### Brevo liste -> liste (avec limite quotidienne)
-
-Transfere des contacts d'une liste de stockage vers une liste rattachee a un workflow, avec un max/jour pour eviter le flag du domaine.
-
-```bash
-# Transferer max 100 contacts/jour de la liste 5 vers la liste 12 (Opti Habitat)
-python scripts/lead_transfer.py brevo-transfer --from-list 5 --to-list 12 --max-per-day 100
-
-# Avec la cle Develly
-python scripts/lead_transfer.py brevo-transfer --from-list 5 --to-list 12 --max-per-day 100 --api-key-env BREVO_DEVELLY_API_KEY
-```
-
-**Parametres** :
-
-| Parametre | Description |
-|-----------|-------------|
-| `--from-list` | ID de la liste source |
-| `--to-list` | ID de la liste destination |
-| `--max-per-day` | Max contacts transferes par jour (defaut: 100) |
-| `--api-key-env` | Variable env de la cle API (defaut: `BREVO_OPTI_HABITAT_API_KEY`) |
-
----
-
-### 4. Recap quotidien - `scripts/daily_recap.py`
-
-Affiche ou envoie par email un recapitulatif de la journee.
-
-```bash
-# Afficher le recap dans la console
-python scripts/daily_recap.py
-
-# Envoyer par email
-python scripts/daily_recap.py --send-email
-
-# Avec destinataires specifiques
-python scripts/daily_recap.py --send-email --email-to user@example.com
-```
-
-**Stats trackees** : leads scrapes (GMaps + Pappers), envoyes Brevo, envoyes GetSales, enrichissements files, transferts liste-a-liste.
-
-Stockees dans `state/daily_stats.json`, remises a zero chaque jour.
-
----
-
-## Docker
+## 📦 Docker - Commandes simples
 
 ### Build
-
 ```bash
 docker compose build
-# ou
-make build
 ```
 
-### Lancer un scraper
+### Lancer les scrapers
 
 ```bash
-# Google Maps
-docker compose run --rm gmaps
+# Google Maps (scrape toute la France par niche)
+docker compose up gmaps
 
 # SCI Pappers
 docker compose run --rm sci
 
-# Societes (SASU/SAS/EURL/SARL)
+# Sociétés (SASU/SAS/EURL/SARL)
 docker compose run --rm company
 
 # Transfert GetSales -> Brevo
 docker compose run --rm transfer
 
-# Transfert Brevo liste -> liste
-docker compose run --rm scraper-scheduler brevo-transfer --from-list 5 --to-list 12
-
 # Recap quotidien
-docker compose run --rm scraper-scheduler recap --send-email
+docker compose run --rm scheduler recap --send-email
 ```
 
-### Scheduler (cron automatique)
+### Scheduler automatique (cron)
 
 ```bash
-docker compose up -d scheduler
+# Lance gmaps en continu + crons pour SCI/Company/Transfer/Recap
+docker compose up scheduler
 ```
 
-**Variables d'environnement cron** :
-
-| Variable | Defaut | Description |
-|----------|--------|-------------|
-| `CRON_GMAPS` | `0 6 * * *` | Google Maps a 6h |
-| `CRON_SCI` | `0 8 * * *` | SCI Pappers a 8h |
-| `CRON_COMPANY` | `0 10 * * *` | Societes a 10h |
-| `CRON_TRANSFER` | `0 14 * * *` | Transfert GetSales->Brevo a 14h |
-| `CRON_RECAP` | `0 22 * * *` | Recap quotidien a 22h |
-
-### Commandes Docker disponibles
-
-| Commande | Description |
-|----------|-------------|
-| `gmaps` | Scraper Google Maps |
-| `sci` | Scraper SCI/Pappers |
-| `company` | Scraper Societes (SASU/SAS/EURL/SARL) |
-| `transfer` | Transfert GetSales -> Brevo |
-| `brevo-transfer` | Transfert Brevo liste -> liste |
-| `recap` | Recap quotidien |
-| `cron` | Scheduler cron |
-| `shell` | Shell interactif |
+**Crons configurables** (dans `.env`) :
+```env
+CRON_SCI=15 10 * * *        # SCI à 10h15
+CRON_COMPANY=20 19 * * *    # Sociétés à 19h20
+CRON_TRANSFER=30 14 * * *   # Transfert à 14h30
+CRON_RECAP=0 23 * * *       # Recap à 23h
+```
 
 ---
 
-## Variables d'environnement
+## 📋 Scripts locaux
+
+### Google Maps
+```bash
+python scripts/scraper_gmaps.py
+```
+- Scrape toute la France par niche
+- Envoie directement vers Brevo si email trouvé
+- Envoie vers Google Sheets si téléphone sans site web
+- Config: `config/gmaps_scraping_config.json`
+
+### Pappers (SCI / Sociétés)
+```bash
+# SCI
+python scripts/scraper_pappers.py --type sci --mode production --send-email
+
+# Sociétés
+python scripts/scraper_pappers.py --type company --mode production --send-email
+
+# Mode test (2 pages max)
+python scripts/scraper_pappers.py --type sci --mode test
+
+# Mode visible (navigateur affiché)
+python scripts/scraper_pappers.py --type sci --mode visible
+```
+
+### Transfert de leads
+```bash
+# GetSales -> Brevo
+python scripts/lead_transfer.py getsales-to-brevo
+
+# Brevo liste -> liste (max 100/jour)
+python scripts/lead_transfer.py brevo-transfer --from-list 5 --to-list 12 --max-per-day 100
+```
+
+### Recap quotidien
+```bash
+# Afficher dans la console
+python scripts/daily_recap.py
+
+# Envoyer par email
+python scripts/daily_recap.py --send-email
+```
+
+---
+
+## 🔧 Configuration
+
+### Google Maps (`config/gmaps_scraping_config.json`)
+
+Chaque niche contient :
+- `name` : Nom de la niche
+- `search_query` : Requête Google Maps
+- `brevo_api_key_env` : Variable env de la clé API Brevo
+- `brevo_list_id_env` : IDs des listes Brevo (array)
+- `departments` : Départements à scraper (retirés automatiquement)
+
+Paramètres globaux :
+- `MAX_SCROLLS` : Nombre max de scrolls par ville (défaut: 50)
+- `HEADLESS` : Mode headless (défaut: true)
+- `DELAY_BETWEEN_CITIES` : Délai entre villes en secondes (défaut: 2)
+- `DELAY_BETWEEN_NICHES` : Délai entre niches (défaut: 5)
+
+---
+
+## 📊 Flux de données
+
+```
+Google Maps  ──> Supabase + Brevo (si email) + Google Sheets (si téléphone sans site)
+Pappers SCI  ──> GetSales ──> Brevo (enrichissement LinkedIn)
+Pappers Co.  ──> GetSales ──> Brevo (enrichissement LinkedIn)
+```
+
+---
+
+## 🔑 Variables d'environnement
 
 ```env
-# GetSales
-GETSALES_BASE_URL=https://amazing.getsales.io
-GETSALES_API_KEY=...
-GETSALES_FLOW_UUID=...
-GETSALES_NEW_SCI_LIST_UUID=cae70689-...
-GETSALES_OLD_SCI_LIST_UUID=def11074-...
-GETSALES_NEW_COMPANY_LIST_UUID=82663f51-...
-
 # Brevo (2 comptes)
 BREVO_OPTI_HABITAT_API_KEY=xkeysib-...
 BREVO_DEVELLY_API_KEY=xkeysib-...
 
-# Opti Habitat listes
-BREVO_SCI_LOGICIEL_LIST=9
-BREVO_SCI_OLD_LIST=6
-BREVO_SCI_NEW_LIST=5
+# Listes Brevo (Opti Habitat)
 BREVO_AGENT_IMMO_LIST=4
-BREVO_CGP_LIST=8
-BREVO_MARCHAND_BIENS_LIST=10
+BREVO_SCI_NEW_LIST=5
+BREVO_SCI_OLD_LIST=6
 
-# Develly listes
-BREVO_COMPTABLE_RUNING_LIST=12
-BREVO_ASTIATIQUE_RUNING_LIST=11
-BREVO_COMPTABLE_LIST=5
-BREVO_ASTIATIQUE_LIST=6
+# Listes Brevo (Develly)
 BREVO_SERRURIER_LIST=16
 BREVO_PLUMBER_LIST=15
 BREVO_ELECTRICIAN_LIST=14
 
-# Resend (rapports email)
-RESEND_API_KEY=...
-RESEND_FROM_EMAIL=...
-RESEND_TO_EMAIL=...
+# GetSales
+GETSALES_BASE_URL=https://amazing.getsales.io
+GETSALES_API_KEY=...
+GETSALES_NEW_SCI_LIST_UUID=...
+GETSALES_OLD_SCI_LIST_UUID=...
+GETSALES_NEW_COMPANY_LIST_UUID=...
 
 # Supabase
 SUPABASE_URL=...
 SUPABASE_KEY=...
+
+# Google Sheets
+GOOGLE_SHEETS_MASTER_SPREADSHEET_ID=...
+
+# Resend (emails)
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL=...
+RESEND_TO_EMAIL=...
 ```
 
 ---
 
-## Structure du projet
+## 📁 Structure du projet
 
 ```
 scraping-lead/
 ├── scripts/
-│   ├── scrape_departments.py    # Google Maps scraper
-│   ├── scraper_enhanced.py      # Pappers SCI/Societes scraper
+│   ├── scraper_gmaps.py         # Google Maps
+│   ├── scraper_pappers.py       # Pappers SCI/Sociétés
 │   ├── lead_transfer.py         # Transfert GetSales/Brevo
-│   └── daily_recap.py           # Recap quotidien
+│   ├── daily_recap.py           # Recap quotidien
+│   └── scheduler.py             # Scheduler intelligent
 ├── services/
 │   ├── brevo_service.py         # API Brevo
 │   ├── getsales_service.py      # API GetSales
-│   ├── supabase_client.py       # API Supabase
-│   └── resend_service.py        # API Resend (emails)
-├── services-metier/
-│   └── scraper.py               # Scraper Google Maps Selenium
+│   ├── gsheets_service.py       # Google Sheets
+│   ├── supabase_client.py       # Supabase
+│   └── resend_service.py        # Resend (emails)
+├── services_metier/
+│   └── scraper.py               # Scraper Selenium
 ├── config/
-│   ├── config.py                # Parametres scraping
-│   └── gmaps_scraping_config.json  # Config niches/departements
-├── state/
-│   ├── daily_stats.json         # Stats quotidiennes
-│   ├── transfer_state.json      # Compteurs transferts
-│   └── .scraped_history.json    # Historique scraping GMaps
+│   ├── gmaps_scraping_config.json
+│   └── google_credentials.json
 ├── docker/
-│   └── entrypoint.sh            # Entrypoint Docker
+│   └── entrypoint.sh
 ├── docker-compose.yml
 ├── Dockerfile
-├── Makefile
-├── requirements.txt
-└── .env
-```
-#   g m a p d - p a p p e r s - s c r a p e r  
- 
+└── requirements.txt
