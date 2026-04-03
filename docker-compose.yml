@@ -21,10 +21,12 @@ services:
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - GOOGLE_SHEETS_MASTER_SPREADSHEET_ID=${GOOGLE_SHEETS_MASTER_SPREADSHEET_ID}
+      - GMAPS_HEADLESS=true
     volumes:
       - ./csv:/app/csv
       - ./logs:/app/logs
       - ./config:/app/config
+    shm_size: "2g"
     restart: unless-stopped
     deploy:
       resources:
@@ -117,10 +119,12 @@ services:
       - CRON_TRANSFER=${CRON_TRANSFER:-30 14 * * *}
       - CRON_RECAP=${CRON_RECAP:-0 23 * * *}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - GMAPS_HEADLESS=true
     volumes:
       - ./csv:/app/csv
       - ./logs:/app/logs
       - ./config:/app/config
+    shm_size: "2g"
     restart: unless-stopped
     deploy:
       resources:

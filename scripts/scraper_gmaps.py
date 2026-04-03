@@ -65,7 +65,13 @@ def load_gmaps_config():
 config = load_gmaps_config()
 settings = config.get("settings", {})
 MAX_SCROLLS = settings.get("MAX_SCROLLS", 50)
-HEADLESS = settings.get("HEADLESS", True)
+def _getenv_bool(name, default):
+    v = os.getenv(name)
+    if v is None:
+        return default
+    return str(v).strip().lower() in ("1", "true", "yes", "y", "on")
+
+HEADLESS = _getenv_bool("GMAPS_HEADLESS", settings.get("HEADLESS", True))
 DELAY_BETWEEN_CITIES = settings.get("DELAY_BETWEEN_CITIES", 2)
 DELAY_BETWEEN_NICHES = settings.get("DELAY_BETWEEN_NICHES", 5)
 

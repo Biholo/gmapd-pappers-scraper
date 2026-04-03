@@ -61,16 +61,17 @@ def any_blocking_process_running():
     return False
 
 def launch_gmaps():
-    """Lance le scraper Google Maps en arrière-plan."""
+    """Lance le scraper Google Maps en avant-plan avec logs visibles."""
     logger.info("Lancement du scraper Google Maps...")
     try:
-        subprocess.Popen(
+        # Exécuter gmaps en avant-plan avec stdout/stderr redirigés vers le scheduler
+        subprocess.run(
             ['python', '-u', 'scripts/scraper_gmaps.py'],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True  # Lance dans une nouvelle session pour éviter les signaux
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            check=False
         )
-        logger.info("Scraper Google Maps lancé avec succès")
+        logger.info("Scraper Google Maps terminé")
         return True
     except Exception as e:
         logger.error(f"Erreur lors du lancement de gmaps: {e}")

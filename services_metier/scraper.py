@@ -15,6 +15,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 
 from services.supabase_client import SupabaseClient
 
@@ -67,9 +68,10 @@ class GoogleMapsScraper:
             opts.add_argument("--headless=new")
         opts.add_argument("--start-maximized")
         opts.add_argument("--window-size=1920,1080")
-        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--no-zygote")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-software-rasterizer")
         opts.add_argument("--lang=fr-FR")
         opts.add_argument("--disable-blink-features=AutomationControlled")
         # Optimisations mémoire et stabilité
@@ -139,15 +141,32 @@ class GoogleMapsScraper:
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='feed']"))
             )
 
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.Nv2PK"))
+            )
+        except Exception:
+            pass
+
         previous_count = 0
         no_change_count = 0
         max_attempts = max(self.max_scrolls, 50)
 
         for i in range(max_attempts):
-            driver.execute_script("arguments[0].scrollBy(0, arguments[0].clientHeight);", feed)
+            try:
+                driver.execute_script("arguments[0].scrollBy(0, arguments[0].clientHeight);", feed)
+            except StaleElementReferenceException:
+                try:
+                    feed = driver.find_elements(By.CSS_SELECTOR, "div[role='feed']")[0]
+                    driver.execute_script("arguments[0].scrollBy(0, arguments[0].clientHeight);", feed)
+                except Exception:
+                    pass
             time.sleep(0.5)
 
-            current_count = len(driver.find_elements(By.CSS_SELECTOR, "div.Nv2PK"))
+            try:
+                current_count = len(driver.find_elements(By.CSS_SELECTOR, "div.Nv2PK"))
+            except Exception:
+                current_count = previous_count
 
             if current_count == previous_count:
                 no_change_count += 1
@@ -522,7 +541,14 @@ class GoogleMapsScraper:
             self._accept_consent(self.driver)
 
             logger.info(f"  Scroll pour charger toutes les cards...")
-            self._scroll_feed(self.driver)
+            try:
+                self._scroll_feed(self.driver)
+            except Exception as e:
+                logger.warning(f"  Scroll error: {e}")
+                self.close()
+                self.driver = None
+                self.cities_scraped = 0
+                return False
 
             cards = self.driver.find_elements(By.CSS_SELECTOR, "div.Nv2PK")
             total_cards = len(cards)
@@ -638,8 +664,7 @@ class GoogleMapsScraper:
 
         except Exception as e:
             logger.error(f"  Erreur scrape {city_name}: {e}")
-            # En cas d'erreur Chromium, recycler le driver
-            if "unknown error" in str(e).lower() or "crashed" in str(e).lower():
+            if isinstance(e, WebDriverException) or "unknown error" in str(e).lower() or "crashed" in str(e).lower():
                 logger.warning(f"  Erreur Chromium détectée, recyclage du driver...")
                 self.close()
                 self.driver = None
