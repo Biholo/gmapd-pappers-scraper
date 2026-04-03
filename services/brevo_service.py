@@ -1,7 +1,11 @@
 import os
 import time
+import logging
 import requests
 from typing import Any, Dict, List, Optional
+from datetime import date
+
+logger = logging.getLogger(__name__)
 
 
 class BrevoService:
@@ -122,3 +126,83 @@ class BrevoService:
             params["createdSince"] = created_since
 
         return self._request("GET", "/contacts", params=params)
+
+    def send_to_brevo(self, list_ids: List[int], lead_data: Dict[str, Any], email: str, socials: Dict[str, str], city_id: str, stats: Dict[str, Any], sent_emails: set, is_valid_email_func, format_phone_func) -> bool:
+        """Envoyer un lead vers Brevo si email valide et pas de doublon."""
+        if not list_ids or not email:
+            return False
+
+        email = email.strip().lower()
+
+        if not is_valid_email_func(email):
+            logger.debug(f"    Brevo: email invalide ignore: {email}")
+            return False
+
+        # Dedup local (meme session)
+        if email in sent_emails:
+            logger.debug(f"    Brevo: doublon session ignore: {email}")
+            stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
+            return False
+
+        attributes = {}
+
+        company = lead_data.get("name")
+        if company:
+            attributes["COMPANY"] = company
+            attributes["NOM"] = company
+
+        phone = lead_data.get("phone")
+        if phone:
+            attributes["TEL"] = phone
+            formatted_phone = format_phone_func(phone)
+            if formatted_phone:
+                attributes["SMS"] = formatted_phone
+                attributes["LANDLINE_NUMBER"] = formatted_phone
+
+        address = lead_data.get("address")
+        if address:
+            attributes["ADDRESS"] = address
+
+        website = lead_data.get("website")
+        if website:
+            attributes["WEBSITE_URL"] = website
+
+        if city_id:
+            attributes["CITY_ID"] = str(city_id)
+
+        if lead_data.get("numberOfRate") is not None:
+            attributes["NUMBER_OF_RATE"] = lead_data.get("numberOfRate")
+
+        if lead_data.get("averageRate") is not None:
+            attributes["AVERAGE_RATE"] = lead_data.get("averageRate")
+
+        attributes["SCRAPED_AT"] = date.today().strftime("%d/%m/%Y")
+
+        if socials:
+            if socials.get("instagramUrl"):
+                attributes["INSTAGRAM_URL"] = socials.get("instagramUrl")
+            if socials.get("facebookUrl"):
+                attributes["FACEBOOK_URL"] = socials.get("facebookUrl")
+            if socials.get("xUrl"):
+                attributes["X_URL"] = socials.get("xUrl")
+
+        try:
+            self.create_contact(
+                email=email,
+                attributes=attributes,
+                list_ids=list_ids,
+                update_enabled=True,
+            )
+            sent_emails.add(email)
+            stats["gmaps_brevo_sent"] = stats.get("gmaps_brevo_sent", 0) + 1
+            logger.info(f"    Brevo: {email} ajoute aux listes {list_ids}")
+            return True
+        except Exception as e:
+            err = str(e)
+            if "duplicate" in err.lower() or "already" in err.lower() or "Contact already exist" in err:
+                sent_emails.add(email)
+                stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
+                logger.info(f"    Brevo: {email} deja existant (doublon)")
+                return False
+            logger.warning(f"    Brevo: erreur ajout {email}: {e}")
+            return False

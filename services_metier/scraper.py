@@ -574,6 +574,11 @@ class GoogleMapsScraper:
                                 logger.debug(f"    Enrichment error: {e}")
                         else:
                             logger.info(f"    Email: - (pas de site web)")
+                            if on_lead_enriched:
+                                try:
+                                    on_lead_enriched(lead_data, None, None)
+                                except Exception as cb_err:
+                                    logger.debug(f"    Callback error: {cb_err}")
                     else:
                         logger.warning(f"  [{idx+1}/{total_cards}] Aucune donnee extraite, skip")
 

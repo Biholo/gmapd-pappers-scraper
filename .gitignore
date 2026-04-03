@@ -1,1 +1,3 @@
 .env
+/logs/*
+/config/google_credentials.json

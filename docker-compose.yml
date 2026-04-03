@@ -20,11 +20,12 @@ services:
     env_file: .env
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - GOOGLE_SHEETS_MASTER_SPREADSHEET_ID=${GOOGLE_SHEETS_MASTER_SPREADSHEET_ID}
     volumes:
       - ./csv:/app/csv
       - ./logs:/app/logs
       - ./config:/app/config
-    restart: "no"
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -34,6 +35,7 @@ services:
       - scraper-net
 
   # --- Scraper SCI / Pappers (Playwright) ---
+  # Lancé uniquement par le scheduler via cron
   sci:
     build: .
     image: scraping-lead:latest
@@ -46,6 +48,8 @@ services:
       - ./csv:/app/csv
       - ./logs:/app/logs
     restart: "no"
+    profiles:
+      - cron-only
     deploy:
       resources:
         limits:
@@ -55,6 +59,7 @@ services:
       - scraper-net
 
   # --- Scraper Societes SASU/SAS/EURL/SARL (Playwright) ---
+  # Lancé uniquement par le scheduler via cron
   company:
     build: .
     image: scraping-lead:latest
@@ -67,6 +72,8 @@ services:
       - ./csv:/app/csv
       - ./logs:/app/logs
     restart: "no"
+    profiles:
+      - cron-only
     deploy:
       resources:
         limits:
@@ -76,6 +83,7 @@ services:
       - scraper-net
 
   # --- Transfert GetSales -> Brevo ---
+  # Lancé uniquement par le scheduler via cron
   transfer:
     build: .
     image: scraping-lead:latest
@@ -87,6 +95,8 @@ services:
     volumes:
       - ./logs:/app/logs
     restart: "no"
+    profiles:
+      - cron-only
     networks:
       - scraper-net
 
@@ -99,7 +109,6 @@ services:
     env_file: .env
     environment:
       - TZ=Europe/Paris
-      - CRON_GMAPS=${CRON_GMAPS:-0 2,6,10,14 * * *;30 20 * * *}
       - CRON_SCI=${CRON_SCI:-15 10 * * *}
       - CRON_COMPANY=${CRON_COMPANY:-20 19 * * *}
       - CRON_TRANSFER=${CRON_TRANSFER:-30 14 * * *}

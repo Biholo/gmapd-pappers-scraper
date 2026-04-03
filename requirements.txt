@@ -11,5 +11,9 @@ selenium>=4.24.0
 # Playwright (scraper SCI Pappers)
 playwright>=1.40.0
 
+# Google Sheets
+gspread>=6.0.0
+google-auth>=2.28.0
+
 # Email (rapport scraping)
 resend>=2.0.0

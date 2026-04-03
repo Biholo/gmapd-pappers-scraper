@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from services.supabase_client import SupabaseClient
 from services.brevo_service import BrevoService
+from services.gsheets_service import GoogleSheetsService
 from services_metier.scraper import GoogleMapsScraper
 
 # Configuration du logging
@@ -158,89 +159,31 @@ def format_phone_fr(phone: str) -> str:
     return p
 
 
-def send_to_brevo(brevo_service, list_ids, lead_data, email, socials, city_id, stats):
-    """Envoyer un lead vers Brevo si email valide et pas de doublon."""
-    if not brevo_service or not list_ids or not email:
-        return False
-
-    email = email.strip().lower()
-
-    if not is_valid_email(email):
-        logger.debug(f"    Brevo: email invalide ignore: {email}")
-        return False
-
-    # Dedup local (meme session)
-    if email in _sent_emails:
-        logger.debug(f"    Brevo: doublon session ignore: {email}")
-        stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
-        save_daily_stats(stats)
-        return False
-
-    attributes = {}
-    
-    company = lead_data.get("name")
-    if company:
-        attributes["COMPANY"] = company
-        attributes["NOM"] = company  # Maps company to NOM as fallback
-        
+def process_lead(lead_data, email, socials, city_name, city_id, brevo_svc, list_ids, gsheets_svc, niche_name, stats, department):
+    """Gérer l'envoi vers Brevo (avec email) OU vers Google Sheets (téléphone sans site web)."""
     phone = lead_data.get("phone")
-    if phone:
-        attributes["TEL"] = phone
-        formatted_phone = format_phone_fr(phone)
-        if formatted_phone:
-            attributes["SMS"] = formatted_phone
-            attributes["LANDLINE_NUMBER"] = formatted_phone
-            
-    address = lead_data.get("address")
-    if address:
-        attributes["ADDRESS"] = address
-        
     website = lead_data.get("website")
-    if website:
-        attributes["WEBSITE_URL"] = website
-        
-    if city_id:
-        attributes["CITY_ID"] = str(city_id)
-        
-    if lead_data.get("numberOfRate") is not None:
-        attributes["NUMBER_OF_RATE"] = lead_data.get("numberOfRate")
-        
-    if lead_data.get("averageRate") is not None:
-        attributes["AVERAGE_RATE"] = lead_data.get("averageRate")
-        
-    attributes["SCRAPED_AT"] = date.today().strftime("%d/%m/%Y")
-    
-    if socials:
-        if socials.get("instagramUrl"):
-            attributes["INSTAGRAM_URL"] = socials.get("instagramUrl")
-        if socials.get("facebookUrl"):
-            attributes["FACEBOOK_URL"] = socials.get("facebookUrl")
-        if socials.get("xUrl"):
-            attributes["X_URL"] = socials.get("xUrl")
 
-    try:
-        brevo_service.create_contact(
-            email=email,
-            attributes=attributes,
-            list_ids=list_ids,
-            update_enabled=True,  # Brevo gere le conflit : met a jour si existe deja
-        )
-        _sent_emails.add(email)
-        stats["gmaps_brevo_sent"] = stats.get("gmaps_brevo_sent", 0) + 1
-        save_daily_stats(stats)
-        logger.info(f"    Brevo: {email} ajoute aux listes {list_ids}")
-        return True
-    except Exception as e:
-        err = str(e)
-        if "duplicate" in err.lower() or "already" in err.lower() or "Contact already exist" in err:
-            _sent_emails.add(email)
-            stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
+    # Flag pour savoir si on a traité le lead d'une manière ou d'une autre
+    processed = False
+
+    # 1. Si pas de site web MAIS un numéro de téléphone -> Google Sheets
+    # Indépendant de Brevo
+    if phone and not website:
+        # On passe _sent_emails car la fonction l'attend, mais la logique des doublons 
+        # utilise get_existing_phones dans gsheets_svc
+        if gsheets_svc and gsheets_svc.send_to_gsheets(niche_name, lead_data, email, city_name, department, _sent_emails):
+            processed = True
+
+    # 2. Si on a un email (qu'il y ait un site ou non, la logique initiale est conservée pour Brevo)
+    # Indépendant de Google Sheets
+    if email:
+        # Pour Brevo, la déduplication en session est toujours nécessaire (gérée dans send_to_brevo)
+        if brevo_svc.send_to_brevo(list_ids, lead_data, email, socials, city_id, stats, _sent_emails, is_valid_email, format_phone_fr):
             save_daily_stats(stats)
-            logger.info(f"    Brevo: {email} deja existant (doublon)")
-            return False
-        logger.warning(f"    Brevo: erreur ajout {email}: {e}")
-        return False
+            processed = True
 
+    return processed
 
 def main():
     config = load_gmaps_config()
@@ -270,9 +213,20 @@ def main():
         logger.error(f"Erreur Supabase: {e}")
         return
 
-    # Pre-initialiser les services Brevo par niche
+    # Pre-initialiser les services Brevo et GSheets par niche
     brevo_services = {}
     brevo_list_ids_map = {}
+
+    logger.info("Initialisation du service Google Sheets...")
+    gsheets_service = GoogleSheetsService()
+
+    if not getattr(gsheets_service, "client", None) or not getattr(gsheets_service, "main_spreadsheet", None):
+        logger.warning("Google Sheets n'a pas pu être initialisé. Les leads sans site ne seront pas envoyés au Google Sheet.")
+        logger.warning("Vérifiez que config/google_credentials.json existe et que GOOGLE_SHEETS_MASTER_SPREADSHEET_ID est configuré.")
+        gsheets_service = None
+
+    caller_name = settings.get("CALLER_NAME", "Léa")
+
     for niche_cfg in niches_config:
         name = niche_cfg["name"]
         brevo_services[name] = get_brevo_service_for_niche(niche_cfg)
@@ -281,6 +235,12 @@ def main():
             logger.info(f"  Brevo OK pour {name} -> listes {brevo_list_ids_map[name]} ({niche_cfg['brevo_api_key_env']})")
         else:
             logger.warning(f"  Brevo NON CONFIGURE pour {name}")
+
+        if gsheets_service and gsheets_service.main_spreadsheet:
+            logger.info(f"  GSheets OK pour {name} -> spreadsheet principal configuré")
+            gsheets_service.ensure_sheet_exists(name)
+        else:
+            logger.warning(f"  GSheets NON CONFIGURE pour {name}")
 
     # Initialiser le scraper
     scraper = GoogleMapsScraper(headless=HEADLESS, max_scrolls=MAX_SCROLLS)
@@ -356,11 +316,16 @@ def main():
                     logger.info(f"  [{city_name}] Scraping...")
 
                     try:
+                        def handle_lead(lead_data, email, socials, niche=niche_name, city=city_name, cid=city_id, brevo=brevo_svc, lists=list_ids):
+                            return process_lead(
+                                lead_data, email, socials, city, cid,
+                                brevo, lists, gsheets_service,
+                                niche, stats, caller_name
+                            )
+
                         scraper.scrape(
                             city_name, city_id, search_query,
-                            on_lead_enriched=lambda lead_data, email, socials: (
-                                send_to_brevo(brevo_svc, list_ids, lead_data, email, socials, city_id, stats) if email else False
-                            )
+                            on_lead_enriched=handle_lead
                         )
 
                         total_scrapes += 1

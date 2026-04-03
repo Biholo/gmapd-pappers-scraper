@@ -77,12 +77,10 @@ case "${1:-help}" in
         ;;
 
     cron)
-        echo "[$(date)] Démarrage du scheduler cron..."
+        echo "[$(date)] Démarrage du scheduler intelligent..."
         link_state
 
         # Générer le crontab depuis les variables d'environnement
-        # Split GMAPS crons si multiples (séparés par ;)
-        CRON_GMAPS="${CRON_GMAPS:-0 2,6,10,14 * * *;30 20 * * *}"
         CRON_SCI="${CRON_SCI:-15 10 * * *}"
         CRON_COMPANY="${CRON_COMPANY:-20 19 * * *}"
         CRON_TRANSFER="${CRON_TRANSFER:-30 14 * * *}"
@@ -94,15 +92,6 @@ case "${1:-help}" in
         cat > /etc/cron.d/scrapers <<EOF
 SHELL=/bin/bash
 DISPLAY=:99
-
-# Scraper Google Maps
-EOF
-        IFS=';' read -ra GMAPS_CRONS <<< "$CRON_GMAPS"
-        for cron_expr in "${GMAPS_CRONS[@]}"; do
-            echo "${cron_expr} root cd /app && python -u scripts/scraper_gmaps.py >> /app/logs/gmaps_cron.log 2>&1" >> /etc/cron.d/scrapers
-        done
-
-        cat >> /etc/cron.d/scrapers <<EOF
 
 # Scraper SCI
 ${CRON_SCI} root cd /app && python -u scripts/scraper_pappers.py --mode production --type sci --send-email >> /app/logs/sci_cron.log 2>&1
@@ -121,15 +110,18 @@ EOF
         crontab /etc/cron.d/scrapers
 
         echo "Cron configuré :"
-        echo "  Google Maps      : ${CRON_GMAPS}"
         echo "  SCI/Pappers      : ${CRON_SCI}"
         echo "  Societes         : ${CRON_COMPANY}"
         echo "  Transfert Brevo  : ${CRON_TRANSFER}"
         echo "  Recap quotidien  : ${CRON_RECAP}"
         echo "Logs dans /app/logs/"
 
-        # Lancer cron au premier plan
-        exec cron -f
+        # Lancer cron en arrière-plan (pour les crons)
+        cron &
+        CRON_PID=$!
+        
+        # Lancer le scheduler Python intelligent en avant-plan
+        exec python -u scripts/scheduler.py
         ;;
 
     shell|bash)
