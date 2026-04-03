@@ -119,7 +119,6 @@ services:
       - CRON_TRANSFER=${CRON_TRANSFER:-30 14 * * *}
       - CRON_RECAP=${CRON_RECAP:-0 23 * * *}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - GMAPS_HEADLESS=true
     volumes:
       - ./csv:/app/csv
       - ./logs:/app/logs
