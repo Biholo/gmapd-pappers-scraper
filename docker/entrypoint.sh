@@ -41,25 +41,25 @@ case "${1:-help}" in
     gmaps)
         echo "[$(date)] Lancement du scraper Google Maps..."
         link_state
-        exec python -u scripts/scraper_gmaps.py 2>&1 | tee /app/logs/gmaps_$(date +%Y%m%d_%H%M%S).log
+        python -u scripts/scraper_gmaps.py 2>&1 | tee /app/logs/gmaps_$(date +%Y%m%d_%H%M%S).log
         ;;
 
     sci)
         echo "[$(date)] Lancement du scraper SCI/Pappers (mode production)..."
         link_state
-        exec python -u scripts/scraper_pappers.py --mode production --type sci --send-email 2>&1 | tee /app/logs/sci_$(date +%Y%m%d_%H%M%S).log
+        python -u scripts/scraper_pappers.py --mode production --type sci --send-email 2>&1 | tee /app/logs/sci_$(date +%Y%m%d_%H%M%S).log
         ;;
 
     company)
         echo "[$(date)] Lancement du scraper Societes SASU/SAS/EURL/SARL (mode production)..."
         link_state
-        exec python -u scripts/scraper_pappers.py --mode production --type company --send-email 2>&1 | tee /app/logs/company_$(date +%Y%m%d_%H%M%S).log
+        python -u scripts/scraper_pappers.py --mode production --type company --send-email 2>&1 | tee /app/logs/company_$(date +%Y%m%d_%H%M%S).log
         ;;
 
     transfer)
         echo "[$(date)] Lancement du transfert GetSales -> Brevo..."
         link_state
-        exec python -u scripts/lead_transfer.py getsales-to-brevo 2>&1 | tee /app/logs/transfer_$(date +%Y%m%d_%H%M%S).log
+        python -u scripts/lead_transfer.py getsales-to-brevo 2>&1 | tee /app/logs/transfer_$(date +%Y%m%d_%H%M%S).log
         ;;
 
     brevo-transfer)
@@ -86,24 +86,31 @@ case "${1:-help}" in
         CRON_TRANSFER="${CRON_TRANSFER:-30 14 * * *}"
         CRON_RECAP="${CRON_RECAP:-0 23 * * *}"
 
-        # Exporter toutes les variables d'env pour cron
-        printenv | grep -v "no_proxy" >> /etc/environment
+        # Exporter toutes les variables d'env dans un fichier sourceable pour cron
+        # (printenv >> /etc/environment est peu fiable pour les valeurs avec espaces/caractères spéciaux)
+        python3 -c "
+import os, shlex
+for k, v in os.environ.items():
+    if k not in ('_', 'SHLVL'):
+        print(f'export {k}={shlex.quote(v)}')
+" > /app/.env_cron
+        chmod 644 /app/.env_cron
 
         cat > /etc/cron.d/scrapers <<EOF
 SHELL=/bin/bash
 DISPLAY=:99
 
 # Scraper SCI
-${CRON_SCI} root cd /app && python -u scripts/scraper_pappers.py --mode production --type sci --send-email >> /app/logs/sci_cron.log 2>&1
+${CRON_SCI} root bash -c '. /app/.env_cron && cd /app && python -u scripts/scraper_pappers.py --mode production --type sci --send-email >> /app/logs/sci_cron.log 2>&1'
 
 # Scraper Societes (SASU/SAS/EURL/SARL)
-${CRON_COMPANY} root cd /app && python -u scripts/scraper_pappers.py --mode production --type company --send-email >> /app/logs/company_cron.log 2>&1
+${CRON_COMPANY} root bash -c '. /app/.env_cron && cd /app && python -u scripts/scraper_pappers.py --mode production --type company --send-email >> /app/logs/company_cron.log 2>&1'
 
 # Transfert GetSales -> Brevo
-${CRON_TRANSFER} root cd /app && python -u scripts/lead_transfer.py getsales-to-brevo >> /app/logs/transfer_cron.log 2>&1
+${CRON_TRANSFER} root bash -c '. /app/.env_cron && cd /app && python -u scripts/lead_transfer.py getsales-to-brevo >> /app/logs/transfer_cron.log 2>&1'
 
-# Recap quotidien (22h)
-${CRON_RECAP} root cd /app && python -u scripts/daily_recap.py --send-email >> /app/logs/recap_cron.log 2>&1
+# Recap quotidien
+${CRON_RECAP} root bash -c '. /app/.env_cron && cd /app && python -u scripts/daily_recap.py --send-email >> /app/logs/recap_cron.log 2>&1'
 EOF
 
         chmod 0644 /etc/cron.d/scrapers

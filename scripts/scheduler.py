@@ -109,15 +109,15 @@ def main():
                 # Vérifier si gmaps est vraiment arrêté
                 if not is_process_running('scraper_gmaps.py'):
                     logger.info("Aucun processus bloquant en cours, lancement de gmaps...")
-                    if launch_gmaps():
-                        gmaps_running = True
-                        time.sleep(5)  # Attendre un peu avant la prochaine vérification
-                    else:
-                        time.sleep(check_interval)
+                    launch_gmaps()
+                    # subprocess.run est bloquant : quand on arrive ici, gmaps est terminé
+                    gmaps_running = False
+                    time.sleep(check_interval)
                 else:
                     gmaps_running = True
-            
-            time.sleep(check_interval)
+                    time.sleep(check_interval)
+            else:
+                time.sleep(check_interval)
             
         except KeyboardInterrupt:
             logger.info("Arrêt du scheduler...")

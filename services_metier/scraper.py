@@ -71,6 +71,7 @@ class GoogleMapsScraper:
         opts.add_argument("--no-zygote")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-software-rasterizer")
         opts.add_argument("--lang=fr-FR")
         opts.add_argument("--disable-blink-features=AutomationControlled")

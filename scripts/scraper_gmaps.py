@@ -8,6 +8,7 @@ import os
 import re
 import json
 import time
+import random
 import logging
 from pathlib import Path
 from datetime import date
@@ -269,96 +270,87 @@ def main():
             # Recharger la config à chaque tour pour avoir les dernières données
             config = load_gmaps_config()
             niches_config = config.get("niches", [])
-            
-            # Vérifier s'il reste du travail dans au moins une niche
-            work_remaining = False
-            for niche_cfg in niches_config:
-                if niche_cfg.get("departments", []):
-                    work_remaining = True
-                    break
-                    
-            if not work_remaining:
+
+            # Niches qui ont encore des départements à scraper
+            available = [(idx, cfg) for idx, cfg in enumerate(niches_config) if cfg.get("departments")]
+
+            if not available:
                 logger.info("Tous les départements de toutes les niches ont été traités.")
                 break
-                
-            # Parcourir chaque niche pour traiter 1 seul département
-            for niche_idx, niche_cfg in enumerate(niches_config):
-                niche_name = niche_cfg["name"]
-                search_query = niche_cfg["search_query"]
-                remaining_depts = niche_cfg.get("departments", [])
 
-                if not remaining_depts:
+            # Sélection aléatoire d'une niche puis d'un département
+            niche_idx, niche_cfg = random.choice(available)
+            niche_name = niche_cfg["name"]
+            search_query = niche_cfg["search_query"]
+            remaining_depts = niche_cfg["departments"]
+            dept_code = random.choice(remaining_depts)
+
+            logger.info(f"\n{'=' * 80}")
+            logger.info(f"NICHE: {niche_name} (query: {search_query})")
+            logger.info(f"Departements restants: {len(remaining_depts)}")
+            logger.info("=" * 80)
+
+            brevo_svc = brevo_services.get(niche_name)
+            list_ids = brevo_list_ids_map.get(niche_name, [])
+
+            logger.info(f"\n--- Departement {dept_code} / {niche_name} ---")
+
+            # Recuperer les villes du departement
+            try:
+                cities = supabase.get_cities_by_department(dept_code)
+                logger.info(f"  {len(cities)} villes trouvees")
+            except Exception as e:
+                logger.error(f"  Erreur chargement villes dept {dept_code}: {e}")
+                continue
+
+            if not cities:
+                logger.info("  Aucune ville, on marque comme termine")
+                mark_department_done(config, niche_idx, dept_code)
+                continue
+
+            for city in cities:
+                if time.time() - start_time > MAX_SESSION_DURATION:
+                    logger.info("Limite de temps (2h30) atteinte. Arret de la session.")
+                    return
+
+                city_name = city['name']
+                city_id = city['id']
+
+                if scraper.is_already_scraped(city_id, search_query):
                     continue
 
-                logger.info(f"\n{'=' * 80}")
-                logger.info(f"NICHE: {niche_name} (query: {search_query})")
-                logger.info(f"Departements restants: {len(remaining_depts)}")
-                logger.info("=" * 80)
+                logger.info(f"  [{city_name}] Scraping...")
 
-                brevo_svc = brevo_services.get(niche_name)
-                list_ids = brevo_list_ids_map.get(niche_name, [])
-
-                # Prendre uniquement le PREMIER département de la liste
-                dept_code = remaining_depts[0]
-                logger.info(f"\n--- Departement {dept_code} / {niche_name} ---")
-
-                # Recuperer les villes du departement
                 try:
-                    cities = supabase.get_cities_by_department(dept_code)
-                    logger.info(f"  {len(cities)} villes trouvees")
-                except Exception as e:
-                    logger.error(f"  Erreur chargement villes dept {dept_code}: {e}")
-                    # En cas d'erreur, on passe à la niche suivante mais on ne marque pas le dept comme fait
-                    continue
-
-                if not cities:
-                    logger.info("  Aucune ville, on marque comme termine")
-                    mark_department_done(config, niche_idx, dept_code)
-                    continue
-
-                for city in cities:
-                    if time.time() - start_time > MAX_SESSION_DURATION:
-                        logger.info("Limite de temps (2h30) atteinte. Arret de la session.")
-                        return
-
-                    city_name = city['name']
-                    city_id = city['id']
-
-                    if scraper.is_already_scraped(city_id, search_query):
-                        continue
-
-                    logger.info(f"  [{city_name}] Scraping...")
-
-                    try:
-                        gsheets_rule = niche_cfg.get("gsheets_rule", "no_website")
-                        def handle_lead(lead_data, email, socials, niche=niche_name, city=city_name, cid=city_id, brevo=brevo_svc, lists=list_ids, dept=dept_code, rule=gsheets_rule):
-                            return process_lead(
-                                lead_data, email, socials, city, cid,
-                                brevo, lists, gsheets_service,
-                                niche, stats, dept, rule
-                            )
-
-                        scraper.scrape(
-                            city_name, city_id, search_query,
-                            on_lead_enriched=handle_lead
+                    gsheets_rule = niche_cfg.get("gsheets_rule", "no_website")
+                    def handle_lead(lead_data, email, socials, niche=niche_name, city=city_name, cid=city_id, brevo=brevo_svc, lists=list_ids, dept=dept_code, rule=gsheets_rule):
+                        return process_lead(
+                            lead_data, email, socials, city, cid,
+                            brevo, lists, gsheets_service,
+                            niche, stats, dept, rule
                         )
 
-                        total_scrapes += 1
-                        stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
-                        save_daily_stats(stats)
-                        successful_scrapes += 1
+                    scraper.scrape(
+                        city_name, city_id, search_query,
+                        on_lead_enriched=handle_lead
+                    )
 
-                        time.sleep(DELAY_BETWEEN_CITIES)
+                    total_scrapes += 1
+                    stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
+                    save_daily_stats(stats)
+                    successful_scrapes += 1
 
-                    except Exception as e:
-                        failed_scrapes += 1
-                        logger.error(f"  Erreur {city_name}: {e}")
-                        continue
+                    time.sleep(DELAY_BETWEEN_CITIES)
 
-                # Departement termine -> retirer de la config
-                mark_department_done(config, niche_idx, dept_code)
-                logger.info(f"Département {dept_code} terminé pour la niche {niche_name}. Passage à la niche suivante...")
-                time.sleep(DELAY_BETWEEN_NICHES)
+                except Exception as e:
+                    failed_scrapes += 1
+                    logger.error(f"  Erreur {city_name}: {e}")
+                    continue
+
+            # Departement termine -> retirer de la config
+            mark_department_done(config, niche_idx, dept_code)
+            logger.info(f"Département {dept_code} terminé pour la niche {niche_name}.")
+            time.sleep(DELAY_BETWEEN_NICHES)
 
     finally:
         scraper.close()

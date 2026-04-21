@@ -95,6 +95,18 @@ class GetSalesService:
         endpoint = f"/flows/api/flows/{f_uuid}/leads/{lead_uuid}"
         return self._make_request("POST", endpoint, {}, attempt_fallback=False)
 
+    def add_lead_to_multiple_flows(self, lead_uuid: str, flow_uuids: List[str]) -> Dict[str, Any]:
+        """Ajoute un lead à plusieurs automatisations (flows)"""
+        results = {}
+        for flow_uuid in flow_uuids:
+            if flow_uuid:
+                try:
+                    endpoint = f"/flows/api/flows/{flow_uuid}/leads/{lead_uuid}"
+                    results[flow_uuid] = self._make_request("POST", endpoint, {}, attempt_fallback=False)
+                except Exception as e:
+                    results[flow_uuid] = {"error": str(e)}
+        return results
+
     def search_leads(self, list_uuid: str, created_at_from: str, created_at_to: str, limit: int = 100) -> List[Dict[str, Any]]:
         """Recherche des leads dans une liste spécifique pour une plage de dates.
         
@@ -233,11 +245,23 @@ class GetSalesService:
                 logger = logging.getLogger(__name__)
                 logger.warning(f"Erreur lors de l'ajout à l'enrichissement pour {lead_uuid}: {e}")
                 
-            # 5. Ajouter à l'automatisation (flow) pour le Add SCI Owner
+            # 5. Ajouter à l'automatisation (flow) appropriée selon la liste
             try:
+                flows_to_add = []
+                
+                # Déterminer le flow par défaut (SCI Owner)
                 flow_uuid = os.environ.get("GETSALES_FLOW_ADD_SCI_OWNER_UUID")
                 if flow_uuid:
-                    self.add_lead_to_flow(lead_uuid, flow_uuid=flow_uuid)
+                    flows_to_add.append(flow_uuid)
+                
+                # Si le lead est dans la liste NEW_COMPANY, ajouter aussi le flow NEW_COMPANY
+                if self.list_uuid == os.environ.get("GETSALES_NEW_COMPANY_LIST_UUID"):
+                    new_company_flow = os.environ.get("GETSALES_FLOW_CONTACT_NEW_COMPANY")
+                    if new_company_flow:
+                        flows_to_add.append(new_company_flow)
+                
+                if flows_to_add:
+                    self.add_lead_to_multiple_flows(lead_uuid, flows_to_add)
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
