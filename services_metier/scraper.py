@@ -89,6 +89,7 @@ class GoogleMapsScraper:
         opts.add_argument("--no-zygote")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--no-sandbox")
+        opts.add_argument("--single-process")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-software-rasterizer")
         opts.add_argument("--lang=fr-FR")
@@ -113,6 +114,12 @@ class GoogleMapsScraper:
         opts.add_argument("--disable-background-timer-throttling")
         opts.add_argument("--disable-renderer-backgrounding")
         opts.add_argument("--disable-preconnect")
+        # VPS stability: disable GPU-related features that crash in headless containers
+        opts.add_argument("--disable-accelerated-2d-canvas")
+        opts.add_argument("--disable-webgl")
+        opts.add_argument("--disable-webgl2")
+        opts.add_argument("--disable-3d-apis")
+        opts.add_argument("--renderer-process-limit=1")
         # Limite mémoire
         opts.add_argument("--memory-pressure-off")
         opts.add_experimental_option("excludeSwitches", ["enable-automation"])

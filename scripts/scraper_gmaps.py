@@ -185,7 +185,7 @@ def main():
     logger.info("=" * 80)
 
     start_time = time.time()
-    MAX_SESSION_DURATION = 2.5 * 3600
+    max_session_duration = 2.5 * 3600
 
     try:
         supabase = SupabaseClient()
@@ -220,7 +220,7 @@ def main():
 
     try:
         while True:
-            if time.time() - start_time > MAX_SESSION_DURATION:
+            if time.time() - start_time > max_session_duration:
                 logger.info("Limite de temps (2h30) atteinte. Arret.")
                 break
 
@@ -229,53 +229,63 @@ def main():
                 logger.info("Aucune mission pending. Arret.")
                 break
 
-            niche_groups = defaultdict(list)
+            # Build batch: one random city per niche, shuffled — guarantees niche diversity
+            niche_groups: defaultdict = defaultdict(list)
             for m in missions:
                 niche_groups[m["niche"]].append(m)
-            chosen_niche = random.choice(list(niche_groups.keys()))
-            mission = random.choice(niche_groups[chosen_niche])
-            niche_name = mission["niche"]
-            city_id = mission["city_id"]
-            city_name = mission["name"]
-            dept_code = mission.get("department_code", "")
+            batch = [random.choice(cities) for cities in niche_groups.values()]
+            random.shuffle(batch)
+            logger.info(f"Batch: {len(batch)} niches — {' | '.join(m['niche'] for m in batch)}")
 
-            if scraper.is_already_scraped(city_id, niche_name):
-                supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=0)
-                continue
+            for mission in batch:
+                if time.time() - start_time > max_session_duration:
+                    logger.info("Limite de temps (2h30) atteinte. Arret.")
+                    break
 
-            logger.info(f"\n{'=' * 80}")
-            logger.info(f"MISSION: {niche_name} / {city_name} (dept {dept_code})")
-            logger.info("=" * 80)
+                niche_name = mission["niche"]
+                city_id = mission["city_id"]
+                city_name = mission["name"]
+                dept_code = mission.get("department_code", "")
 
-            city_leads_sent = 0
+                if scraper.is_already_scraped(city_id, niche_name):
+                    supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=0)
+                    continue
 
-            def handle_lead(lead_data, email, socials,
-                            _niche=niche_name, _city=city_name, _cid=city_id,
-                            _brevo=brevo_svc, _dept=dept_code):
-                nonlocal city_leads_sent
-                result = process_lead(
-                    lead_data, email, socials, _city, _cid,
-                    _brevo, gsheets_service,
-                    _niche, stats, _dept
-                )
-                if result:
-                    city_leads_sent += 1
-                return result
+                logger.info(f"\n{'=' * 80}")
+                logger.info(f"MISSION: {niche_name} / {city_name} (dept {dept_code})")
+                logger.info("=" * 80)
 
-            try:
-                scraper.scrape(city_name, city_id, niche_name, on_lead_enriched=handle_lead)
-                supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=city_leads_sent)
-                stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
-                save_daily_stats(stats)
-                successful_scrapes += 1
-                total_scrapes += 1
-                time.sleep(DELAY_BETWEEN_CITIES)
+                city_leads_sent = 0
 
-            except Exception as e:
-                failed_scrapes += 1
-                logger.error(f"Erreur {city_name}/{niche_name}: {e}")
-                supabase.update_scrape_progress(niche_name, city_id, "error", error_msg=str(e))
-                continue
+                def handle_lead(lead_data, email, socials,
+                                _niche=niche_name, _city=city_name, _cid=city_id,
+                                _brevo=brevo_svc, _dept=dept_code):
+                    nonlocal city_leads_sent
+                    result = process_lead(
+                        lead_data, email, socials, _city, _cid,
+                        _brevo, gsheets_service,
+                        _niche, stats, _dept
+                    )
+                    if result:
+                        city_leads_sent += 1
+                    return result
+
+                try:
+                    success = scraper.scrape(city_name, city_id, niche_name, on_lead_enriched=handle_lead)
+                    if success:
+                        supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=city_leads_sent)
+                        stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
+                        save_daily_stats(stats)
+                        successful_scrapes += 1
+                    else:
+                        supabase.update_scrape_progress(niche_name, city_id, "error", error_msg="Chrome crash during scroll")
+                        failed_scrapes += 1
+                    total_scrapes += 1
+                    time.sleep(DELAY_BETWEEN_CITIES)
+                except Exception as e:
+                    failed_scrapes += 1
+                    logger.error(f"Erreur {city_name}/{niche_name}: {e}")
+                    supabase.update_scrape_progress(niche_name, city_id, "error", error_msg=str(e))
 
     finally:
         scraper.close()
