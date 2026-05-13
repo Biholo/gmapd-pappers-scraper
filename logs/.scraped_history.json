@@ -218,61 +218,84 @@
     "IAD"
   ],
   "11162": [
-    "Serrurier"
+    "Serrurier",
+    "Agent immobilier",
+    "Plombier"
   ],
   "11176": [
-    "Serrurier"
+    "Serrurier",
+    "Agent immobilier",
+    "Plombier"
   ],
   "11227": [
-    "Serrurier"
+    "Serrurier",
+    "Agent immobilier",
+    "Plombier"
   ],
   "11232": [
-    "Serrurier"
+    "Serrurier",
+    "Agent immobilier"
   ],
   "11248": [
-    "Serrurier"
+    "Serrurier",
+    "Agent immobilier",
+    "Plombier"
   ],
   "11293": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11317": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11326": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11365": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11373": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11445": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11447": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11451": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11452": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11455": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11463": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11489": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11507": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "11508": [
-    "Serrurier"
+    "Serrurier",
+    "Plombier"
   ],
   "34459": [
     "Experts-comptables"
@@ -3172,45 +3195,276 @@
     "Plombier"
   ],
   "33893": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33897": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33915": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33926": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33959": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33972": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33978": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "33983": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34006": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34012": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34018": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34022": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34046": [
-    "Serrurier"
+    "Serrurier",
+    "Experts-comptables"
   ],
   "34048": [
+    "Serrurier",
+    "Experts-comptables"
+  ],
+  "34080": [
+    "Serrurier",
+    "Experts-comptables"
+  ],
+  "34098": [
+    "Serrurier",
+    "Experts-comptables"
+  ],
+  "34130": [
     "Serrurier"
+  ],
+  "16394": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "16465": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "16527": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "16576": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "15745": [
+    "Plombier"
+  ],
+  "15800": [
+    "Plombier"
+  ],
+  "15840": [
+    "Plombier"
+  ],
+  "15850": [
+    "Plombier"
+  ],
+  "15869": [
+    "Plombier"
+  ],
+  "15970": [
+    "Plombier"
+  ],
+  "11196": [
+    "Agent immobilier",
+    "Plombier"
+  ],
+  "11197": [
+    "Agent immobilier",
+    "Plombier"
+  ],
+  "11336": [
+    "Plombier"
+  ],
+  "10588": [
+    "Plombier"
+  ],
+  "10620": [
+    "Plombier"
+  ],
+  "10622": [
+    "Plombier"
+  ],
+  "10704": [
+    "Plombier"
+  ],
+  "2109": [
+    "Electricien"
+  ],
+  "2166": [
+    "Electricien"
+  ],
+  "2252": [
+    "Electricien"
+  ],
+  "2255": [
+    "Electricien"
+  ],
+  "2272": [
+    "Electricien"
+  ],
+  "2329": [
+    "Electricien"
+  ],
+  "2345": [
+    "Electricien"
+  ],
+  "2399": [
+    "Electricien"
+  ],
+  "2424": [
+    "Electricien"
+  ],
+  "13711": [
+    "IAD"
+  ],
+  "13723": [
+    "IAD"
+  ],
+  "13727": [
+    "IAD"
+  ],
+  "13733": [
+    "IAD"
+  ],
+  "13754": [
+    "IAD"
+  ],
+  "13771": [
+    "IAD"
+  ],
+  "13779": [
+    "IAD"
+  ],
+  "13783": [
+    "IAD"
+  ],
+  "13795": [
+    "IAD"
+  ],
+  "2579": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "2638": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "2681": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "2713": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "2718": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "2750": [
+    "Conseiller en gestion de patrimoine"
+  ],
+  "35607": [
+    "Plombier"
+  ],
+  "35650": [
+    "Plombier"
+  ],
+  "35651": [
+    "Plombier"
+  ],
+  "35696": [
+    "Plombier"
+  ],
+  "34056": [
+    "Experts-comptables"
+  ],
+  "19007": [
+    "Electricien"
+  ],
+  "19044": [
+    "Electricien"
+  ],
+  "19045": [
+    "Electricien"
+  ],
+  "19111": [
+    "Electricien"
+  ],
+  "19114": [
+    "Electricien"
+  ],
+  "19139": [
+    "Electricien"
+  ],
+  "19181": [
+    "Electricien"
+  ],
+  "19233": [
+    "Electricien"
+  ],
+  "19291": [
+    "Electricien"
+  ],
+  "19448": [
+    "Electricien"
+  ],
+  "19450": [
+    "Electricien"
+  ],
+  "10283": [
+    "cgp"
+  ],
+  "10790": [
+    "cgp"
+  ],
+  "10972": [
+    "cgp"
+  ],
+  "10419": [
+    "cgp"
+  ],
+  "10335": [
+    "cgp"
+  ],
+  "10523": [
+    "cgp"
+  ],
+  "10743": [
+    "cgp"
+  ],
+  "10079": [
+    "cgp"
+  ],
+  "10870": [
+    "cgp"
+  ],
+  "10299": [
+    "cgp"
+  ],
+  "10434": [
+    "cgp"
   ]
 }

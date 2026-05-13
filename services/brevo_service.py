@@ -127,9 +127,66 @@ class BrevoService:
 
         return self._request("GET", "/contacts", params=params)
 
+    def _build_lead_attributes(
+        self,
+        lead_data: Dict[str, Any],
+        socials: Dict[str, str],
+        city_id: str,
+        canal_principal: str,
+        formatted_phone: str = "",
+    ) -> Dict[str, Any]:
+        attrs: Dict[str, Any] = {}
+
+        company = lead_data.get("name")
+        if company:
+            attrs["NOM"] = company
+            attrs["COMPANY"] = company
+
+        contact_name = lead_data.get("contact_name")
+        if contact_name:
+            attrs["PRENOM"] = contact_name
+
+        phone = lead_data.get("phone")
+        if phone:
+            attrs["TEL"] = phone
+        if formatted_phone:
+            attrs["SMS"] = formatted_phone
+            attrs["LANDLINE_NUMBER"] = formatted_phone
+
+        if lead_data.get("address"):
+            attrs["ADDRESS"] = lead_data["address"]
+        if lead_data.get("website"):
+            attrs["WEBSITE_URL"] = lead_data["website"]
+        if city_id:
+            attrs["CITY_ID"] = str(city_id)
+        if lead_data.get("numberOfRate") is not None:
+            attrs["NUMBER_OF_RATE"] = lead_data["numberOfRate"]
+        if lead_data.get("averageRate") is not None:
+            attrs["AVERAGE_RATE"] = lead_data["averageRate"]
+        if lead_data.get("google_category"):
+            attrs["CATEGORIE"] = lead_data["google_category"]
+
+        attrs["SCRAPED_AT"] = date.today().strftime("%d/%m/%Y")
+        attrs["CANAL_PRINCIPAL"] = canal_principal
+
+        if lead_data.get("proprietaire"):
+            attrs["PROPRIETAIRE"] = lead_data["proprietaire"]
+        if lead_data.get("google_category"):
+            attrs["JOB_TITLE"] = lead_data["google_category"]
+
+        if socials:
+            if socials.get("instagramUrl"):
+                attrs["INSTAGRAM_URL"] = socials["instagramUrl"]
+            if socials.get("facebookUrl"):
+                attrs["FACEBOOK_URL"] = socials["facebookUrl"]
+            if socials.get("linkedinUrl"):
+                attrs["LINKEDIN"] = socials["linkedinUrl"]
+
+        return attrs
+
     def send_to_brevo(self, list_ids: List[int], lead_data: Dict[str, Any], email: str, socials: Dict[str, str], city_id: str, stats: Dict[str, Any], sent_emails: set, is_valid_email_func, format_phone_func) -> bool:
-        """Envoyer un lead vers Brevo si email valide et pas de doublon."""
-        if not list_ids or not email:
+        """Envoyer un lead avec email vers Brevo."""
+        if not email:
             return False
 
         email = email.strip().lower()
@@ -138,64 +195,20 @@ class BrevoService:
             logger.debug(f"    Brevo: email invalide ignore: {email}")
             return False
 
-        # Dedup local (meme session)
         if email in sent_emails:
             logger.debug(f"    Brevo: doublon session ignore: {email}")
             stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
             return False
 
-        attributes = {}
-
-        company = lead_data.get("name")
-        if company:
-            attributes["COMPANY"] = company
-            attributes["NOM"] = company
-
-        phone = lead_data.get("phone")
-        if phone:
-            attributes["TEL"] = phone
-            formatted_phone = format_phone_func(phone)
-            if formatted_phone:
-                attributes["SMS"] = formatted_phone
-                attributes["LANDLINE_NUMBER"] = formatted_phone
-
-        address = lead_data.get("address")
-        if address:
-            attributes["ADDRESS"] = address
-
-        website = lead_data.get("website")
-        if website:
-            attributes["WEBSITE_URL"] = website
-
-        if city_id:
-            attributes["CITY_ID"] = str(city_id)
-
-        if lead_data.get("numberOfRate") is not None:
-            attributes["NUMBER_OF_RATE"] = lead_data.get("numberOfRate")
-
-        if lead_data.get("averageRate") is not None:
-            attributes["AVERAGE_RATE"] = lead_data.get("averageRate")
-
-        attributes["SCRAPED_AT"] = date.today().strftime("%d/%m/%Y")
-
-        if socials:
-            if socials.get("instagramUrl"):
-                attributes["INSTAGRAM_URL"] = socials.get("instagramUrl")
-            if socials.get("facebookUrl"):
-                attributes["FACEBOOK_URL"] = socials.get("facebookUrl")
-            if socials.get("xUrl"):
-                attributes["X_URL"] = socials.get("xUrl")
+        formatted = format_phone_func(lead_data.get("phone") or "")
+        canal = "WHATSAPP" if lead_data.get("has_whatsapp") else "EMAIL"
+        attributes = self._build_lead_attributes(lead_data, socials or {}, city_id, canal, formatted)
 
         try:
-            self.create_contact(
-                email=email,
-                attributes=attributes,
-                list_ids=list_ids,
-                update_enabled=True,
-            )
+            self.create_contact(email=email, attributes=attributes, list_ids=list_ids, update_enabled=True)
             sent_emails.add(email)
             stats["gmaps_brevo_sent"] = stats.get("gmaps_brevo_sent", 0) + 1
-            logger.info(f"    Brevo: {email} ajoute aux listes {list_ids}")
+            logger.info(f"    Brevo: {email} ajoute aux listes {list_ids} [{canal}]")
             return True
         except Exception as e:
             err = str(e)
@@ -205,4 +218,32 @@ class BrevoService:
                 logger.info(f"    Brevo: {email} deja existant (doublon)")
                 return False
             logger.warning(f"    Brevo: erreur ajout {email}: {e}")
+            return False
+
+    def send_phone_to_brevo(self, list_ids: List[int], lead_data: Dict[str, Any], formatted_phone: str, city_id: str, stats: Dict[str, Any], sent_phones: set) -> bool:
+        """Envoyer un lead sans email vers Brevo en utilisant le numéro comme ext_id."""
+        if not formatted_phone:
+            return False
+
+        if formatted_phone in sent_phones:
+            stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
+            return False
+
+        canal = "WHATSAPP" if lead_data.get("has_whatsapp") else "SMS"
+        attributes = self._build_lead_attributes(lead_data, {}, city_id, canal, formatted_phone)
+
+        try:
+            self.create_contact(ext_id=formatted_phone, attributes=attributes, list_ids=list_ids, update_enabled=True)
+            sent_phones.add(formatted_phone)
+            stats["gmaps_brevo_sent"] = stats.get("gmaps_brevo_sent", 0) + 1
+            logger.info(f"    Brevo (phone): {formatted_phone} ajoute aux listes {list_ids} [{canal}]")
+            return True
+        except Exception as e:
+            err = str(e)
+            if "duplicate" in err.lower() or "already" in err.lower():
+                sent_phones.add(formatted_phone)
+                stats["gmaps_brevo_dupes"] = stats.get("gmaps_brevo_dupes", 0) + 1
+                logger.info(f"    Brevo (phone): {formatted_phone} deja existant (doublon)")
+                return False
+            logger.warning(f"    Brevo (phone): erreur {formatted_phone}: {e}")
             return False

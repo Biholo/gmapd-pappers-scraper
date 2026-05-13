@@ -36,17 +36,8 @@ class SupabaseClient:
         except Exception as e:
             raise Exception(f"Failed to fetch cities: {str(e)}")
     
-    def create_lead(self, payload: dict):
-        """
-        Insert a lead into the Supabase database using direct HTTP requests.
-        Handles conflicts by updating existing records based on unique constraints.
-        Supports automatic retry on 429 Rate Limit.
-        """
-        import time
-        max_retries = 3
-        retry_delay = 2
-
-        lead_data = {
+    def _build_lead_data(self, payload: dict) -> dict:
+        return {
             "company": payload.get("company"),
             "niche": payload.get("niche"),
             "city_id": payload.get("cityId"),
@@ -60,26 +51,62 @@ class SupabaseClient:
             "instagram_url": payload.get("instagramUrl"),
             "number_of_rate": payload.get("numberOfRate"),
             "average_rate": payload.get("averageRate"),
+            "is_mobile_phone": payload.get("is_mobile_phone"),
+            "google_category": payload.get("google_category"),
+            "google_maps_url": payload.get("google_maps_url"),
         }
-        
-        lead_data = {k: v for k, v in lead_data.items() if v is not None}
+
+    def _find_lead_by_phone(self, phone: str):
+        try:
+            resp = requests.get(
+                f"{self.base_url}/leads",
+                params={"phone": f"eq.{phone}", "select": "id,phone", "limit": "1"},
+                headers=self.headers,
+                timeout=10,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data[0] if data else None
+        except Exception:
+            return None
+
+    def create_lead(self, payload: dict):
+        """
+        Upsert a lead: update by phone if exists, otherwise insert.
+        Supports automatic retry on 429 Rate Limit.
+        """
+        import time
+        max_retries = 3
+        retry_delay = 2
+
+        lead_data = {k: v for k, v in self._build_lead_data(payload).items() if v is not None}
+        phone = lead_data.get("phone")
+
+        # Update existing lead if phone matches
+        if phone:
+            existing = self._find_lead_by_phone(phone)
+            if existing:
+                try:
+                    self.update_lead({"phone": phone}, lead_data)
+                    return {"status": "updated"}
+                except Exception as e:
+                    raise Exception(f"Failed to update lead by phone: {str(e)}") from e
+
         url = f"{self.base_url}/leads"
-        
-        # resolution=merge-duplicates handles 409 by updating existing record
         upsert_headers = {
-            **self.headers, 
+            **self.headers,
             "Prefer": "return=representation,resolution=merge-duplicates"
         }
 
         for attempt in range(max_retries):
             try:
                 response = requests.post(url, json=lead_data, headers=upsert_headers, timeout=20)
-                
+
                 if response.status_code == 429:
                     if attempt < max_retries - 1:
                         time.sleep(retry_delay * (attempt + 1))
                         continue
-                
+
                 response.raise_for_status()
                 return response.json() if response.content else {"status": "created"}
 
@@ -87,10 +114,10 @@ class SupabaseClient:
                 if e.response.status_code == 409:
                     return {"status": "duplicate", "message": "Handled by merge-duplicates"}
                 if attempt == max_retries - 1:
-                    raise Exception(f"Failed to insert lead (HTTP {e.response.status_code}): {e.response.text}")
+                    raise Exception(f"Failed to insert lead (HTTP {e.response.status_code}): {e.response.text}") from e
             except Exception as e:
                 if attempt == max_retries - 1:
-                    raise Exception(f"Failed to insert lead: {str(e)}")
+                    raise Exception(f"Failed to insert lead: {str(e)}") from e
                 time.sleep(retry_delay)
 
     def update_lead(self, query_params: dict, update_data: dict):
@@ -101,22 +128,72 @@ class SupabaseClient:
         max_retries = 3
         retry_delay = 2
 
-        query_str = "&".join([f"{k}=eq.{v}" for k, v in query_params.items()])
-        url = f"{self.base_url}/leads?{query_str}"
-        
+        url = f"{self.base_url}/leads"
+        filter_params = {k: f"eq.{v}" for k, v in query_params.items()}
+
         for attempt in range(max_retries):
             try:
-                response = requests.patch(url, json=update_data, headers=self.headers, timeout=20)
-                
+                response = requests.patch(url, params=filter_params, json=update_data, headers=self.headers, timeout=20)
+
                 if response.status_code == 429:
                     if attempt < max_retries - 1:
                         time.sleep(retry_delay * (attempt + 1))
                         continue
-                
+
                 response.raise_for_status()
                 return True
+            except requests.HTTPError as e:
+                if attempt == max_retries - 1:
+                    raise Exception(
+                        f"Failed to update lead (HTTP {e.response.status_code}): {e.response.text[:500]}"
+                    ) from e
             except Exception as e:
                 if attempt == max_retries - 1:
                     raise e
                 time.sleep(retry_delay)
         return False
+
+    def get_pending_missions(self):
+        """Fetch pending scrape missions joined with city info."""
+        url = (
+            f"{self.base_url}/scrape_progress"
+            f"?select=niche,city_id,cities(name,department_code)"
+            f"&status=eq.pending"
+        )
+        try:
+            response = requests.get(url, headers=self.headers, timeout=20)
+            response.raise_for_status()
+            rows = response.json()
+            missions = []
+            for row in rows:
+                city = row.get("cities") or {}
+                missions.append({
+                    "niche": row["niche"],
+                    "city_id": row["city_id"],
+                    "name": city.get("name"),
+                    "department_code": city.get("department_code") or "",
+                })
+            return sorted(missions, key=lambda x: (x["niche"], x["department_code"]))
+        except requests.HTTPError as e:
+            raise Exception(f"Failed to fetch pending missions (HTTP {e.response.status_code}): {e.response.text}") from e
+        except Exception as e:
+            raise Exception(f"Failed to fetch pending missions: {str(e)}") from e
+
+    def update_scrape_progress(self, niche: str, city_id: int, status: str,
+                                leads_found: int = None, error_msg: str = None):
+        """Update scrape_progress row after scraping a city."""
+        from datetime import datetime, timezone
+        url = f"{self.base_url}/scrape_progress?niche=eq.{niche}&city_id=eq.{city_id}"
+        body = {
+            "status": status,
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if leads_found is not None:
+            body["leads_found"] = leads_found
+        if error_msg:
+            body["error_msg"] = error_msg[:500]
+        try:
+            response = requests.patch(url, json=body, headers=self.headers, timeout=20)
+            response.raise_for_status()
+        except Exception as e:
+            raise Exception(f"Failed to update scrape_progress: {str(e)}") from e

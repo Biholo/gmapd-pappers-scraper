@@ -18,8 +18,24 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 
 from services.supabase_client import SupabaseClient
+from services.wasender_service import WasenderService
 
 logger = logging.getLogger(__name__)
+
+
+def _is_mobile_phone(phone: str) -> bool:
+    """French mobile: starts with 06, 07, +336, or +337."""
+    if not phone:
+        return False
+    p = phone.replace(" ", "").replace(".", "").replace("-", "")
+    return bool(re.match(r"^(06|07|\+336|\+337)", p))
+
+
+def _format_phone_fr(phone: str) -> str:
+    p = phone.replace(" ", "").replace(".", "").replace("-", "")
+    if p.startswith("0"):
+        p = "+33" + p[1:]
+    return p
 
 CONSENT_BUTTON_XPATHS = [
     "//button[contains(., 'Tout accepter') or contains(., 'Accepter') or contains(., 'Accept all') or contains(., 'I agree')]",
@@ -48,6 +64,8 @@ class GoogleMapsScraper:
         except Exception as e:
             logger.warning(f"Supabase client init failed: {e}")
 
+        self.wasender = WasenderService()
+
     def _load_history(self):
         if os.path.exists(self.history_path):
             try:
@@ -75,6 +93,7 @@ class GoogleMapsScraper:
         opts.add_argument("--disable-software-rasterizer")
         opts.add_argument("--lang=fr-FR")
         opts.add_argument("--disable-blink-features=AutomationControlled")
+        opts.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
         # Optimisations mémoire et stabilité
         opts.add_argument("--disable-extensions")
         opts.add_argument("--disable-plugins")
@@ -183,6 +202,7 @@ class GoogleMapsScraper:
         data = {
             "name": None, "address": None, "phone": None,
             "website": None, "averageRate": None, "numberOfRate": None,
+            "google_category": None,
         }
 
         try:
@@ -229,6 +249,14 @@ class GoogleMapsScraper:
             data["averageRate"] = ratings["averageRate"]
             data["numberOfRate"] = ratings["numberOfRate"]
 
+            try:
+                cat_btn = driver.find_element(By.CSS_SELECTOR, "button.DkEaL")
+                txt = cat_btn.text.strip()
+                if txt:
+                    data["google_category"] = txt
+            except Exception:
+                pass
+
         except Exception as e:
             logger.error(f"  Error extracting from popup: {e}")
 
@@ -256,20 +284,16 @@ class GoogleMapsScraper:
             except Exception:
                 pass
 
-            # Extraction du nombre d'avis via le XPath fourni par l'utilisateur
+            # Extraction du nombre d'avis via aria-label
             try:
-                review_span = WebDriverWait(driver, 2).until(
-                    EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'F7nice')]//span[@role='img' and contains(@aria-label,'avis')]"))
-                )
-                # Le text brut est souvent "(1 251)", on nettoie tout ce qui n'est pas un chiffre
-                txt = review_span.text.strip()
-                if not txt:
-                    # En fallback, l'aria-label contient "1 251 avis"
-                    txt = review_span.get_attribute("aria-label") or ""
-                
-                num_str = re.sub(r'[^\d]', '', txt)
-                if num_str:
-                    data["numberOfRate"] = int(num_str)
+                review_spans = driver.find_elements(By.CSS_SELECTOR, "div.F7nice span[role='img']")
+                for span in review_spans:
+                    label = span.get_attribute("aria-label") or ""
+                    if "avis" in label or "review" in label:
+                        num_str = re.sub(r'[^\d]', '', label)
+                        if num_str:
+                            data["numberOfRate"] = int(num_str)
+                            break
             except Exception:
                 pass
             
@@ -416,7 +440,15 @@ class GoogleMapsScraper:
             payload["cityId"] = str(city_id)
 
         if lead_data.get("phone"):
-            payload["phone"] = lead_data["phone"].strip()
+            phone = lead_data["phone"].strip()
+            payload["phone"] = phone
+            payload["is_mobile_phone"] = _is_mobile_phone(phone)
+
+        if lead_data.get("google_category"):
+            payload["google_category"] = lead_data["google_category"]
+
+        if lead_data.get("google_maps_url"):
+            payload["google_maps_url"] = lead_data["google_maps_url"]
 
         if lead_data.get("averageRate") is not None:
             try:
@@ -456,8 +488,6 @@ class GoogleMapsScraper:
         if socials:
             if socials.get("facebookUrl"):
                 update_data["facebook_url"] = socials["facebookUrl"]
-            if socials.get("xUrl"):
-                update_data["x_url"] = socials["xUrl"]
             if socials.get("linkedinUrl"):
                 update_data["linkedin_url"] = socials["linkedinUrl"]
             if socials.get("instagramUrl"):
@@ -483,6 +513,14 @@ class GoogleMapsScraper:
                 logger.warning(f"    Failed to update enrichment for {company}")
         except Exception as e:
             logger.warning(f"    Failed to update enrichment: {e}")
+
+    def _update_lead_whatsapp(self, phone: str, has_whatsapp: bool):
+        if not self.supabase:
+            return
+        try:
+            self.supabase.update_lead({"phone": phone}, {"has_whatsapp": has_whatsapp})
+        except Exception as e:
+            logger.warning(f"    Failed to update has_whatsapp for {phone}: {e}")
 
     def _mark_done(self, city_id, niche):
         try:
@@ -574,6 +612,7 @@ class GoogleMapsScraper:
                     time.sleep(0.3)
 
                     link = card.find_element(By.CSS_SELECTOR, "a.hfpxzc")
+                    gmaps_url = link.get_attribute("href") or ""
                     self.driver.execute_script("arguments[0].click();", link)
 
                     # Attendre que le panneau detail affiche un nom different
@@ -590,6 +629,8 @@ class GoogleMapsScraper:
                             pass
 
                     lead_data = self._extract_card_details(self.driver, expected_name=expected_name)
+                    if gmaps_url:
+                        lead_data["google_maps_url"] = gmaps_url
 
                     # Fallback nom depuis la card
                     if not lead_data.get("name") and expected_name:
@@ -618,9 +659,16 @@ class GoogleMapsScraper:
                     if any(lead_data.values()):
                         website = lead_data.get("website")
 
-                        push_status = self._post_lead(lead_data, city_id, niche)
+                        self._post_lead(lead_data, city_id, niche)
                         leads_posted += 1
                         previous_name = current_name
+
+                        phone = lead_data.get("phone")
+                        if phone and _is_mobile_phone(phone):
+                            formatted_phone = _format_phone_fr(phone)
+                            has_wa = self.wasender.check_whatsapp(formatted_phone)
+                            lead_data["has_whatsapp"] = has_wa
+                            self._update_lead_whatsapp(phone, has_wa)
 
                         # Même si c'est un doublon Supabase, on veut essayer de l'enrichir et l'envoyer à Brevo
                         # si on n'a pas pu le faire avant (par exemple si le job a crashé ou si on relance pour enrichir)

@@ -96,7 +96,8 @@ for k, v in os.environ.items():
 " > /app/.env_cron
         chmod 644 /app/.env_cron
 
-        cat > /etc/cron.d/scrapers <<EOF
+        if [ "${ENABLE_OTHER_CRONS:-false}" = "true" ]; then
+            cat > /etc/cron.d/scrapers <<EOF
 SHELL=/bin/bash
 DISPLAY=:99
 
@@ -112,20 +113,18 @@ ${CRON_TRANSFER} root bash -c '. /app/.env_cron && cd /app && python -u scripts/
 # Recap quotidien
 ${CRON_RECAP} root bash -c '. /app/.env_cron && cd /app && python -u scripts/daily_recap.py --send-email >> /app/logs/recap_cron.log 2>&1'
 EOF
-
-        chmod 0644 /etc/cron.d/scrapers
-        crontab /etc/cron.d/scrapers
-
-        echo "Cron configuré :"
-        echo "  SCI/Pappers      : ${CRON_SCI}"
-        echo "  Societes         : ${CRON_COMPANY}"
-        echo "  Transfert Brevo  : ${CRON_TRANSFER}"
-        echo "  Recap quotidien  : ${CRON_RECAP}"
-        echo "Logs dans /app/logs/"
-
-        # Lancer cron en arrière-plan (pour les crons)
-        cron &
-        CRON_PID=$!
+            chmod 0644 /etc/cron.d/scrapers
+            crontab /etc/cron.d/scrapers
+            cron &
+            CRON_PID=$!
+            echo "Cron configuré :"
+            echo "  SCI/Pappers      : ${CRON_SCI}"
+            echo "  Societes         : ${CRON_COMPANY}"
+            echo "  Transfert Brevo  : ${CRON_TRANSFER}"
+            echo "  Recap quotidien  : ${CRON_RECAP}"
+        else
+            echo "Autres crons désactivés (ENABLE_OTHER_CRONS=false). Gmaps uniquement."
+        fi
         
         # Lancer le scheduler Python intelligent en avant-plan
         exec python -u scripts/scheduler.py

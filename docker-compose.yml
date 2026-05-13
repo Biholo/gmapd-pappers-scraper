@@ -118,6 +118,7 @@ services:
     env_file: .env
     environment:
       - TZ=Europe/Paris
+      - ENABLE_OTHER_CRONS=false
       - CRON_SCI=${CRON_SCI:-15 10 * * *}
       - CRON_COMPANY=${CRON_COMPANY:-20 19 * * *}
       - CRON_TRANSFER=${CRON_TRANSFER:-30 14 * * *}
