@@ -32,8 +32,11 @@ docker compose build
 ### Lancer les scrapers
 
 ```bash
-# Google Maps (scrape toute la France par niche)
+# Google Maps — 1 worker (défaut)
 docker compose up gmaps
+
+# Google Maps — N workers parallèles (via .env ou inline)
+GMAPS_WORKERS=3 docker compose up gmaps
 
 # SCI Pappers
 docker compose run --rm sci

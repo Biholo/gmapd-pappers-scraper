@@ -10,7 +10,6 @@ import json
 import time
 import random
 import logging
-from collections import defaultdict
 from pathlib import Path
 from datetime import date
 from dotenv import load_dotenv
@@ -23,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from services.supabase_client import SupabaseClient  # noqa: E402
 from services.brevo_service import BrevoService  # noqa: E402
 from services.gsheets_service import GoogleSheetsService  # noqa: E402
-from services_metier.scraper import GoogleMapsScraper  # noqa: E402
+from services_metier.scraper import GoogleMapsScraper, _is_mobile_phone  # noqa: E402
 
 logs_dir = Path(__file__).parent.parent / "logs"
 logs_dir.mkdir(parents=True, exist_ok=True)
@@ -61,10 +60,13 @@ def _getenv_bool(name, default):
     return str(v).strip().lower() in ("1", "true", "yes", "y", "on")
 
 
-MAX_SCROLLS = int(os.getenv("GMAPS_MAX_SCROLLS", "50"))
+MAX_SCROLLS = int(os.getenv("GMAPS_MAX_SCROLLS", "30"))
 HEADLESS = _getenv_bool("GMAPS_HEADLESS", True)
 DELAY_BETWEEN_CITIES = int(os.getenv("DELAY_BETWEEN_CITIES", "2"))
 DELAY_BETWEEN_NICHES = int(os.getenv("DELAY_BETWEEN_NICHES", "5"))
+SCROLL_SLEEP = float(os.getenv("GMAPS_SCROLL_SLEEP", "0.3"))
+EMAIL_MAX_PAGES = int(os.getenv("GMAPS_EMAIL_MAX_PAGES", "1"))
+
 
 
 def is_valid_email(email: str) -> bool:
@@ -126,50 +128,36 @@ def _get_proprietaire(niche: str) -> str:
 
 
 def process_lead(lead_data, email, socials, city_name, city_id, brevo_svc, gsheets_svc, niche_name, stats, department):
-    """Routing:
-    - GSheets  → lead has phone AND no WhatsApp
-    - Brevo email list  → lead has email
-    - Brevo WA list     → lead has WhatsApp
-    - Brevo SMS list    → lead has phone but no WhatsApp
+    """Routing — une seule liste Brevo par lead :
+    - Email présent        → BREVO_LIST_EMAIL_ID (même si WA vérifié)
+    - Pas d'email + mobile → BREVO_LIST_WA_ID    (même si WA non vérifié)
     """
     lead_data["proprietaire"] = _get_proprietaire(niche_name)
     phone = lead_data.get("phone")
-    has_whatsapp = lead_data.get("has_whatsapp", False)
+    has_whatsapp = lead_data.get("has_whatsapp")  # True | False | None(429)
     processed = False
 
-    # Google Sheets: only if no WhatsApp
-    if phone and not has_whatsapp and gsheets_svc:
-        if gsheets_svc.send_to_gsheets(niche_name, lead_data, email, city_name, department, _sent_emails):
-            processed = True
+    # GSheets : fixe, ou WA=False, ou WA indéterminé (429)
+    if phone and gsheets_svc:
+        is_mobile = _is_mobile_phone(phone)
+        push_gsheets = not is_mobile or has_whatsapp is not True
+        if push_gsheets:
+            if gsheets_svc.send_to_gsheets(niche_name, lead_data, email, city_name, department, _sent_emails):
+                processed = True
 
     if not brevo_svc:
         return processed
 
     email_list_id = _env_int("BREVO_LIST_EMAIL_ID")
     wa_list_id = _env_int("BREVO_LIST_WA_ID")
-    sms_list_id = _env_int("BREVO_LIST_SMS_ID")
 
-    # Build target lists for this lead (can be in multiple)
-    target_lists = []
     if email and email_list_id:
-        target_lists.append(email_list_id)
-    if has_whatsapp and wa_list_id:
-        target_lists.append(wa_list_id)
-    elif phone and not has_whatsapp and sms_list_id:
-        target_lists.append(sms_list_id)
-
-    if not target_lists:
-        return processed
-
-    if email:
-        # Email contact: use email as Brevo identifier, include all target lists at once
-        if brevo_svc.send_to_brevo(target_lists, lead_data, email, socials, city_id, stats, _sent_emails, is_valid_email, format_phone_fr):
+        if brevo_svc.send_to_brevo([email_list_id], lead_data, email, socials, city_id, stats, _sent_emails, is_valid_email, format_phone_fr):
             save_daily_stats(stats)
             processed = True
-    elif phone:
-        # Phone-only contact: use formatted phone as ext_id
+    elif phone and _is_mobile_phone(phone) and wa_list_id:
         formatted = format_phone_fr(phone)
-        if brevo_svc.send_phone_to_brevo(target_lists, lead_data, formatted, city_id, stats, _sent_phones):
+        if brevo_svc.send_phone_to_brevo([wa_list_id], lead_data, formatted, city_id, stats, _sent_phones):
             save_daily_stats(stats)
             processed = True
 
@@ -182,6 +170,17 @@ def main():
     logger.info("=" * 80)
     logger.info("DEMARRAGE DU SCRAPING GOOGLE MAPS")
     logger.info(f"Mode: {'HEADLESS' if HEADLESS else 'VISIBLE'}")
+    proxy_enabled = os.getenv("PROXY_ENABLED", "true").strip().lower() not in ("0", "false", "no")
+    proxy_list = [p for p in os.getenv("PROXY_LIST", "").split(",") if p.strip()]
+    proxy_host = os.getenv("PROXY_HOST", "").strip()
+    if not proxy_enabled:
+        logger.info("PROXY: désactivé (PROXY_ENABLED=false)")
+    elif proxy_list:
+        logger.info(f"PROXY: actif — {len(proxy_list)} proxy(s) dans PROXY_LIST")
+    elif proxy_host:
+        logger.info(f"PROXY: actif — PROXY_HOST={proxy_host} (session pinning)")
+    else:
+        logger.info("PROXY: désactivé (connexion directe)")
     logger.info("=" * 80)
 
     start_time = time.time()
@@ -212,7 +211,12 @@ def main():
         logger.warning("Google Sheets non configure.")
         gsheets_service = None
 
-    scraper = GoogleMapsScraper(headless=HEADLESS, max_scrolls=MAX_SCROLLS)
+    scraper = GoogleMapsScraper(
+        headless=HEADLESS,
+        max_scrolls=MAX_SCROLLS,
+        scroll_sleep=SCROLL_SLEEP,
+        max_email_pages=EMAIL_MAX_PAGES,
+    )
 
     total_scrapes = 0
     successful_scrapes = 0
@@ -224,68 +228,68 @@ def main():
                 logger.info("Limite de temps (2h30) atteinte. Arret.")
                 break
 
-            missions = supabase.get_pending_missions()
+            missions = supabase.get_pending_missions(limit=500)
             if not missions:
                 logger.info("Aucune mission pending. Arret.")
                 break
 
-            # Build batch: one random city per niche, shuffled — guarantees niche diversity
-            niche_groups: defaultdict = defaultdict(list)
-            for m in missions:
-                niche_groups[m["niche"]].append(m)
-            batch = [random.choice(cities) for cities in niche_groups.values()]
-            random.shuffle(batch)
-            logger.info(f"Batch: {len(batch)} niches — {' | '.join(m['niche'] for m in batch)}")
-
-            for mission in batch:
-                if time.time() - start_time > max_session_duration:
-                    logger.info("Limite de temps (2h30) atteinte. Arret.")
+            # Shuffle → claim atomique → un seul worker scrape chaque mission
+            random.shuffle(missions)
+            mission = None
+            for candidate in missions:
+                if supabase.claim_mission(candidate["niche"], candidate["city_id"]):
+                    mission = candidate
                     break
 
-                niche_name = mission["niche"]
-                city_id = mission["city_id"]
-                city_name = mission["name"]
-                dept_code = mission.get("department_code", "")
+            if not mission:
+                logger.info("Toutes les missions visibles reclamees. Pause 10s.")
+                time.sleep(10)
+                continue
 
-                if scraper.is_already_scraped(city_id, niche_name):
-                    supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=0)
-                    continue
+            niche_name = mission["niche"]
+            city_id = mission["city_id"]
+            city_name = mission["name"]
+            dept_code = mission.get("department_code", "")
 
-                logger.info(f"\n{'=' * 80}")
-                logger.info(f"MISSION: {niche_name} / {city_name} (dept {dept_code})")
-                logger.info("=" * 80)
+            if scraper.is_already_scraped(city_id, niche_name):
+                supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=0)
+                continue
 
-                city_leads_sent = 0
+            logger.info(f"\n{'=' * 80}")
+            logger.info(f"MISSION: {niche_name} / {city_name} (dept {dept_code})")
+            logger.info("=" * 80)
 
-                def handle_lead(lead_data, email, socials,
-                                _niche=niche_name, _city=city_name, _cid=city_id,
-                                _brevo=brevo_svc, _dept=dept_code):
-                    nonlocal city_leads_sent
-                    result = process_lead(
-                        lead_data, email, socials, _city, _cid,
-                        _brevo, gsheets_service,
-                        _niche, stats, _dept
-                    )
-                    if result:
-                        city_leads_sent += 1
-                    return result
+            city_leads_sent = 0
 
-                try:
-                    success = scraper.scrape(city_name, city_id, niche_name, on_lead_enriched=handle_lead)
-                    if success:
-                        supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=city_leads_sent)
-                        stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
-                        save_daily_stats(stats)
-                        successful_scrapes += 1
-                    else:
-                        supabase.update_scrape_progress(niche_name, city_id, "error", error_msg="Chrome crash during scroll")
-                        failed_scrapes += 1
-                    total_scrapes += 1
-                    time.sleep(DELAY_BETWEEN_CITIES)
-                except Exception as e:
+            def handle_lead(lead_data, email, socials,
+                            _niche=niche_name, _city=city_name, _cid=city_id,
+                            _brevo=brevo_svc, _dept=dept_code):
+                nonlocal city_leads_sent
+                result = process_lead(
+                    lead_data, email, socials, _city, _cid,
+                    _brevo, gsheets_service,
+                    _niche, stats, _dept
+                )
+                if result:
+                    city_leads_sent += 1
+                return result
+
+            try:
+                success = scraper.scrape(city_name, city_id, niche_name, on_lead_enriched=handle_lead)
+                if success:
+                    supabase.update_scrape_progress(niche_name, city_id, "done", leads_found=city_leads_sent)
+                    stats["gmaps_scraped"] = stats.get("gmaps_scraped", 0) + 1
+                    save_daily_stats(stats)
+                    successful_scrapes += 1
+                else:
+                    supabase.update_scrape_progress(niche_name, city_id, "error", error_msg="Chrome crash during scroll")
                     failed_scrapes += 1
-                    logger.error(f"Erreur {city_name}/{niche_name}: {e}")
-                    supabase.update_scrape_progress(niche_name, city_id, "error", error_msg=str(e))
+                total_scrapes += 1
+                time.sleep(DELAY_BETWEEN_CITIES)
+            except Exception as e:
+                failed_scrapes += 1
+                logger.error(f"Erreur {city_name}/{niche_name}: {e}")
+                supabase.update_scrape_progress(niche_name, city_id, "error", error_msg=str(e))
 
     finally:
         scraper.close()

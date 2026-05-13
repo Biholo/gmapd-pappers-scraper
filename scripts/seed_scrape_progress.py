@@ -15,6 +15,7 @@ Usage:
 
 import os
 import sys
+import time
 import argparse
 from dotenv import load_dotenv
 from supabase import create_client, Client
@@ -87,6 +88,7 @@ def fetch_cities_for_departments(departments: list[str]) -> list[dict]:
                 supabase.table("cities")
                 .select("id, name, department_code")
                 .in_("department_code", chunk)
+                .gte("pop", 5000)
                 .range(offset, offset + PAGE_SIZE - 1)
                 .execute()
             )
@@ -116,13 +118,22 @@ def reset_pending(niche_key: str | None) -> int:
 # ─────────────────────────────────────────────
 # SEED
 # ─────────────────────────────────────────────
-def insert_batch(rows: list[dict]) -> int:
-    response = (
-        supabase.table("scrape_progress")
-        .upsert(rows, on_conflict="niche,city_id")
-        .execute()
-    )
-    return len(response.data)
+def insert_batch(rows: list[dict], max_retries: int = 5) -> int:
+    delay = 2
+    for attempt in range(max_retries):
+        try:
+            response = (
+                supabase.table("scrape_progress")
+                .upsert(rows, on_conflict="niche,city_id")
+                .execute()
+            )
+            return len(response.data)
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise
+            print(f"\n   ⚠️  Retry {attempt + 1}/{max_retries} ({e.__class__.__name__})...", end="", flush=True)
+            time.sleep(delay * (attempt + 1))
+    return 0
 
 
 def seed_niche(niche_key: str, niche_config: dict) -> dict:

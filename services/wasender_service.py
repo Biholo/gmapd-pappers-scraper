@@ -22,12 +22,15 @@ class WasenderService:
             return exc.response.status_code in (401, 403)
         return False
 
-    def check_whatsapp(self, numero: str) -> bool:
+    def check_whatsapp(self, numero: str) -> bool | None:
         normalized = self._normalize(numero)
         url = f"{WASENDER_API_BASE}/on-whatsapp/{normalized}"
         try:
             with httpx.Client(headers=self.headers, timeout=15) as client:
                 resp = client.get(url)
+                if resp.status_code == 429:
+                    print(f"[Wasender] 429 rate limit — {normalized} inconnu")
+                    return None
                 resp.raise_for_status()
                 data = resp.json()
                 exists = bool(data.get("data", {}).get("exists", False))

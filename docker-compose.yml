@@ -12,10 +12,12 @@
 
 services:
   # --- Scraper Google Maps (Selenium) ---
+  # Workers parallèles via GMAPS_WORKERS dans .env (défaut: 1)
+  # Usage: docker compose up gmaps         → 1 worker (ou selon GMAPS_WORKERS)
+  # Claim atomique Supabase → zéro collision entre workers
   gmaps:
     build: .
     image: scraping-lead:latest
-    container_name: scraper-gmaps
     command: gmaps
     env_file: .env
     environment:
@@ -30,6 +32,7 @@ services:
     shm_size: "2g"
     restart: unless-stopped
     deploy:
+      replicas: ${GMAPS_WORKERS:-1}
       resources:
         limits:
           memory: 4G

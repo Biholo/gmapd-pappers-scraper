@@ -19,6 +19,7 @@ from selenium.common.exceptions import StaleElementReferenceException, WebDriver
 
 from services.supabase_client import SupabaseClient
 from services.wasender_service import WasenderService
+from services.proxy_service import ProxyService
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +46,16 @@ CONSENT_BUTTON_XPATHS = [
 
 
 class GoogleMapsScraper:
-    def __init__(self, headless=False, max_scrolls=50):
+    def __init__(self, headless=False, max_scrolls=50, scroll_sleep=0.3, max_email_pages=2):
         self.headless = headless
         self.max_scrolls = max_scrolls
+        self.scroll_sleep = scroll_sleep
+        self.max_email_pages = max_email_pages
         self.driver = None
         self.supabase = None
         self.cities_scraped = 0  # Compteur pour recycler le driver
         self.max_cities_per_driver = 10  # Recycler tous les 10 villes
+        self._proxy_svc: ProxyService = ProxyService()
         
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         logs_dir = os.path.join(base_dir, 'logs')
@@ -96,7 +100,6 @@ class GoogleMapsScraper:
         opts.add_argument("--disable-blink-features=AutomationControlled")
         opts.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
         # Optimisations mémoire et stabilité
-        opts.add_argument("--disable-extensions")
         opts.add_argument("--disable-plugins")
         opts.add_argument("--disable-images")  # Désactiver les images pour économiser la mémoire
         opts.add_argument("--disable-default-apps")
@@ -125,6 +128,14 @@ class GoogleMapsScraper:
         opts.add_experimental_option("excludeSwitches", ["enable-automation"])
         opts.add_experimental_option("useAutomationExtension", False)
 
+        opts.add_argument("--disable-extensions")
+
+        if self._proxy_svc.enabled:
+            self._proxy_svc.start()
+            opts.add_argument(f"--proxy-server=http://127.0.0.1:{self._proxy_svc.port}")
+        else:
+            logger.debug("No proxy configured, direct connection")
+
         # Support Docker : utiliser Chromium si CHROME_BIN est défini
         chrome_bin = os.environ.get("CHROME_BIN")
         if chrome_bin:
@@ -137,9 +148,16 @@ class GoogleMapsScraper:
         driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
         })
+        if self._proxy_svc.enabled:
+            try:
+                driver.get("https://api.ipify.org?format=text")
+                ip = driver.find_element(By.TAG_NAME, "body").text.strip()
+                logger.info("IP via proxy: %s", ip)
+            except Exception as e:
+                logger.warning("IP check failed: %s", e)
         return driver
 
-    def _accept_consent(self, driver, timeout=8):
+    def _accept_consent(self, driver, timeout=4):
         try:
             for xp in CONSENT_BUTTON_XPATHS:
                 try:
@@ -164,12 +182,12 @@ class GoogleMapsScraper:
             feed = feed[0]
         except Exception:
             self._accept_consent(driver)
-            feed = WebDriverWait(driver, 20).until(
+            feed = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='feed']"))
             )
 
         try:
-            WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, 5).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.Nv2PK"))
             )
         except Exception:
@@ -177,7 +195,7 @@ class GoogleMapsScraper:
 
         previous_count = 0
         no_change_count = 0
-        max_attempts = max(self.max_scrolls, 50)
+        max_attempts = max(self.max_scrolls, 20)
 
         for i in range(max_attempts):
             try:
@@ -188,7 +206,7 @@ class GoogleMapsScraper:
                     driver.execute_script("arguments[0].scrollBy(0, arguments[0].clientHeight);", feed)
                 except Exception:
                     pass
-            time.sleep(0.5)
+            time.sleep(self.scroll_sleep)
 
             try:
                 current_count = len(driver.find_elements(By.CSS_SELECTOR, "div.Nv2PK"))
@@ -214,7 +232,7 @@ class GoogleMapsScraper:
 
         try:
             try:
-                name_elem = WebDriverWait(driver, 5).until(
+                name_elem = WebDriverWait(driver, 2).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "h1.DUwDvf"))
                 )
                 if name_elem and name_elem.text.strip():
@@ -337,12 +355,12 @@ class GoogleMapsScraper:
 
         if closed:
             try:
-                WebDriverWait(driver, 5).until(
+                WebDriverWait(driver, 2).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='feed']"))
                 )
-                time.sleep(0.5)
+                time.sleep(0.3)
             except Exception:
-                time.sleep(1)
+                time.sleep(0.5)
 
         return closed
 
@@ -413,7 +431,7 @@ class GoogleMapsScraper:
                 seen.add(u)
                 uniq.append(u)
 
-        for u in uniq[:3]:
+        for u in uniq[:self.max_email_pages]:
             try:
                 r2 = requests.get(u, headers=headers, timeout=5, allow_redirects=True)
                 if r2.ok and r2.text:
@@ -631,7 +649,7 @@ class GoogleMapsScraper:
                                     return False  # panneau en transition, attendre
                                 txt = elems[0].text.strip()
                                 return txt and txt != previous_name
-                            WebDriverWait(self.driver, 8).until(_panel_changed)
+                            WebDriverWait(self.driver, 4).until(_panel_changed)
                         except Exception:
                             pass
 

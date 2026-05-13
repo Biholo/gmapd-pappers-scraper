@@ -153,12 +153,14 @@ class SupabaseClient:
                 time.sleep(retry_delay)
         return False
 
-    def get_pending_missions(self):
-        """Fetch pending scrape missions joined with city info."""
+    def get_pending_missions(self, limit=500):
+        """Fetch next N pending scrape missions ordered deterministically."""
         url = (
             f"{self.base_url}/scrape_progress"
             f"?select=niche,city_id,cities(name,department_code)"
             f"&status=eq.pending"
+            f"&order=niche.asc,city_id.asc"
+            f"&limit={limit}"
         )
         try:
             response = requests.get(url, headers=self.headers, timeout=20)
@@ -173,11 +175,27 @@ class SupabaseClient:
                     "name": city.get("name"),
                     "department_code": city.get("department_code") or "",
                 })
-            return sorted(missions, key=lambda x: (x["niche"], x["department_code"]))
+            return missions
         except requests.HTTPError as e:
             raise Exception(f"Failed to fetch pending missions (HTTP {e.response.status_code}): {e.response.text}") from e
         except Exception as e:
             raise Exception(f"Failed to fetch pending missions: {str(e)}") from e
+
+    def claim_mission(self, niche: str, city_id: int) -> bool:
+        """Atomically claim a pending mission by setting status to in_progress.
+        Returns True if claimed, False if another worker claimed it first."""
+        from datetime import datetime, timezone
+        url = f"{self.base_url}/scrape_progress?niche=eq.{niche}&city_id=eq.{city_id}&status=eq.pending"
+        body = {
+            "status": "in_progress",
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
+        }
+        try:
+            response = requests.patch(url, json=body, headers=self.headers, timeout=10)
+            response.raise_for_status()
+            return len(response.json()) > 0
+        except Exception:
+            return False
 
     def update_scrape_progress(self, niche: str, city_id: int, status: str,
                                 leads_found: int = None, error_msg: str = None):
