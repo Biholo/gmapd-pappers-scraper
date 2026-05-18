@@ -153,12 +153,16 @@ class SupabaseClient:
                 time.sleep(retry_delay)
         return False
 
-    def get_pending_missions(self, limit=500):
-        """Fetch next N pending scrape missions ordered deterministically."""
+    def get_pending_missions(self, limit=50, niches=None):
+        """Fetch next N pending scrape missions. Optional niche filter (list)."""
+        niche_filter = ""
+        if niches:
+            niche_filter = f"&niche=in.({','.join(niches)})"
         url = (
             f"{self.base_url}/scrape_progress"
             f"?select=niche,city_id,cities(name,department_code)"
             f"&status=eq.pending"
+            f"{niche_filter}"
             f"&order=niche.asc,city_id.asc"
             f"&limit={limit}"
         )

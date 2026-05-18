@@ -48,7 +48,7 @@ EMAIL_REGEX = re.compile(
 BLACKLIST_PATTERNS = [
     r"^(info|contact|hello|admin|support|noreply|no-reply|webmaster|postmaster|mailer-daemon)@",
     r"@(example\.com|test\.com|localhost)$",
-    r"\.png$|\.jpg$|\.jpeg$|\.gif$|\.svg$|\.webp$",
+    r"\.(?:png|jpg|jpeg|gif|svg|webp|ico|bmp|tiff?|pdf|zip|rar|js|css|ts|json|xml|html?)$",
 ]
 BLACKLIST_RE = [re.compile(p, re.IGNORECASE) for p in BLACKLIST_PATTERNS]
 
@@ -58,6 +58,13 @@ def _getenv_bool(name, default):
     if v is None:
         return default
     return str(v).strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+PRIORITY_GROUPS = [
+    ["serrurier", "comptable", "plombier", "electricien"],
+    ["architecte_interieur", "garage_auto", "architecte"],
+    ["iad", "cgp", "agent_immo"],
+]
 
 
 MAX_SCROLLS = int(os.getenv("GMAPS_MAX_SCROLLS", "30"))
@@ -228,13 +235,19 @@ def main():
                 logger.info("Limite de temps (2h30) atteinte. Arret.")
                 break
 
-            missions = supabase.get_pending_missions(limit=500)
+            # Fetch 5 missions per niche individually → even niche distribution within group
+            # Groups appended in priority order → prio 1 tried first
+            missions = []
+            for group_niches in PRIORITY_GROUPS:
+                group_missions = []
+                for niche in group_niches:
+                    group_missions.extend(supabase.get_pending_missions(limit=5, niches=[niche]))
+                if group_missions:
+                    random.shuffle(group_missions)
+                    missions.extend(group_missions)
             if not missions:
                 logger.info("Aucune mission pending. Arret.")
                 break
-
-            # Shuffle → claim atomique → un seul worker scrape chaque mission
-            random.shuffle(missions)
             mission = None
             for candidate in missions:
                 if supabase.claim_mission(candidate["niche"], candidate["city_id"]):

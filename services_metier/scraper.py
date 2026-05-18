@@ -382,7 +382,12 @@ class GoogleMapsScraper:
         return socials
 
     def _find_email_and_socials(self, website):
-        email_regex = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+        email_regex = re.compile(
+            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+"
+            r"\.(?!(?:png|jpg|jpeg|gif|svg|webp|ico|bmp|tiff?|pdf|zip|rar|js|css|ts|json|xml|html?|php)\b)"
+            r"[A-Za-z]{2,63}"
+            r"(?![\w.])"
+        )
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         email = None
         socials = {"facebookUrl": "", "xUrl": "", "linkedinUrl": "", "instagramUrl": ""}
